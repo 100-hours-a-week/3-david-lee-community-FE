@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>아무 말 대잔치 — 로그인</title>
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+<header class="appbar">
+    <div class="appbar__inner">
+        <strong class="appbar__title">아무 말 대잔치</strong>
+    </div>
+</header>
+
+<main class="container center">
+    <section class="panel" aria-labelledby="login-title">
+        <h1 id="login-title" class="title">로그인</h1>
+
+        <form class="form" id="loginForm" autocomplete="on">
+            <div class="field">
+                <label class="label" for="email">이메일</label>
+                <input class="input" id="email" name="email" type="email" placeholder="이메일을 입력하세요" required>
+            </div>
+
+            <div class="field">
+                <label class="label" for="password">비밀번호</label>
+                <input class="input" id="password" name="password" type="password" placeholder="비밀번호를 입력하세요" minlength="6" required>
+                <div class="help">* helper text</div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn--primary">로그인</button>
+            </div>
+
+            <div class="linkrow">
+                <a href="/pages/html/signup.html" aria-label="회원가입 페이지로 이동">회원가입</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script type="module">
+    document.getElementById('loginForm')?.addEventListener('submit', (e)=>{
+        e.preventDefault();
+    });
+</script>
+</body>
+</html>

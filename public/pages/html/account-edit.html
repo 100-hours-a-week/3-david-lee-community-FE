@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>아무 말 대잔치 — 회원정보 수정</title>
+    <link rel="stylesheet" href="../css/account.css">
+</head>
+<body>
+<header class="appbar">
+    <div class="appbar__inner">
+        <strong class="appbar__title">아무 말 대잔치</strong>
+        <div class="appbar__avatar" id="avatarBtn" title="프로필"></div>
+        <nav class="menu" id="menu">
+            <a href="/pages/html/account-edit.html">회원정보수정</a>
+            <a href="/pages/html/account-password.html">비밀번호수정</a>
+            <a href="/pages/html/login.html">로그아웃</a>
+        </nav>
+    </div>
+</header>
+
+<main class="container">
+    <h1 class="page">회원정보수정</h1>
+
+    <section class="panel">
+        <!-- 프로필 사진 -->
+        <div class="label" style="text-align:left; margin-bottom:6px">프로필 사진*</div>
+        <div class="profile">
+            <span aria-hidden="true">👤</span>
+            <button type="button">변경</button>
+            <!-- 실제 파일 입력을 붙일 때: <input type="file" accept="image/*" hidden id="avatarFile"> -->
+        </div>
+
+        <!-- 폼 -->
+        <form class="form" id="accountForm">
+            <div class="field">
+                <label class="label" for="email">이메일</label>
+                <input class="input" id="email" type="email" value="startupcode@gmail.com" disabled>
+            </div>
+
+            <div class="field">
+                <label class="label" for="nickname">닉네임</label>
+                <input class="input" id="nickname" type="text" placeholder="닉네임을 입력하세요" value="스타트업코드" required>
+                <div class="help">* helper text</div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn--primary">수정하기</button>
+                <button type="button" class="btn btn--danger" id="withdrawBtn">회원 탈퇴</button>
+            </div>
+        </form>
+
+        <div class="notice" id="done" hidden>수정완료</div>
+    </section>
+</main>
+
+<script type="module">
+    // 드롭다운
+    const menu = document.getElementById('menu');
+    const avatarBtn = document.getElementById('avatarBtn');
+    avatarBtn.addEventListener('click', () => {
+        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', (e)=>{
+        if(!menu.contains(e.target) && e.target !== avatarBtn) menu.style.display='none';
+    });
+
+    // 폼 동작 (예시)
+    document.getElementById('accountForm').addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const nickname = document.getElementById('nickname').value.trim();
+        if(!nickname){ alert('닉네임을 입력하세요.'); return; }
+        console.log('PATCH /v1/users ->', { nickname });
+        // fetch('/v1/users',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${localStorage.getItem('accessToken')}`},body:JSON.stringify({nickname})})
+        document.getElementById('done').hidden = false;
+    });
+
+    document.getElementById('withdrawBtn').addEventListener('click', ()=>{
+        if(confirm('정말 탈퇴하시겠습니까?')){
+            console.log('DELETE /v1/users');
+            // fetch('/v1/users',{method:'DELETE',headers:{Authorization:`Bearer ${...}`}})
+            location.href = '/pages/html/login.html';
+        }
+    });
+</script>
+</body>
+</html>
