@@ -7,7 +7,7 @@ app.use(express.static('public'));
 
 // 루트("/") 접근 시 pages/index.html로 리다이렉트
 app.get('/', (req, res) => {
-    res.redirect('/pages/html/index.html');
+    res.redirect('/pages/html/login.html');
 });
 
 // 서버 실행

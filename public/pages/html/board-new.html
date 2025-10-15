@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>아무 말 대잔치 — 게시글 작성</title>
+    <link rel="stylesheet" href="../css/board-editor.css">
+</head>
+<body>
+<header class="appbar">
+    <div class="appbar__inner">
+        <a class="appbar__back" href="/pages/html/board-list.html" aria-label="뒤로 가기">←</a>
+        <strong class="appbar__title">아무 말 대잔치</strong>
+        <div class="appbar__avatar"></div>
+    </div>
+</header>
+
+<main class="container">
+    <h1 class="page">게시글 작성</h1>
+
+    <section class="panel">
+        <form id="postForm" class="form">
+            <div class="field">
+                <label class="label required" for="title">제목</label>
+                <input class="input" id="title" name="title" type="text" maxlength="26"
+                       placeholder="제목을 입력해주세요. (최대 26글자)" required>
+            </div>
+
+            <div class="field">
+                <label class="label required" for="content">내용</label>
+                <textarea class="textarea" id="content" name="content" placeholder="내용을 입력해주세요." required></textarea>
+                <div class="help">* helper text</div>
+            </div>
+
+            <div class="field">
+                <label class="label" for="image">이미지</label>
+                <div class="filebox">
+                    <label for="image" class="fake">파일 선택</label>
+                    <input id="image" name="image" type="file" accept="image/*">
+                    <span id="filename" class="name">파일을 선택해주세요.</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn--primary">완료</button>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script type="module">
+    const input = document.getElementById('image');
+    const nameEl = document.getElementById('filename');
+    input.addEventListener('change', () => {
+        nameEl.textContent = input.files?.[0]?.name ?? '파일을 선택해주세요.';
+    });
+
+    document.getElementById('postForm').addEventListener('submit', (e)=>{
+        e.preventDefault();
+        const fd = new FormData(e.currentTarget);
+        console.log('create ->', Object.fromEntries(fd.entries()));
+    });
+</script>
+</body>
+</html>

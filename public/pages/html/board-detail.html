@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>아무 말 대잔치 — 상세</title>
+    <link rel="stylesheet" href="../css/board.css">
+</head>
+<body>
+<!-- 상단 앱바 -->
+<header class="appbar">
+    <div class="appbar__inner">
+        <a class="appbar__back" href="/pages/html/board-list.html" aria-label="뒤로가기">← 뒤로</a>
+        <strong class="appbar__title">아무 말 대잔치</strong>
+        <div class="appbar__avatar" title="내 프로필"></div>
+    </div>
+</header>
+
+<main class="container">
+    <!-- 게시글 헤더 -->
+    <section class="card postview">
+        <div class="post__header">
+            <div>
+                <h1 class="title">제목 1</h1>
+                <div class="sub">
+                    <div style="display:flex; align-items:center; gap:8px">
+                        <div class="author__avatar"></div>
+                        <span>더미 작성자 1</span>
+                    </div>
+                    <time datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
+                </div>
+            </div>
+
+            <div class="toolbar">
+                <button class="btn btn--ghost btn--small">수정</button>
+                <button class="btn btn--ghost btn--small">삭제</button>
+            </div>
+        </div>
+
+        <!-- 미디어 영역(회색 박스) -->
+        <div class="media mt-12" aria-label="이미지 자리"></div>
+
+        <!-- 본문 -->
+        <article class="content">
+            <p>
+                맛있고 매기깔깔? 아무말이지만, 실은 평범한 문단이에요. 우리가 매일 쓰는
+                짧은 생각을 이곳에 남겨두세요. 새로운 연결과 발견이 생길지도 모릅니다.
+            </p>
+            <p>
+                지극히 일상적인 이야기라도 좋아요. 꾸밈은 최소한으로, 자연스러운 흐름으로.
+                글이 길거나 짧아도 좋아요. 다만, 읽는 이를 위한 작은 친절은 잊지 말기!
+            </p>
+        </article>
+
+        <!-- 통계 -->
+        <div class="stats">
+            <div class="stat">
+                <div class="num">123</div>
+                <div class="label">좋아요수</div>
+            </div>
+            <div class="stat">
+                <div class="num">123</div>
+                <div class="label">조회수</div>
+            </div>
+            <div class="stat">
+                <div class="num">123</div>
+                <div class="label">댓글</div>
+            </div>
+        </div>
+
+        <!-- 댓글 작성 -->
+        <div class="commentbox">
+            <label for="comment" class="muted" style="display:block; margin-bottom:6px">댓글을 남겨주세요!</label>
+            <textarea id="comment" placeholder="내용을 입력하세요."></textarea>
+            <div class="actions">
+                <button class="btn btn--primary btn--small">댓글 등록</button>
+            </div>
+        </div>
+
+        <!-- 댓글 리스트 -->
+        <div class="comments">
+            <div class="comment">
+                <div class="comment__top">
+                    <div class="comment__meta">
+                        <div class="author__avatar" style="width:28px;height:28px"></div>
+                        <span>더미 작성자 1</span>
+                        <time datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
+                    </div>
+                    <div>
+                        <button class="btn btn--ghost btn--small">수정</button>
+                        <button class="btn btn--ghost btn--small">삭제</button>
+                    </div>
+                </div>
+                <div class="comment__body">댓글 내용</div>
+            </div>
+
+            <div class="comment">
+                <div class="comment__top">
+                    <div class="comment__meta">
+                        <div class="author__avatar" style="width:28px;height:28px"></div>
+                        <span>더미 작성자 1</span>
+                        <time datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
+                    </div>
+                    <div>
+                        <button class="btn btn--ghost btn--small">수정</button>
+                        <button class="btn btn--ghost btn--small">삭제</button>
+                    </div>
+                </div>
+                <div class="comment__body">댓글 내용</div>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
