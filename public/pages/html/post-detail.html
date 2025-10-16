@@ -17,99 +17,86 @@
 </header>
 
 <main class="container">
-    <!-- 게시글 헤더 -->
-    <section class="card postview">
-        <div class="post__header">
-            <div>
-                <h1 class="title">제목 1</h1>
-                <div class="sub">
-                    <div style="display:flex; align-items:center; gap:8px">
-                        <div class="author__avatar"></div>
-                        <span>더미 작성자 1</span>
-                    </div>
-                    <time datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
-                </div>
-            </div>
-
-            <div class="toolbar">
-                <button class="btn btn--ghost btn--small">수정</button>
-                <button class="btn btn--ghost btn--small">삭제</button>
-            </div>
-        </div>
-
-        <!-- 미디어 영역(회색 박스) -->
-        <div class="media mt-12" aria-label="이미지 자리"></div>
-
-        <!-- 본문 -->
-        <article class="content">
-            <p>
-                맛있고 매기깔깔? 아무말이지만, 실은 평범한 문단이에요. 우리가 매일 쓰는
-                짧은 생각을 이곳에 남겨두세요. 새로운 연결과 발견이 생길지도 모릅니다.
-            </p>
-            <p>
-                지극히 일상적인 이야기라도 좋아요. 꾸밈은 최소한으로, 자연스러운 흐름으로.
-                글이 길거나 짧아도 좋아요. 다만, 읽는 이를 위한 작은 친절은 잊지 말기!
-            </p>
-        </article>
-
-        <!-- 통계 -->
-        <div class="stats">
-            <div class="stat">
-                <div class="num">123</div>
-                <div class="label">좋아요수</div>
-            </div>
-            <div class="stat">
-                <div class="num">123</div>
-                <div class="label">조회수</div>
-            </div>
-            <div class="stat">
-                <div class="num">123</div>
-                <div class="label">댓글</div>
-            </div>
-        </div>
-
-        <!-- 댓글 작성 -->
-        <div class="commentbox">
-            <label for="comment" class="muted" style="display:block; margin-bottom:6px">댓글을 남겨주세요!</label>
-            <textarea id="comment" placeholder="내용을 입력하세요."></textarea>
-            <div class="actions">
-                <button class="btn btn--primary btn--small">댓글 등록</button>
-            </div>
-        </div>
-
-        <!-- 댓글 리스트 -->
-        <div class="comments">
-            <div class="comment">
-                <div class="comment__top">
-                    <div class="comment__meta">
-                        <div class="author__avatar" style="width:28px;height:28px"></div>
-                        <span>더미 작성자 1</span>
-                        <time datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
-                    </div>
-                    <div>
-                        <button class="btn btn--ghost btn--small">수정</button>
-                        <button class="btn btn--ghost btn--small">삭제</button>
-                    </div>
-                </div>
-                <div class="comment__body">댓글 내용</div>
-            </div>
-
-            <div class="comment">
-                <div class="comment__top">
-                    <div class="comment__meta">
-                        <div class="author__avatar" style="width:28px;height:28px"></div>
-                        <span>더미 작성자 1</span>
-                        <time datetime="2021-01-01T00:00:00">2021-01-01 00:00:00</time>
-                    </div>
-                    <div>
-                        <button class="btn btn--ghost btn--small">수정</button>
-                        <button class="btn btn--ghost btn--small">삭제</button>
-                    </div>
-                </div>
-                <div class="comment__body">댓글 내용</div>
-            </div>
-        </div>
-    </section>
+    <div id="postRoot"><p>로딩 중...</p></div>
 </main>
+
+<!-- JS 로직 -->
+<script type="module">
+    import {getPostDetail, deletePost} from '../../api/post.js';
+    import {saveComments} from "../../api/comment.js";
+    import {createPostView} from '../../assets/postView.js';
+
+    const root = document.getElementById('postRoot');
+    const params = new URLSearchParams(location.search);
+    const postId = params.get('id');
+
+    function showError(msg){
+        root.innerHTML = `<p class="error" style="color:#c00">${msg}</p>`;
+    }
+
+    async function load() {
+        try {
+            if(!postId) throw new Error('잘못된 접근입니다. (id 누락)');
+            const data = await getPostDetail(postId);
+
+            // 백엔드 응답 → 뷰 모델 매핑
+            const post = {
+                id: data.id,
+                title: data.title,
+                content: data.content,
+                author: data.author?.nickname,
+                createdAt: data.createdAt,
+                likeCount: data.likeCount ?? 0,
+                viewCount: data.viewCount ?? 0,
+                commentCount: data.commentCount ?? 0,
+                images: data.image ?? [],
+                comments: data.comments ?? [],
+                editable: data.editable,
+            };
+
+            // 댓글 전달할 옵션 객체를 분리해서 생성
+            const viewOptions = {
+                onSubmitComment: async (p, text) => {
+                    if (!text || !text.trim()) {
+                        alert('댓글 내용을 입력해주세요.');
+                        return;
+                    }
+                    try {
+                        await saveComments(p.id, text);
+                        await load();
+                    } catch (e) {
+                        alert('댓글 등록에 실패했습니다: ' + (e.message || ''));
+                    }
+                }
+            };
+
+            // [수정 3] post.editable이 true일 때만 수정/삭제 핸들러를 옵션에 추가
+            if (post.editable) {
+                viewOptions.onEdit = (p) => location.href = `/pages/html/post-edit.html?id=${encodeURIComponent(p.id)}`;
+                viewOptions.onDelete = async (p) => {
+                    if (!confirm('정말 삭제하시겠습니까?')) return;
+                    try {
+                        await deletePost(p.id);
+                        alert('삭제되었습니다.');
+                        location.href = '/pages/html/post-list.html';
+                    } catch (e) {
+                        alert('삭제 실패: ' + (e.message || ''));
+                    }
+                };
+            }
+
+            // 완성된 post 객체와 viewOptions를 전달
+            const view = await createPostView(post, viewOptions);
+
+            root.innerHTML = '';
+            root.appendChild(view);
+        } catch (e) {
+            console.error(e);
+            showError(e.message || '상세 조회 실패');
+        }
+    }
+
+    load();
+</script>
 </body>
 </html>

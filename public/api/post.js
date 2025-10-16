@@ -8,6 +8,10 @@ export async function createPost(postData) {
         body: JSON.stringify(postData),
     });
     if (!res.ok) throw new Error(`게시글 등록 실패 (${res.status})`);
+
+    // 로그
+    console.log(res);
+
     return await res.json();
 }
 
@@ -21,6 +25,10 @@ export async function getPosts(categoryId) {
     });
     if (!res.ok) throw new Error(`목록 조회 실패 (${res.status})`);
     const data = await res.json();
+
+    // 로그
+    console.log(data);
+
     return Array.isArray(data.content) ? data.content : data;
 }
 
@@ -31,7 +39,12 @@ export async function getPostDetail(postId) {
         headers: { 'Content-Type': 'application/json' },
     });
     if (!res.ok) throw new Error(`상세 조회 실패 (${res.status})`);
-    return await res.json();
+    const data = await res.json();
+
+    // 로그
+    console.log(data.data);
+
+    return data.data;
 }
 
 /// 수정

@@ -1,0 +1,61 @@
+<template id="postView">
+  <section class="card postiew">
+
+    <!-- 헤더 -->
+    <div class="post__header">
+      <div>
+        <h1 class="title"></h1>
+
+        <!-- 유저 -->
+        <div class="sub">
+          <div class="sub">
+            <div style="display:flex; align-items:center; gap:8px">
+              <div class="author__avatar"></div>
+              <span class="author__name"></span>
+              <div class="createdAt"></div> </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 수정/삭제 -->
+      <div class="toolbar">
+        <button class="btn btn--ghost btn--small" data-action="edit">수정</button>
+        <button class="btn btn--ghost btn--small" data-action="delete">삭제</button>
+      </div>
+    </div>
+
+    <!-- 미디어 -->
+    <div class="media mt-12" aria-label="이미지 자리"></div>
+
+    <!-- 본문 -->
+    <article class="content"></article>
+
+    <!-- 통계 -->
+    <div class="stats">
+      <div class="stat">
+        <div class="num likeCount">0</div>
+        <div class="label">좋아요수</div>
+      </div>
+      <div class="stat">
+        <div class="num viewCount">0</div>
+        <div class="label">조회수</div>
+      </div>
+      <div class="stat">
+        <div class="num commentCount">0</div>
+        <div class="label">댓글</div>
+      </div>
+    </div>
+
+    <!-- 댓글 입력 -->
+    <div class="commentbox">
+      <label for="comment" class="muted" style="display:block; margin-bottom:6px">댓글을 남겨주세요!</label>
+      <textarea id="comment" placeholder="내용을 입력하세요."></textarea>
+      <div class="actions">
+        <button class="btn btn--primary btn--small" data-action="comment">댓글 등록</button>
+      </div>
+    </div>
+
+    <!-- 댓글 리스트 -->
+    <div class="commentboxs"></div>
+  </section>
+</template>

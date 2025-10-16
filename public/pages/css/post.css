@@ -106,6 +106,13 @@ body{
     color:var(--muted); font-size:13px; display:flex; align-items:center; gap:10px; flex-wrap:wrap
 }
 .postview .toolbar{ margin-left:auto; display:flex; gap:8px }
+
+.postview .sub .createdAt::before {
+    content: "·"; /* 구분점 문자 */
+    margin-right: 10px; /* 구분점과 날짜 사이의 간격 */
+    font-weight: bold;
+    color: var(--border); /* 구분점 색상 */
+}
 .media{
     margin:16px 0; height:260px; border-radius:var(--radius); border:1px dashed var(--border);
     background:repeating-linear-gradient(45deg,#efeff3,#efeff3 12px,#f8f8fb 12px,#f8f8fb 24px);
@@ -138,8 +145,8 @@ body{
 .commentbox textarea:focus{ box-shadow:0 0 0 4px var(--ring) }
 .commentbox .actions{ display:flex; justify-content:flex-end; margin-top:10px }
 
-.comments{ display:grid; gap:12px; margin-top:14px }
-.comment{
+.commentboxs{ display:grid; gap:12px; margin-top:14px }
+.commentboxs{
     background:#fff; border:1px solid var(--border); border-radius:12px;
     padding:12px 14px; box-shadow:var(--shadow);
 }
