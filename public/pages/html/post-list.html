@@ -29,7 +29,65 @@
     <section class="list" id="postList"></section>
 
 </main>
-<script type="module" src="/assets/postCard.js"></script>
+<!-- 📘 JS 로직 -->
+<script type="module">
+    import { getPosts } from '../../api/post.js';
+    import { createPostCard } from '../../assets/postCard.js';
+
+    const listEl = document.getElementById('postList');
+
+    function showError(msg) {
+        listEl.innerHTML = `<p class="error" style="color:#c00">${msg}</p>`;
+    }
+
+    async function renderList() {
+        try {
+            // API 응답 전체를 response 변수에 저장합니다.
+            const response = await getPosts(2);
+
+            // ✨ [수정된 부분 1]
+            // 실제 게시글 목록은 response.data.content 에 있습니다.
+            const postList = response.data.content;
+
+            // 백엔드 응답 구조 맞춰서 데이터 가공
+            const posts = postList.map(p => ({
+                id: p.id,
+                title: p.title,
+                likes: p.likeCount ?? 0,
+                comments: p.commentCount ?? 0,
+                views: p.viewCount ?? 0,
+                date: p.createdAt ? p.createdAt.replace('T', ' ').slice(0, 19) : '',
+                // ✨ [수정된 부분 2]
+                // API 응답에 'author'가 아닌 'user' 객체가 있으므로 user.nickname으로 접근합니다.
+                author: p.user?.nickname ?? '익명',
+            }));
+
+            listEl.innerHTML = '';
+
+            if (posts.length === 0) {
+                listEl.innerHTML = `<p class="empty">게시글이 없습니다.</p>`;
+                return;
+            }
+
+            for (const post of posts) {
+                const card = await createPostCard(post, {
+                    onClick: (p) => {
+                        location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(p.id)}`;
+                    },
+                });
+                listEl.appendChild(card);
+            }
+        } catch (err) {
+            console.error(err);
+            // API 응답 자체에 에러 메시지가 있을 경우 그것을 사용합니다.
+            const errorMessage = err.response?.data?.message || err.message;
+            showError(errorMessage);
+        }
+    }
+
+    // 초기화 실행
+    renderList();
+</script>
 
 </body>
 </html>
