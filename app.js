@@ -1,6 +1,6 @@
 import express from 'express';
 const app = express();
-const port = 8080;
+const port = 3000;
 
 // 현재 디렉터리의 모든 파일을 정적(static)으로 제공
 app.use(express.static('public'));
