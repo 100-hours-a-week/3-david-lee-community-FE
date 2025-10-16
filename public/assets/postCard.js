@@ -6,7 +6,7 @@ const posts = [
 ];
 
 async function loadTemplate() {
-    const res = await fetch('/assets/postCard.html'); // 절대경로로 고정
+    const res = await fetch('/assets/postCard.html');
     if (!res.ok) throw new Error(`템플릿 로드 실패: ${res.status}`);
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
