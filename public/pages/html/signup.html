@@ -1,14 +1,13 @@
 <!doctype html>
 <html lang="ko">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>아무 말 대잔치 — 회원가입</title>
     <link rel="stylesheet" href="../css/auth.css">
 </head>
-
 <body>
+<!-- 상단 앱바 -->
 <header class="appbar">
     <div class="appbar__inner">
         <a class="appbar__back" href="/pages/html/login.html" aria-label="뒤로 가기">←</a>
@@ -17,38 +16,43 @@
 </header>
 
 <main class="container center">
+    <!-- 인사/헤더 -->
     <section class="panel" aria-labelledby="signup-title">
         <h1 id="signup-title" class="title">회원가입</h1>
 
+        <!-- S3 프런트 이미지 추가 -->
         <div class="avatar-uploader" aria-label="프로필 사진">
             <div style="font-weight:700">프로필 사진</div>
             <div class="note">* helper text</div>
             <div class="avatar-circle">+</div>
         </div>
 
+        <!-- 개인정보 추가 -->
         <form class="form" id="signupForm" style="margin-top:14px">
+
+            <div class="field">
+                <label class="label" for="s-name">이름*</label>
+                <input class="input" id="s-name" name="name" type="text" placeholder="이름을 입력하세요" required>
+            </div>
+
             <div class="field">
                 <label class="label" for="s-email">이메일*</label>
                 <input class="input" id="s-email" name="email" type="email" placeholder="이메일을 입력하세요" required>
-                <div class="help">* helper text</div>
             </div>
 
             <div class="field">
                 <label class="label" for="s-pw">비밀번호*</label>
-                <input class="input" id="s-pw" name="password" type="password" placeholder="비밀번호를 입력하세요" minlength="6" required>
-                <div class="help">* helper text</div>
+                <input class="input" id="s-pw" name="password" type="password" placeholder="비밀번호를 입력하세요" minlength="8" maxlength="20" required>
             </div>
 
             <div class="field">
                 <label class="label" for="s-pw2">비밀번호 확인*</label>
-                <input class="input" id="s-pw2" name="password2" type="password" placeholder="비밀번호를 한 번 더 입력하세요" minlength="6" required>
-                <div class="help">* helper text</div>
+                <input class="input" id="s-pw2" name="password2" type="password" placeholder="비밀번호를 한 번 더 입력하세요" minlength="8" maxlength="20" required>
             </div>
 
             <div class="field">
                 <label class="label" for="s-nick">닉네임*</label>
-                <input class="input" id="s-nick" name="nickname" type="text" placeholder="닉네임을 입력하세요" required>
-                <div class="help">* helper text</div>
+                <input class="input" id="s-nick" name="nickname" type="text" placeholder="닉네임을 입력하세요" maxlength="10" required>
             </div>
 
             <div class="actions">
@@ -62,18 +66,185 @@
     </section>
 </main>
 
+<!-- JS 로직 -->
 <script type="module">
-    document.getElementById('signupForm')?.addEventListener('submit', (e)=>{
-        e.preventDefault();
-        const f = e.currentTarget;
+    import { signUp, checkDuplicateNickname, checkDuplicateEmail } from '../../api/user.js';
 
-        if(f.password.value !== f.password2.value){
-            alert('비밀번호가 일치하지 않습니다.');
+    // ───────────────── 헬퍼들 ─────────────────
+    const $ = (sel) => document.querySelector(sel);
+
+    const debounce = (fn, delay = 300) => {
+        let t;
+        return (...args) => {
+            clearTimeout(t);
+            t = setTimeout(() => fn(...args), delay);
+        };
+    };
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const NICK_RE  = /^[a-zA-Z0-9가-힣_.-]{2,10}$/;
+    const PW_MIN = 8, PW_MAX = 20;
+
+    function setFieldState(inputEl, { ok, msg }) {
+        const field = inputEl.closest('.field') || inputEl.parentElement;
+        let hint = field.querySelector('.note');
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.className = 'note';
+            hint.setAttribute('aria-live', 'polite');
+            field.appendChild(hint);
+        }
+        hint.textContent = msg || '';
+        field.classList.toggle('is-valid', !!ok);
+        field.classList.toggle('is-invalid', ok === false);
+    }
+
+    const form = $('#signupForm');
+    const nameEl = $('#s-name');
+    const emailEl = $('#s-email');
+    const pwEl = $('#s-pw');
+    const pw2El = $('#s-pw2');
+    const nickEl = $('#s-nick');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+
+    // 전체 폼 유효성 체크 → 버튼 활성/비활성
+    function refreshFormValidity() {
+        const emailValid = emailEl && EMAIL_RE.test(emailEl.value.trim());
+        const nickValid  = nickEl && NICK_RE.test(nickEl.value.trim());
+        const pw        = pwEl?.value || '';
+        const pw2       = pw2El?.value || '';
+        const pwLenOk   = pw.length >= PW_MIN && pw.length <= PW_MAX;
+        const pwMatch   = pw && pw2 && pw === pw2;
+        const noEmailDup = emailEl.dataset.duplicate !== 'true';
+        const noNickDup  = nickEl.dataset.duplicate !== 'true';
+        const nameOk     = nameEl?.value?.trim().length > 0;
+
+        const allOk = emailValid && nickValid && pwLenOk && pwMatch && noEmailDup && noNickDup && nameOk;
+        if (submitBtn) submitBtn.disabled = !allOk;
+    }
+
+    // ───────────── 이메일 검증 + 중복 체크 ─────────────
+    async function verifyEmail() {
+        const v = emailEl.value.trim();
+        if (!v) {
+            setFieldState(emailEl, { ok: false, msg: '이메일을 입력하세요.' });
+            delete emailEl.dataset.duplicate;
+            refreshFormValidity();
+            return;
+        }
+        if (!EMAIL_RE.test(v)) {
+            setFieldState(emailEl, { ok: false, msg: '이메일 형식이 올바르지 않습니다.' });
+            delete emailEl.dataset.duplicate;
+            refreshFormValidity();
             return;
         }
 
-        console.log('signup ->', f.email.value, f.password.value, f.nickname.value);
+        try {
+            const res = await checkDuplicateEmail(v);
+            const duplicated = res?.data?.duplicate ?? res?.duplicate ?? res === true;
+            emailEl.dataset.duplicate = duplicated ? 'true' : '';
+            setFieldState(emailEl, duplicated
+                ? { ok: false, msg: '이미 사용 중인 이메일입니다.' }
+                : { ok: true,  msg: '사용 가능한 이메일입니다.' }
+            );
+        } catch (e) {
+            delete emailEl.dataset.duplicate;
+            setFieldState(emailEl, { ok: true, msg: '이메일 확인 중 오류가 발생했습니다. 제출 시 다시 시도합니다.' });
+        } finally {
+            refreshFormValidity();
+        }
+    }
+
+    // ───────────── 닉네임 검증 + 중복 체크 ─────────────
+    async function verifyNickname() {
+        const v = nickEl.value.trim();
+        if (!v) {
+            setFieldState(nickEl, { ok: false, msg: '닉네임을 입력하세요.' });
+            delete nickEl.dataset.duplicate;
+            refreshFormValidity();
+            return;
+        }
+        if (!NICK_RE.test(v)) {
+            setFieldState(nickEl, { ok: false, msg: '2~10자, 한글/영문/숫자/._-만 사용 가능합니다.' });
+            delete nickEl.dataset.duplicate;
+            refreshFormValidity();
+            return;
+        }
+
+        try {
+            const res = await checkDuplicateNickname(v);
+            const duplicated = res?.data?.duplicate ?? res?.duplicate ?? res === true;
+            nickEl.dataset.duplicate = duplicated ? 'true' : '';
+            setFieldState(nickEl, duplicated
+                ? { ok: false, msg: '이미 사용 중인 닉네임입니다.' }
+                : { ok: true,  msg: '사용 가능한 닉네임입니다.' }
+            );
+        } catch (e) {
+            delete nickEl.dataset.duplicate;
+            setFieldState(nickEl, { ok: true, msg: '닉네임 확인 중 오류가 발생했습니다. 제출 시 다시 시도합니다.' });
+        } finally {
+            refreshFormValidity();
+        }
+    }
+
+    // ───────────── 비밀번호 검증 ─────────────
+    function verifyPassword() {
+        const lenOk = pwEl.value.length >= PW_MIN && pwEl.value.length <= PW_MAX;
+        setFieldState(pwEl, lenOk
+            ? { ok: true,  msg: '' }
+            : { ok: false, msg: `비밀번호는 ${PW_MIN}~${PW_MAX}자로 입력하세요.` }
+        );
+        verifyPasswordMatch();
+    }
+
+    function verifyPasswordMatch() {
+        const same = pwEl.value && pw2El.value && pwEl.value === pw2El.value;
+        setFieldState(pw2El, same
+            ? { ok: true,  msg: '' }
+            : { ok: false, msg: '비밀번호가 일치하지 않습니다.' }
+        );
+        refreshFormValidity();
+    }
+
+    // ───────────── 이벤트 바인딩 ─────────────
+    emailEl?.addEventListener('input', debounce(verifyEmail, 350));
+    nickEl?.addEventListener('input', debounce(verifyNickname, 350));
+    pwEl?.addEventListener('input', () => { verifyPassword(); });
+    pw2El?.addEventListener('input', () => { verifyPasswordMatch(); });
+    nameEl?.addEventListener('input', refreshFormValidity);
+
+    submitBtn && (submitBtn.disabled = true);
+
+    // ───────────── 제출 ─────────────
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        await Promise.all([verifyEmail(), verifyNickname()]);
+        verifyPassword();
+        verifyPasswordMatch();
+        refreshFormValidity();
+        if (submitBtn?.disabled) return;
+
+        const payload = {
+            name: nameEl.value.trim(),
+            imageUrl: null,
+            email: emailEl.value.trim(),
+            password: pwEl.value,
+            confirmPassword: pw2El.value,
+            nickname: nickEl.value.trim(),
+        };
+
+        try {
+            console.log(payload);
+            await signUp(payload);
+            alert('회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.');
+            window.location.href = '/pages/html/login.html';
+        } catch (err) {
+            alert(err?.message || '회원가입 중 오류가 발생했습니다.');
+        }
     });
 </script>
+
+
 </body>
 </html>

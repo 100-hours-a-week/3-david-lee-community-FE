@@ -5,7 +5,7 @@ export async function signUp(userData) {
     const res = await fetch(BASE_URL, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({content: userData})
+        body: JSON.stringify(userData),          // 반드시!
     });
 
     if (!res.ok) throw new Error(`회원가입 실패 (${res.status})`);
@@ -14,7 +14,7 @@ export async function signUp(userData) {
 
 /// 이메일 중복 체크
 export async function checkDuplicateEmail(email) {
-    const res = await fetch(`${BASE_URL}?email=${encodeURIComponent(email)}`, {
+    const res = await fetch(`${BASE_URL}/email?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
@@ -29,7 +29,7 @@ export async function checkDuplicateEmail(email) {
 
 /// 닉네임 중복 체크
 export async function checkDuplicateNickname(nickName) {
-    const res = await fetch(`${BASE_URL}?nickName=${encodeURIComponent(nickName)}`, {
+    const res = await fetch(`${BASE_URL}/nickname?nickName=${encodeURIComponent(nickName)}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
     });
