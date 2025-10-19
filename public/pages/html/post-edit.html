@@ -61,7 +61,7 @@
 
     import {initAppBar} from '../../assets/appbar.js';
     import {attachLogout} from '../../assets/logout.js';
-    import {updatePost} from '../../api/post.js';
+    import { getPostDetail, updatePost } from '../../api/post.js';
 
     // ───────────── 기본 설정 ─────────────
     const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
@@ -70,16 +70,35 @@
     // ───────────── 내부 설정 ─────────────
 
     const params = new URLSearchParams(location.search);
-    /// ID 획득
     const postId = params.get('id');
+    const titleEl = document.getElementById('e-title');
+    const contentEl = document.getElementById('e-content');
 
+    // ───────────── 기존 값 호출 ─────────────
+    (async function preload() {
+        if (!postId) {
+            alert('잘못된 접근입니다. (id 누락)');
+            location.href = '/pages/html/post-list.html';
+            return;
+        }
+        try {
+            const d = await getPostDetail(postId); // 서버에서 최신 데이터 가져옴
+            titleEl.value = d.title ?? '';
+            contentEl.value = d.content ?? '';
+
+        } catch (e) {
+            console.error(e);
+            alert(e?.message || '기존 내용을 불러오지 못했습니다.');
+        }
+    })();
+
+    // ───────────── 수정 ─────────────
     document.getElementById('editForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const form = e.currentTarget;
         const categoryId = "2";
-        const title = form.title.value.trim();
-        const content = form.content.value.trim();
+        const title = titleEl.value.trim();
+        const content = contentEl.value.trim();
         const imageUrls = [];
 
         if (!title) return alert('제목을 입력하세요.');
