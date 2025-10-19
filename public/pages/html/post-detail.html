@@ -32,10 +32,11 @@
 <!-- JS 로직 -->
 <script type="module">
     import {getPostDetail, deletePost} from '../../api/post.js';
-    import {saveComments} from "../../api/comment.js";
     import {createPostView} from '../../assets/postView.js';
     import {initAppBar} from '../../assets/appbar.js';
     import {attachLogout} from '../../assets/logout.js';
+    import {likePost} from "../../api/like.js";
+    import {unlikePost} from "../../api/like.js";
 
     // ───────────── 기본 설정 ─────────────
     const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
@@ -72,25 +73,36 @@
                 images: data.image ?? [],
                 comments: data.comments ?? [],
                 editable: data.editable,
+                liked: data.liked,
             };
 
-            // 댓글 전달할 옵션 객체를 분리해서 생성
+            // ───────────── 좋아요 ─────────────
             const viewOptions = {
-                onSubmitComment: async (p, text) => {
-                    if (!text || !text.trim()) {
-                        alert('댓글 내용을 입력해주세요.');
-                        return;
-                    }
+                onLike: async (p) => {
+                    const likeBtn = document.querySelector('[data-action="like"]');
+
+                    // 이미 좋아요 눌렀는지 확인
+                    const isLiked = likeBtn.classList.toggle('liked'); // 토글
                     try {
-                        await saveComments(p.id, text);
-                        await load();
+                        if (isLiked) {
+                            await likePost({postId}); // 백엔드 호출
+                            location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(postId)}`;
+
+                        } else {
+                            await unlikePost(postId); // 백엔드 호출
+                            location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(postId)}`;
+                        }
+
                     } catch (e) {
-                        alert('댓글 등록에 실패했습니다: ' + (e.message || ''));
+                        // 실패 시 원상 복귀
+                        likeBtn.classList.toggle('liked', !isLiked);
+                        likeBtn.style.color = isLiked ? '' : 'red';
+                        alert('좋아요 처리 중 오류가 발생했습니다: ' + (e.message || ''));
                     }
-                }
+                },
             };
 
-            /// 수정/삭제 여부 뜨게끔
+            // ───────────── 수정/삭제 ─────────────
             if (post.editable) {
                 // ───────────── 수정 ─────────────
                 viewOptions.onEdit = () => location.href = `/pages/html/post-edit.html?id=${postId}`;
@@ -108,22 +120,26 @@
                 };
             }
 
-            // 완성된 post 객체와 viewOptions를 전달
+            // ───────────── post/viewOptions를 ─────────────
             const view = await createPostView(post, viewOptions);
 
             root.innerHTML = '';
             root.appendChild(view);
+
+            // 조회 시 이미 좋아요였다면 버튼을 빨갛게
+            if (post.liked) {
+                const likeBtn = root.querySelector('[data-action="like"]');
+                if (likeBtn) {
+                    likeBtn.classList.add('liked');
+                }
+            }
         } catch (e) {
             console.error(e);
             showError(e.message || '상세 조회 실패');
         }
     }
+
     load();
-
-    // ───────────── 좋아요 ─────────────
-
-
-
 </script>
 </body>
 </html>
