@@ -7,12 +7,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>아무 말 대잔치 — 회원정보 수정</title>
     <link rel="stylesheet" href="../css/account.css">
+    <link rel="stylesheet" href="../css/appbar.css">
 </head>
 <body>
 
 <!-- 상단 앱바 -->
 <header class="appbar" style="box-shadow:inset 0 -3px 0 #3b82f6">
     <div class="appbar__inner">
+        <a class="appbar__back" href="/pages/html/post-list.html" aria-label="뒤로가기">← 뒤로</a>
         <strong class="appbar__title">아무 말 대잔치</strong>
         <div class="appbar__avatar" id="avatarBtn" title="프로필"></div>
         <nav class="menu" id="menu">
@@ -61,7 +63,8 @@
 
 <!-- JS 스크립트 -->
 <script type="module">
-    // 드롭다운
+
+    // ───────────── 드롭다운 ─────────────
     const menu = document.getElementById('menu');
     const avatarBtn = document.getElementById('avatarBtn');
     avatarBtn.addEventListener('click', () => {
