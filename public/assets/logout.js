@@ -6,7 +6,7 @@ export function attachLogout(
         onBefore = () => {},
         onAfter = () => {},
         redirectTo = '/pages/html/login.html',
-        clear = defaultClearClientSide,    // 기본 클린업
+        clear = defaultClearClientSide,
         textDuring = '로그아웃 중...',
     } = {}
 ) {
@@ -22,8 +22,12 @@ export function attachLogout(
         el.style.pointerEvents = 'none';
 
         try {
-            await apiLogout?.(); // 서버에 세션/리프레시 정리 (withCredentials 필요 시 설정)
+            await apiLogout?.();
             clear();
+
+            /// 팝업
+            alert('로그아웃이 완료되었습니다.');
+
             location.href = redirectTo;
         } catch (err) {
             const msg = err?.response?.data?.message || err?.message || '로그아웃 중 오류가 발생했습니다.';
@@ -41,10 +45,10 @@ export function attachLogout(
     return () => el.removeEventListener('click', onClick);
 }
 
+/// 다 지우기, 쿠키는 서버에서 다시 보내준다.
 function defaultClearClientSide() {
     try {
         localStorage.removeItem('accessToken');
         sessionStorage.clear();
-        document.cookie = 'refresh_token=; Max-Age=0; path=/;';
     } catch {}
 }
