@@ -14,7 +14,7 @@ async function ensureTemplate() {
 
 /// 상세 컴포넌트 생성
 export async function createPostView(post, opts = {}) {
-    const { onEdit, onDelete, onSubmitComment } = opts;
+    const {onLike, onEdit, onDelete, onSubmitComment} = opts;
 
     /// 템플릿 가져오기
     const tpl = await ensureTemplate();
@@ -41,31 +41,31 @@ export async function createPostView(post, opts = {}) {
     }
 
     // 통계
-    node.querySelector('.likeCount').textContent = post.likeCount ?? 0;
-    node.querySelector('.viewCount').textContent = post.viewCount ?? 0;
-    node.querySelector('.commentCount').textContent = post.commentCount ?? 0;
+    node.querySelector('.likeCount').textContent = post.likeCount;
+    node.querySelector('.viewCount').textContent = post.viewCount;
+    node.querySelector('.commentCount').textContent = post.commentCount;
 
     // 액션: onEdit, onDelete 핸들러가 있을 때만 버튼을 보여주고 이벤트를 연결합니다.
-    const toolbar = node.querySelector('.toolbar');
     const editBtn = node.querySelector('[data-action="edit"]');
     const deleteBtn = node.querySelector('[data-action="delete"]');
+    const likeBtn = node.querySelector('[data-action="like"]');
 
+    /// 수정 여부
     if (onEdit) {
         editBtn.addEventListener('click', () => onEdit(post));
     } else {
-        editBtn.remove(); // onEdit 핸들러가 없으면 버튼 제거
+        editBtn.remove();
     }
 
+    /// 삭제 여부
     if (onDelete) {
         deleteBtn.addEventListener('click', () => onDelete(post));
     } else {
-        deleteBtn.remove(); // onDelete 핸들러가 없으면 버튼 제거
+        deleteBtn.remove();
     }
 
-    // 수정/삭제 버튼이 모두 없으면 toolbar 영역 전체를 제거
-    if (!onEdit && !onDelete) {
-        toolbar.remove();
-    }
+    // 좋아요 버튼은 항상 표시되도록 유지
+    likeBtn.addEventListener('click', () => onLike?.(post));
 
     // 댓글
     node.querySelector('[data-action="comment"]').addEventListener('click', async () => {
