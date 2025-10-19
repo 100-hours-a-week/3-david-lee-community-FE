@@ -144,6 +144,7 @@
         }
 
         try {
+            /// API 호출
             const res = await checkDuplicateEmail(v);
             const duplicated = res?.data?.duplicate ?? res?.duplicate ?? res === true;
             emailEl.dataset.duplicate = duplicated ? 'true' : '';
@@ -176,6 +177,7 @@
         }
 
         try {
+            /// 닉네임 API 호출
             const res = await checkDuplicateNickname(v);
             const duplicated = res?.data?.duplicate ?? res?.duplicate ?? res === true;
             nickEl.dataset.duplicate = duplicated ? 'true' : '';
