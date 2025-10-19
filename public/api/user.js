@@ -1,4 +1,5 @@
 const BASE_URL = 'http://localhost:8080/v1/users';
+import { authFetch } from './base.js';
 
 /// 회원가입
 export async function signUp(userData) {
@@ -16,7 +17,7 @@ export async function signUp(userData) {
 export async function checkDuplicateEmail(email) {
     const res = await fetch(`${BASE_URL}/email?email=${encodeURIComponent(email)}`, {
         method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {'Content-Type': 'application/json'},
     });
 
     if (!res.ok) {
@@ -44,11 +45,8 @@ export async function checkDuplicateNickname(nickName) {
 /// 마이페이지 조회
 export async function getMyPage() {
 
-    const res = await fetch(`${BASE_URL}/mypage`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-    });
+    const res = await authFetch(`${BASE_URL}/mypage`, {method: 'GET'});
+
 
     if (!res.ok) {
         throw new Error(`마이페이지 조회 실패 (${res.status})`);
@@ -57,15 +55,11 @@ export async function getMyPage() {
     return await res.json();
 }
 
-
 /// 타 유저 조회
 export async function getOtherUser(userId) {
 
-    const res = await fetch(`${BASE_URL}/${encodeURIComponent(userId)}`, {
-        method: 'GET',
-        credentials: 'include',
-        headers: {'Content-Type': 'application/json'},
-    });
+    const res = await authFetch(`${BASE_URL}/${encodeURIComponent(userId)}`, {method: 'GET'});
+
 
     if (!res.ok) {
         throw new Error(`타 유저 조회 실패 (${res.status})`);
@@ -77,11 +71,8 @@ export async function getOtherUser(userId) {
 /// 개인정보 수정
 export async function putMyPages(changeableData) {
 
-    const res = await fetch(`${BASE_URL}/mypage`, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({changeableData}),
+    const res = await authFetch(`${BASE_URL}/mypage`, {
+        method: 'PUT', body: JSON.stringify({changeableData}),
     });
 
     if (!res.ok) {
@@ -91,15 +82,23 @@ export async function putMyPages(changeableData) {
     return await res.json();
 }
 
+/// 비밀번호 수정
+export async function updatePassword(changeableData) {
 
+    const res = await authFetch(`${BASE_URL}/password`, {
+        method: 'PUT', body: JSON.stringify({changeableData})
+    });
+
+    if (!res.ok) {
+        throw new Error(`마이페이지 조회 실패 (${res.status})`);
+    }
+
+    return await res.json();
+}
 
 /// 회원 탈퇴
 export async function withdraw() {
-    const res = await fetch(BASE_URL, {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {'Content-Type': 'application/json'}
-    });
+    const res = await authFetch(BASE_URL, {method: 'PUT'});
 
     if (!res.ok) throw new Error(`회원 탈퇴 실패 (${res.status})`);
     return await res.json();
