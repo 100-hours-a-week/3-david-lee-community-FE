@@ -49,6 +49,6 @@ export async function updatePost(postId, postData) {
 
 /// 삭제
 export async function deletePost(postId) {
-    const res = await authFetch(`${BASE_URL}/${postId}`, {method: 'DELETE'});
+    const res = await authFetch(`${BASE_URL}/${postId}`, {method: 'PUT'});
     if (!res.ok) throw new Error(`게시글 삭제 실패 (${res.status})`);
 }
