@@ -35,8 +35,20 @@ export async function logout() {
 
 /// 리프레쉬 토큰 바탕의 재발급
 export async function reissue() {
-    const res = await authFetch(BASE_URL, {method: 'PUT'});
+    const res = await fetch(BASE_URL, {
+        method: 'PUT',
+        credentials: 'include',
+        headers: {'Content-Type': 'application/json'},
+    });
 
     if (!res.ok) throw new Error(`재발급 등록 실패 (${res.status})`);
+
+    const token = res.headers.get('Authorization');
+    if (token) {
+        // Bearer 제거하고 저장
+        const pureToken = token.replace('Bearer ', '');
+        localStorage.setItem('accessToken', pureToken);
+    }
+
     return await res.json();
 }
