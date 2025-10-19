@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="ko">
+
+<!-- 타이틀 -->
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>아무 말 대잔치 — 로그인</title>
+    <link rel="stylesheet" href="../css/auth.css">
+</head>
+<body>
+
+<!-- 상단 앱바 -->
+<header class="appbar">
+    <div class="appbar__inner">
+        <strong class="appbar__title">아무 말 대잔치</strong>
+    </div>
+</header>
+
+<!-- 컨테이너 -->
+<main class="container center">
+    <section class="panel" aria-labelledby="login-title">
+        <h1 id="login-title" class="title">로그인</h1>
+
+        <form class="form" id="loginForm" autocomplete="on">
+            <div class="field">
+                <label class="label" for="email">이메일</label>
+                <input class="input" id="email" name="email" type="email" placeholder="이메일을 입력하세요" required>
+            </div>
+
+            <div class="field">
+                <label class="label" for="password">비밀번호</label>
+                <input class="input" id="password" name="password" type="password" placeholder="비밀번호를 입력하세요" minlength="8" required>
+                <div class="help">8~20자 비밀번호</div>
+            </div>
+
+            <div class="actions">
+                <button type="submit" class="btn btn--primary">로그인</button>
+            </div>
+
+            <div class="linkrow">
+                <a href="/pages/html/signup.html" aria-label="회원가입 페이지로 이동">회원가입</a>
+            </div>
+        </form>
+    </section>
+</main>
+
+<script type="module">
+    import { login } from '../../api/auth.js';
+
+    // ───────────── 헬퍼 ─────────────
+    const $ = (sel) => document.querySelector(sel);
+
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const PW_MIN = 8, PW_MAX = 20;
+
+    function setFieldState(inputEl, { ok, msg }) {
+        const field = inputEl.closest('.field') || inputEl.parentElement;
+        let hint = field.querySelector('.note');
+        if (!hint) {
+            hint = document.createElement('div');
+            hint.className = 'note';
+            hint.setAttribute('aria-live', 'polite');
+            field.appendChild(hint);
+        }
+        hint.textContent = msg || '';
+        field.classList.toggle('is-valid', !!ok);
+        field.classList.toggle('is-invalid', ok === false);
+    }
+
+    // ───────────── 엘리먼트 ─────────────
+    const form = $('#loginForm');
+    const emailEl = $('#email');
+    const pwEl = $('#password');
+    const submitBtn = form?.querySelector('button[type="submit"]');
+
+    // ───────────── 유효성 검사 ─────────────
+    function verifyEmail() {
+        const v = emailEl.value.trim();
+        if (!v) {
+            setFieldState(emailEl, { ok: false, msg: '이메일을 입력하세요.' });
+            return false;
+        }
+        if (!EMAIL_RE.test(v)) {
+            setFieldState(emailEl, { ok: false, msg: '이메일 형식이 올바르지 않습니다.' });
+            return false;
+        }
+        setFieldState(emailEl, { ok: true, msg: '' });
+        return true;
+    }
+
+    function verifyPassword() {
+        const len = pwEl.value.length;
+        if (len < PW_MIN || len > PW_MAX) {
+            setFieldState(pwEl, { ok: false, msg: `비밀번호는 ${PW_MIN}~${PW_MAX}자로 입력하세요.` });
+            return false;
+        }
+        setFieldState(pwEl, { ok: true, msg: '' });
+        return true;
+    }
+
+    function refreshFormValidity() {
+        const ok = verifyEmail() & verifyPassword(); // 둘 다 실행되도록 단항 & 사용
+        if (submitBtn) submitBtn.disabled = !ok;
+    }
+
+    // ───────────── 이벤트 바인딩 ─────────────
+    emailEl?.addEventListener('input', refreshFormValidity);
+    pwEl?.addEventListener('input', refreshFormValidity);
+    submitBtn && (submitBtn.disabled = true);
+
+    // ───────────── 제출 ─────────────
+    form?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        refreshFormValidity();
+        if (submitBtn?.disabled) return;
+
+        const payload = {
+            email: emailEl.value.trim(),
+            password: pwEl.value,
+        };
+
+        // 로딩 상태(중복 클릭 방지)
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = '로그인 중...';
+
+        try {
+            await login(payload);
+            alert('로그인이 완료되었습니다.');
+            window.location.href = '/pages/html/post-list.html';
+        } catch (err) {
+            // 서버가 주는 메시지를 우선 사용
+            const msg = err?.message || '로그인 중 오류가 발생했습니다.';
+            // 필드에 친절히 안내
+            setFieldState(pwEl, { ok: false, msg });
+            // 이메일 형식이 맞는지 다시 한번 표시(사용자 힌트)
+            verifyEmail();
+        } finally {
+            submitBtn.textContent = originalText;
+            refreshFormValidity(); // 값 유지 시 다시 활성화될 수 있음
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+:root{
+    --bg:#f4f5f7; --card:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
+    --primary:#9b5cff; --primary-pressed:#824bff; --ring:#e4d5ff;
+    --radius:16px; --shadow:0 10px 20px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.05);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);
+    font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+
+
+/* Layout */
+.container{width:min(980px,100%);margin:24px auto 48px;padding:0 20px}
+.panel{width:min(520px,100%); margin:0 auto; background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 20px; text-align:center}
+h1.page{margin:8px 0 18px; text-align:center}
+
+/* Avatar big */
+.profile{
+    width:150px;height:150px;border-radius:50%;margin:8px auto 12px;
+    background:radial-gradient(circle at 50% 45%,#f0f0f3,#e6e7eb);
+    border:1px solid var(--border); position:relative; display:grid; place-items:center
+}
+.profile button{
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
+    height:30px; padding:0 12px; border-radius:16px; border:1px solid var(--border); background:#fff; cursor:pointer
+}
+
+/* Form */
+.form{display:grid; gap:14px; text-align:left}
+.field{display:grid; gap:6px}
+.label{font-weight:700}
+.input{height:42px; padding:0 12px; border:1px solid var(--border); border-radius:10px; outline:none}
+.input:disabled{background:#f7f7fa; color:var(--muted)}
+.input:focus{box-shadow:0 0 0 4px var(--ring)}
+.help{color:var(--muted); font-size:12px}
+
+.btn{display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 16px;
+    border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:700; transition:.15s ease}
+.btn--primary{background:var(--primary); color:#fff; box-shadow:0 6px 14px rgba(155,92,255,.25)}
+.btn--primary:active{background:var(--primary-pressed); transform:translateY(1px)}
+.btn--ghost{background:#fff; border-color:var(--border); color:var(--text)}
+.btn--danger{background:#fff; border-color:#ef4444; color:#ef4444}
+.actions{display:grid; gap:10px; margin-top:8px}
+
+.notice{margin-top:18px; color:#6b7280; font-weight:700}

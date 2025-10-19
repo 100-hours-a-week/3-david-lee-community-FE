@@ -1,0 +1,36 @@
+
+/* 공통 레이아웃 */
+.appbar{
+    position:sticky; top:0; z-index:10;
+    background:#fff; border-bottom:1px solid var(--border);
+    height:64px;
+    display:flex; align-items:center; justify-content:center;
+}
+.appbar__inner{
+    width:min(980px, 100%); padding:0 20px;
+    display:flex; align-items:center; justify-content:center; gap:12px;
+    position:relative;
+}
+.appbar__title{font-weight:700; letter-spacing:.2px}
+.appbar__back{
+    position:absolute; left:20px; top:50%; transform:translateY(-50%);
+    display:inline-flex; align-items:center; gap:6px; cursor:pointer;
+    color:var(--muted);
+}
+.appbar__avatar{
+    position:absolute; right:20px; top:50%; transform:translateY(-50%);
+    width:36px; height:36px; border-radius:50%;
+    background:linear-gradient(#eee,#ddd); border:1px solid var(--border);
+}
+
+/* 드롭다운 */
+.menu{position:absolute; right:20px; top:60px; width:160px; background:#fff; border:1px solid var(--border);
+    border-radius:12px; box-shadow:var(--shadow); padding:6px; display:none}
+.menu a{display:block; padding:10px 12px; border-radius:8px; color:inherit; text-decoration:none}
+.menu a:hover{background:#f8f8fb}
+
+
+.menu { display:none; }
+.menu.is-open { display:block; }
+.appbar__avatar { cursor:pointer; } /* UX 개선 */
+.menu { z-index:1000; } /* 가림 방지 */
