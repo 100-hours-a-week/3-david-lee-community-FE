@@ -44,3 +44,7 @@ h1.page{margin:8px 0 18px; text-align:center}
 .actions{display:grid; gap:10px; margin-top:8px}
 
 .notice{margin-top:18px; color:#6b7280; font-weight:700}
+
+.input.is-invalid{ border-color:#ef4444 !important; outline-color:#ef4444 !important; }
+.input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12); }
+.field__error{ color:#ef4444; font-size:12px; margin-top:6px; min-height:1em; }
