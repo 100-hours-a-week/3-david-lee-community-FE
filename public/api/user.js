@@ -69,10 +69,11 @@ export async function getOtherUser(userId) {
 }
 
 /// 개인정보 수정
-export async function putMyPages(changeableData) {
+export async function updateMyPage(changeableData) {
 
     const res = await authFetch(`${BASE_URL}/mypage`, {
-        method: 'PUT', body: JSON.stringify({changeableData}),
+        method: 'PUT',
+        body: JSON.stringify(changeableData),
     });
 
     if (!res.ok) {
@@ -86,7 +87,7 @@ export async function putMyPages(changeableData) {
 export async function updatePassword(changeableData) {
 
     const res = await authFetch(`${BASE_URL}/password`, {
-        method: 'PUT', body: JSON.stringify({changeableData})
+        method: 'PUT', body: JSON.stringify(changeableData)
     });
 
     if (!res.ok) {

@@ -33,22 +33,20 @@
         <!-- 프로필 사진 -->
         <div class="label" style="text-align:left; margin-bottom:6px">프로필 사진*</div>
         <div class="profile">
-            <span aria-hidden="true">👤</span>
+            <span aria-hidden="true"></span>
             <button type="button">변경</button>
-            <!-- 실제 파일 입력을 붙일 때: <input type="file" accept="image/*" hidden id="avatarFile"> -->
         </div>
 
         <!-- 폼 -->
         <form class="form" id="accountForm">
             <div class="field">
                 <label class="label" for="email">이메일</label>
-                <input class="input" id="email" type="email" value="startupcode@gmail.com" disabled>
+                <input class="input" id="email" type="email" disabled>
             </div>
 
             <div class="field">
                 <label class="label" for="nickname">닉네임</label>
-                <input class="input" id="nickname" type="text" placeholder="닉네임을 입력하세요" value="스타트업코드" required>
-                <div class="help">* helper text</div>
+                <input class="input" id="nickname" type="text" placeholder="닉네임을 입력하세요" required>
             </div>
 
             <div class="actions">
@@ -56,8 +54,6 @@
                 <button type="button" class="btn btn--danger" id="withdrawBtn">회원 탈퇴</button>
             </div>
         </form>
-
-        <div class="notice" id="done" hidden>수정완료</div>
     </section>
 </main>
 
@@ -66,27 +62,79 @@
 
     import {initAppBar} from '../../assets/appbar.js';
     import {attachLogout} from '../../assets/logout.js';
+    import {getMyPage, updateMyPage, withdraw} from '../../api/user.js';
 
     // ───────────── 기본 설정 ─────────────
     const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
     attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크
 
     // ───────────── 내부 설정 ─────────────
-    document.getElementById('accountForm').addEventListener('submit', (e)=>{
+    const emailEl = document.getElementById('email');
+    const nickNameEl = document.getElementById('nickname');
+
+    // ───────────── 기존 값 호출 ─────────────
+    (async function preload() {
+
+        try {
+            const d = await getMyPage(); // 서버에서 최신 데이터 가져옴
+            emailEl.value = d.data.email;
+            nickNameEl.value = d.data.nickname;
+
+        } catch (e) {
+            console.error(e);
+            alert(e?.message || '기존 내용을 불러오지 못했습니다.');
+        }
+    })();
+
+    // ───────────── 수정 로직 ─────────────
+    document.getElementById('accountForm').addEventListener('submit', async (e) => {
+
+        /// 동작 막기
         e.preventDefault();
-        const nickname = document.getElementById('nickname').value.trim();
-        if(!nickname){ alert('닉네임을 입력하세요.'); return; }
-        console.log('PATCH /v1/users ->', { nickname });
-        // fetch('/v1/users',{method:'PATCH',headers:{'Content-Type':'application/json',Authorization:`Bearer ${localStorage.getItem('accessToken')}`},body:JSON.stringify({nickname})})
-        document.getElementById('done').hidden = false;
+
+        /// 수정해야하는 값
+        const nickname = nickNameEl.value;
+        const imageUrl = null;
+
+        if (!nickname) {
+            alert('닉네임을 입력하세요.');
+            return;
+        }
+
+        /// 값
+        const payload = {nickname, imageUrl};
+
+        // 버튼 요소 참조
+        const submitBtn = e.target.querySelector('.btn--primary');
+        submitBtn.disabled = true; // 중복 클릭 방지
+        submitBtn.textContent = '수정 중...';
+
+        try {
+            await updateMyPage(payload); // 비동기 대기
+
+            // 성공 시 버튼 텍스트 변경
+            alert("정상적으로 수정되었습니다.");
+
+            submitBtn.textContent = '수정완료';
+
+        } catch (err) {
+            console.error(err);
+            alert('수정 실패: ' + (err?.message || ''));
+            submitBtn.textContent = '수정하기'; // 실패 시 원복
+        } finally {
+            submitBtn.disabled = false;
+        }
     });
 
+    // ───────────── 탈퇴 로직 ─────────────
     document.getElementById('withdrawBtn').addEventListener('click', ()=>{
+
+        /// 탈퇴한다면 홈으로 리다이렉트
         if(confirm('정말 탈퇴하시겠습니까?')){
-            console.log('DELETE /v1/users');
-            // fetch('/v1/users',{method:'DELETE',headers:{Authorization:`Bearer ${...}`}})
+            withdraw();
             location.href = '/pages/html/login.html';
         }
+
     });
 </script>
 </body>
