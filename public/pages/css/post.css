@@ -117,3 +117,9 @@ body{
     .stats{ grid-template-columns:1fr 1fr; }
     .appbar__title{ font-size:16px }
 }
+
+button[data-action="like"].liked {
+    color: red;
+    font-weight: bold;
+    transition: color 0.2s ease;
+}
