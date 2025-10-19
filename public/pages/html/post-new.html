@@ -20,7 +20,7 @@
         <nav class="menu" id="menu">
             <a href="/pages/html/account-edit.html">회원정보수정</a>
             <a href="/pages/html/account-password.html">비밀번호수정</a>
-            <a href="/pages/html/login.html">로그아웃</a>
+            <a href="/pages/html/login.html" id="logoutLink">로그아웃</a>
         </nav>
     </div>
 </header>
@@ -61,18 +61,18 @@
 
 <!-- JS 스크립트 -->
 <script type="module">
+
+    import {initAppBar} from '../../assets/appbar.js';
+    import {attachLogout} from '../../assets/logout.js';
+
+    // ───────────── 기본 설정 ─────────────
+    const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
+    attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크
+
+    // ───────────── 내부 설정 ─────────────
+
     const input = document.getElementById('image');
     const nameEl = document.getElementById('filename');
-
-    // ───────────── 드롭다운 ─────────────
-    const menu = document.getElementById('menu');
-    const avatarBtn = document.getElementById('avatarBtn');
-    avatarBtn.addEventListener('click', () => {
-        menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    });
-    document.addEventListener('click', (e)=>{
-        if(!menu.contains(e.target) && e.target !== avatarBtn) menu.style.display='none';
-    });
 
     input.addEventListener('change', () => {
         nameEl.textContent = input.files?.[0]?.name ?? '파일을 선택해주세요.';
