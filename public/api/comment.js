@@ -31,9 +31,8 @@ export async function getComments(postId) {
     if (!res.ok) {
         throw new Error(`댓글 목록 조회 실패 (${res.status})`);
     }
+    return await res.json();
 
-    const data = await res.json();
-    return data.content;
 }
 
 /// 댓글 수정

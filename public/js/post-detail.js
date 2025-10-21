@@ -2,9 +2,11 @@
 import {getPostDetail, deletePost} from '../api/post.js';
 import {likePost} from "../api/like.js";
 import {unlikePost} from "../api/like.js";
+import {getComments} from '../api/comment.js';
 
 /// 컴포넌트
 import {createPostView} from '../components/postView.js';
+import {renderCommentThreads} from "../components/commentCard.js";
 
 // ───────────── 내부 설정 ─────────────
 const root = document.getElementById('postRoot');
@@ -97,10 +99,37 @@ async function load() {
                 likeBtn.classList.add('liked');
             }
         }
+
+        // ───────────── 댓글 조회 ─────────────
+        const commentList = root.querySelector('#commentList'); // createPostView 내에 이 컨테이너가 있어야 함
+        if (commentList) {
+            commentList.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
+            try {
+                const res = await getComments(postId);
+
+                console.log(res);
+
+                const threads = res?.data?.content ?? [];
+                commentList.innerHTML = ''; // 스켈레톤 제거
+                await renderCommentThreads(threads, commentList, {
+                    onReply:  (c) => console.log('답글 클릭:', c),
+                    onEdit:   (c) => console.log('수정 클릭:', c),
+                    onDelete: (c) => console.log('삭제 클릭:', c),
+                    onClick:  (c) => console.log('스레드 포커스:', c),
+                });
+            } catch (err) {
+                console.error(err);
+                commentList.innerHTML = `<p style="color:#c00">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
+            }
+        } else {
+            console.warn('#commentList 컨테이너가 뷰에 없습니다. createPostView 템플릿에 추가하세요.');
+        }
+
     } catch (e) {
         console.error(e);
         showError(e.message || '상세 조회 실패');
     }
 }
 
+/// 게시글 조회 로직
 load();

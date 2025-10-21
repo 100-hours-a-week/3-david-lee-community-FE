@@ -21,3 +21,10 @@
 }
 .comment__meta{ color:var(--muted); font-size:13px; display:flex; align-items:center; gap:10px; }
 .comment__body{ white-space:pre-wrap }
+
+
+/* depth(깊이) 만큼 왼쪽 들여쓰기 */
+.comment { margin-left: calc(var(--depth, 0) * 16px); }
+
+/* 자식 댓글 컨테이너 */
+.comment .replies { margin-top: 8px; }
