@@ -1,30 +1,66 @@
-
-/* 댓글 */
-.commentbox{
-    background:#fff; border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; box-shadow:var(--shadow); margin-top:10px;
+/* 카드 기본 */
+.comment__card{
+    position: relative;              /* ▷ 우측 상단 툴바 배치용 */
+    background: var(--card);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.03);
+    padding: 12px 14px;
+    padding-right: 120px;            /* ▷ 툴바가 겹치지 않도록 여유 */
 }
-.commentbox textarea{
-    width:100%; min-height:110px; resize:vertical;
-    border:1px solid var(--border); border-radius:10px; padding:10px; outline:none;
+
+/* 본문 */
+.comment__body{ white-space: pre-wrap; line-height: 1.6; font-size: 14px; }
+.comment__content a{ color:#3b82f6; text-decoration:none }
+.comment__content a:hover{ text-decoration:underline }
+
+/* ── 작성자/시간 한 줄 정렬 ── */
+.author{
+    display: inline-grid;
+    grid-auto-flow: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
 }
-.commentbox textarea:focus{ box-shadow:0 0 0 4px var(--ring) }
-.commentbox .actions{ display:flex; justify-content:flex-end; margin-top:10px }
-
-.commentboxs{ display:grid; gap:12px; margin-top:14px }
-.commentboxs{
-    background:#fff; border:1px solid var(--border); border-radius:12px;
-    padding:12px 14px; box-shadow:var(--shadow);
+.author__avatar{
+    width: 32px; height: 32px; border-radius: 50%;
+    background: #e5e7eb; border: 0.5px solid var(--border);
 }
-.comment__top{
-    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;
+.author__url{ font-weight: 700; color: var(--text); text-decoration: none; }
+.author__url:hover{ text-decoration: underline; }
+.author__name{ color: var(--muted); font-size: 12px }
+
+/* time을 작성자 라인 오른쪽으로 붙이기 */
+.comment__card time{
+    display: inline-block;
+    margin-left: 12px;
+    color: var(--muted);
+    font-size: 12px;
 }
-.comment__meta{ color:var(--muted); font-size:13px; display:flex; align-items:center; gap:10px; }
-.comment__body{ white-space:pre-wrap }
+/* author + time을 한 줄로 보이게 */
+.author + time{
+    position: relative;
+    top: -2px;                        /* 살짝 수직 정렬 보정 */
+}
 
+/* ── 우측 상단 툴바 ── */
+.toolbar{
+    position: absolute;
+    top: 10px; right: 10px;
+    display: flex; gap: 8px;
+}
+.toolbar .btn{
+    height: 30px; padding: 0 12px; border-radius: 8px;
+    border: 0.5px solid var(--ring);  /* 보라 라인 느낌 */
+    background: #fff; font-size: 13px;
+}
+.toolbar .btn:hover{ box-shadow: 0 0 0 3px var(--ring) inset; }
 
-/* depth(깊이) 만큼 왼쪽 들여쓰기 */
-.comment { margin-left: calc(var(--depth, 0) * 16px); }
+/* 대댓글 컨테이너 */
+.replies{ margin-top: 8px; margin-left: 12px; padding-left: 12px; border-left: 1px dashed var(--border); display:grid; gap:10px }
 
-/* 자식 댓글 컨테이너 */
-.comment .replies { margin-top: 8px; }
+/* 반응형: 작은 화면에서 툴바 내려 배치 */
+@media (max-width: 640px){
+    .comment__card{ padding-right: 14px }
+    .toolbar{ position: static; justify-content: flex-end; margin-top: 8px }
+}

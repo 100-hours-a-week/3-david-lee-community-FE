@@ -101,7 +101,7 @@ async function load() {
         }
 
         // ───────────── 댓글 조회 ─────────────
-        const commentList = root.querySelector('#commentList'); // createPostView 내에 이 컨테이너가 있어야 함
+        const commentList = root.querySelector('#commentList');
         if (commentList) {
             commentList.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
             try {
