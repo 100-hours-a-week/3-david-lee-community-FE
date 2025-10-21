@@ -34,10 +34,7 @@ export async function getPosts(categoryId) {
     }
 
     /// JSON 응답
-    const data = await res.json();
-
-    /// 리스트이기에 content만 가져오기
-    return data.content;
+    return await res.json();
 }
 
 /// 상세조회
