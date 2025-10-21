@@ -35,12 +35,13 @@ export async function createPostCard(post, { onClick } = {}) {
     const node = tpl.content.cloneNode(true);
 
     /// 내부 값 변화시키기
-    node.querySelector('.post__title').textContent = post.title ?? '';
+    node.querySelector('.author__url').textContent = post.author.imageUrl ?? '';
+    node.querySelector('.author__name').textContent = post.author;
+    node.querySelector('.post__title').textContent = post.title;
     node.querySelector('.likes').textContent = `좋아요 ${post.likes}`;
     node.querySelector('.comments').textContent = `댓글 ${post.comments}`;
     node.querySelector('.views').textContent = `조회수 ${post.views}`;
-    node.querySelector('time').textContent = post.date ?? '';
-    node.querySelector('.author__name').textContent = post.author ?? '';
+    node.querySelector('time').textContent = post.date;
 
     /// 제목 뿐 아니라, 카드 전체를 선택해도 이동 가능하도록 수정
     if (onClick) {
