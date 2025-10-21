@@ -1,5 +1,5 @@
 
-import {initAppBar} from '../components/appbar.js';
+import {initAppBar} from '../pages/common/appbar.js';
 import {attachLogout} from '../components/logout.js';
 import { getPostDetail, updatePost } from '../api/post.js';
 

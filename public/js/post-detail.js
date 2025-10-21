@@ -1,6 +1,6 @@
 import {getPostDetail, deletePost} from '../api/post.js';
 import {createPostView} from '../components/postView.js';
-import {initAppBar} from '../components/appbar.js';
+import {initAppBar} from '../pages/common/appbar.js';
 import {attachLogout} from '../components/logout.js';
 import {likePost} from "../api/like.js";
 import {unlikePost} from "../api/like.js";

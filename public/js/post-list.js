@@ -1,6 +1,6 @@
 import {getPosts} from '../api/post.js';
 import {createPostCard} from '../components/postCard.js';
-import {initAppBar} from '../components/appbar.js';
+import {initAppBar} from '../pages/common/appbar.js';
 import {attachLogout} from '../components/logout.js';
 
 // ───────────── 기본 설정 ─────────────
