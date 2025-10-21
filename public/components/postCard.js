@@ -9,7 +9,7 @@ async function ensureTemplate() {
     }
 
     /// HTML 가져오기
-    const res = await fetch('/assets/postCard.html');
+    const res = await fetch('/components/postCard.html');
 
     if (!res.ok) {
         throw new Error('postCard 템플릿 로드 실패');

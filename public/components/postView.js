@@ -9,7 +9,7 @@ async function ensureTemplate() {
     }
 
     /// HTML 가져오기
-    const res = await fetch('/assets/postView.html');
+    const res = await fetch('/components/postView.html');
     if (!res.ok) {
         throw new Error('postView 템플릿 로드 실패');
     }
