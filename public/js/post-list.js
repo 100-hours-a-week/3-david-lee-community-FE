@@ -1,11 +1,8 @@
+/// API
 import {getPosts} from '../api/post.js';
-import {createPostCard} from '../components/postCard.js';
-import {initAppBar} from '../pages/common/appbar.js';
-import {attachLogout} from '../components/logout.js';
 
-// ───────────── 기본 설정 ─────────────
-const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
-attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크
+/// 컴포넌트
+import {createPostCard} from '../components/postCard.js';
 
 // ───────────── 내부 설정 ─────────────
 const listEl = document.getElementById('postList');

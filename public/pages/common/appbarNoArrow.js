@@ -1,3 +1,5 @@
+/// 로그아웃 가져오기
+import {attachLogout} from "../../js/logout.js";
 
 /// 헤더 값 가져오기
 const header = document.querySelector('.appbar');
@@ -67,3 +69,10 @@ export function initAppBar({
 
     return { open, close, destroy, menu, avatarBtn };
 }
+
+/// 창 실행
+initAppBar();
+
+
+/// 로그아웃 실행
+attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크

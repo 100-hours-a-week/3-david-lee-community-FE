@@ -1,3 +1,4 @@
+/// API
 import {signUp, checkDuplicateNickname, checkDuplicateEmail} from '../api/user.js';
 
 // ───────────────── 헬퍼들 ─────────────────

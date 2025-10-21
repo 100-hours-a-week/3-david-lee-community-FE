@@ -1,13 +1,10 @@
+/// API
 import {getPostDetail, deletePost} from '../api/post.js';
-import {createPostView} from '../components/postView.js';
-import {initAppBar} from '../pages/common/appbar.js';
-import {attachLogout} from '../components/logout.js';
 import {likePost} from "../api/like.js";
 import {unlikePost} from "../api/like.js";
 
-// ───────────── 기본 설정 ─────────────
-const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
-attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크
+/// 컴포넌트
+import {createPostView} from '../components/postView.js';
 
 // ───────────── 내부 설정 ─────────────
 const root = document.getElementById('postRoot');

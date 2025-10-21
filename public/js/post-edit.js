@@ -1,11 +1,5 @@
-
-import {initAppBar} from '../pages/common/appbar.js';
-import {attachLogout} from '../components/logout.js';
+/// API
 import { getPostDetail, updatePost } from '../api/post.js';
-
-// ───────────── 기본 설정 ─────────────
-const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
-attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크
 
 // ───────────── 내부 설정 ─────────────
 

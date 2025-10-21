@@ -1,9 +1,5 @@
-import {initAppBar} from '../pages/common/appbar.js';
-import {attachLogout} from '../components/logout.js';
+/// API
 import {updatePassword} from "../api/user.js";
-
-const { menu } = initAppBar();
-attachLogout('#logoutLink');
 
 // ───────── 내부 설정 ─────────
 const PW_MIN = 8, PW_MAX = 20;

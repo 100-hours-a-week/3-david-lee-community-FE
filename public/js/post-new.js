@@ -1,10 +1,5 @@
-import {initAppBar} from '../pages/common/appbar.js';
-import {attachLogout} from '../components/logout.js';
+/// API
 import {createPost} from '../api/post.js';
-
-// ───────────── 기본 설정 (아바타 및 로그아웃) ─────────────
-const { menu } = initAppBar();
-attachLogout('#logoutLink');
 
 // ───────────── 제출 로직 ─────────────
 document.getElementById('postForm').addEventListener('submit', async (e) => {
