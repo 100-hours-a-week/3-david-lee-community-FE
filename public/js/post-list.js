@@ -1,59 +1,132 @@
 /// API
-import {getPosts} from '../api/post.js';
+import { getPosts } from '../api/post.js';
 
 /// 컴포넌트
-import {createPostCard} from '../components/postCard.js';
+import { createPostCard } from '../components/postCard.js';
 
 // ───────────── 내부 설정 ─────────────
 const listEl = document.getElementById('postList');
+const sentinel = document.getElementById('infiniteSentinel');
+const PAGE_SIZE = 10;
+// 상태값
+let cursor = '';         // 백엔드 커서(마지막 게시글 id)
+let isLoading = false;   // 중복 요청 방지
+let hasMore = true;      // 더 가져올 데이터가 있는지
+const seenIds = new Set(); // 중복 방지용
 
-/// 에러
-function showError(msg) {
-    listEl.innerHTML = `<p class="error" style="color:#c00">${msg}</p>`;
+// 로딩 UI
+function setLoading(loading) {
+    isLoading = loading;
+    sentinel.textContent = loading ? '불러오는 중…' : '';
 }
 
-/// 목록
-async function renderList() {
+// 에러 UI
+function showError(msg) {
+    console.error(msg);
+
+    sentinel.innerHTML = `
+    <p style="color:#c00; margin:12px 0">오류: ${msg}</p>
+    <button id="retryBtn" class="btn btn--secondary" style="padding:6px 10px">다시 시도</button>
+  `;
+    document.getElementById('retryBtn')?.addEventListener('click', () => {
+        sentinel.innerHTML = '';
+        loadMore(); // 재시도
+    });
+}
+
+// 페이지 렌더링
+async function loadMore() {
+    if (isLoading || !hasMore) {
+        return;
+    }
+
+    setLoading(true);
+
     try {
-        // API 응답 전체를 response 변수에 저장합니다.
-        const response = await getPosts(2);
+        const res = await getPosts(cursor, PAGE_SIZE, 2);
+        const content = res?.data?.content ?? [];
 
-        // 실제 게시글 목록은 response.data.content 에 있습니다.
-        const postList = response.data.content;
-
-        // 백엔드 응답 구조 맞춰서 데이터 가공
-        const posts = postList.map(p => ({
-            id: p.id,
-            title: p.title,
-            likes: p.likeCount,
-            comments: p.commentCount,
-            views: p.viewCount,
-            date: p.createdAt,
-            author: p.user?.nickname,
-        }));
-
-        listEl.innerHTML = '';
-
-        if (posts.length === 0) {
+        // 첫 페이지에서 비어있으면 빈 상태 표시
+        if (cursor === '' && content.length === 0) {
             listEl.innerHTML = `<p class="empty">게시글이 없습니다.</p>`;
+            hasMore = false;
+            setLoading(false);
             return;
         }
 
-        for (const post of posts) {
+        // 데이터 가공 & 렌더
+        for (const p of content) {
+            // 중복 방지 (커서 재요청/네트워크 지연 등 대비)
+            if (seenIds.has(p.id)) {
+                continue;
+            }
+            seenIds.add(p.id);
+
+            const post = {
+                id: p.id,
+                title: p.title,
+                likes: p.likeCount,
+                comments: p.commentCount,
+                views: p.viewCount,
+                date: p.createdAt,
+                author: p.user?.nickname,
+            };
+
             const card = await createPostCard(post, {
-                onClick: (p) => {
-                    location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(p.id)}`;
+                onClick: (pp) => {
+                    location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(pp.id)}`;
                 },
             });
             listEl.appendChild(card);
         }
+
+        // 커서 업데이트: 마지막 아이템의 id
+        if (content.length > 0) {
+            cursor = content[content.length - 1].id;
+        }
+
+        // 더 없음 판단
+        if (content.length < PAGE_SIZE) {
+            hasMore = false;
+            sentinel.textContent = '더 이상 게시글이 없습니다.';
+        } else {
+            setLoading(false);
+        }
     } catch (err) {
-        console.error(err);
-        // API 응답 자체에 에러 메시지가 있을 경우 그것을 사용합니다.
-        const errorMessage = err.response?.data?.message || err.message;
+        const errorMessage = err?.response?.data?.message || err?.message || '알 수 없는 오류';
+        setLoading(false);
         showError(errorMessage);
     }
 }
 
-// 초기화 실행
-renderList();
+// 초기 로딩(첫 페이지)
+async function init() {
+    // 초기 목록 비우기
+    listEl.innerHTML = '';
+    cursor = '';
+    hasMore = true;
+    seenIds.clear();
+
+    // 첫 로딩
+    await loadMore();
+
+    // IntersectionObserver로 sentinel 감지 → loadMore()
+    const io = new IntersectionObserver(
+        (entries) => {
+            const entry = entries[0];
+            if (entry.isIntersecting) {
+                // 여유를 두고 프리패칭 하고 싶으면 rootMargin 사용
+                loadMore();
+            }
+        },
+        {
+            root: null,
+            threshold: 0,
+            rootMargin: '300px',
+        }
+    );
+
+    io.observe(sentinel);
+}
+
+init();

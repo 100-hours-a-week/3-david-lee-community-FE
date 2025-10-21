@@ -21,12 +21,16 @@ export async function createPost(postData) {
 }
 
 /// 목록 조회
-export async function getPosts(categoryId) {
+export async function getPosts(lastId, offset, categoryId) {
 
     /// 인증 요청
-    const res = await authFetch(`${BASE_URL}?lastId=&offSet=10&categoryId=${encodeURIComponent(categoryId)}`,
-        {method: 'GET'}
+    const res = await authFetch(
+        `${BASE_URL}?lastId=${encodeURIComponent(lastId)}&offSet=${encodeURIComponent(offset)}&categoryId=${encodeURIComponent(categoryId)}`, {
+            method: 'GET'
+        }
     );
+
+    console.log("데이터를 추가로 요청합니다.");
 
 
     if (!res.ok) {
