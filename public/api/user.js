@@ -1,20 +1,28 @@
+/// 서버 요청 주소
 const BASE_URL = 'http://localhost:8080/v1/users';
+
+/// 인증 요청
 import { authFetch } from './base.js';
 
 /// 회원가입
 export async function signUp(userData) {
+
     const res = await fetch(BASE_URL, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(userData),          // 반드시!
+        body: JSON.stringify(userData),
     });
 
-    if (!res.ok) throw new Error(`회원가입 실패 (${res.status})`);
+    if (!res.ok) {
+        throw new Error(`회원가입 실패 (${res.status})`);
+    }
+
     return await res.json();
 }
 
 /// 이메일 중복 체크
 export async function checkDuplicateEmail(email) {
+
     const res = await fetch(`${BASE_URL}/email?email=${encodeURIComponent(email)}`, {
         method: 'GET',
         headers: {'Content-Type': 'application/json'},
@@ -30,6 +38,7 @@ export async function checkDuplicateEmail(email) {
 
 /// 닉네임 중복 체크
 export async function checkDuplicateNickname(nickName) {
+
     const res = await fetch(`${BASE_URL}/nickname?nickName=${encodeURIComponent(nickName)}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
@@ -45,8 +54,8 @@ export async function checkDuplicateNickname(nickName) {
 /// 마이페이지 조회
 export async function getMyPage() {
 
+    /// 인증 요청
     const res = await authFetch(`${BASE_URL}/mypage`, {method: 'GET'});
-
 
     if (!res.ok) {
         throw new Error(`마이페이지 조회 실패 (${res.status})`);
@@ -58,8 +67,10 @@ export async function getMyPage() {
 /// 타 유저 조회
 export async function getOtherUser(userId) {
 
-    const res = await authFetch(`${BASE_URL}/${encodeURIComponent(userId)}`, {method: 'GET'});
-
+    /// 인증 요청
+    const res = await authFetch(`${BASE_URL}/${encodeURIComponent(userId)}`, {
+        method: 'GET'
+    });
 
     if (!res.ok) {
         throw new Error(`타 유저 조회 실패 (${res.status})`);
@@ -71,6 +82,7 @@ export async function getOtherUser(userId) {
 /// 개인정보 수정
 export async function updateMyPage(changeableData) {
 
+    /// 인증 요청
     const res = await authFetch(`${BASE_URL}/mypage`, {
         method: 'PUT',
         body: JSON.stringify(changeableData),
@@ -86,6 +98,7 @@ export async function updateMyPage(changeableData) {
 /// 비밀번호 수정
 export async function updatePassword(changeableData) {
 
+    /// 인증 요청
     const res = await authFetch(`${BASE_URL}/password`, {
         method: 'PUT', body: JSON.stringify(changeableData)
     });
@@ -99,8 +112,15 @@ export async function updatePassword(changeableData) {
 
 /// 회원 탈퇴
 export async function withdraw() {
-    const res = await authFetch(BASE_URL, {method: 'PUT'});
 
-    if (!res.ok) throw new Error(`회원 탈퇴 실패 (${res.status})`);
+    /// 인증 요청
+    const res = await authFetch(BASE_URL, {
+        method: 'PUT'
+    });
+
+    if (!res.ok) {
+        throw new Error(`회원 탈퇴 실패 (${res.status})`);
+    }
+
     return await res.json();
 }

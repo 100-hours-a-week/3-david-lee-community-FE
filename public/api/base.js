@@ -1,29 +1,37 @@
+/// 토큰 재발급 호출
 import { reissue } from "./auth.js";
 
+/// 인증이 필요한 내용은 해당 API 호출을 통해서 진행
 export async function authFetch(url, options = {}) {
+
+    /// AccessToken 토큰 가져오기
     const token = localStorage.getItem("accessToken");
 
-    // AccessToken 헤더 설정
+    /// 토큰 가져와서 헤더 설정
     const headers = {
         "Content-Type": "application/json",
         ...(options.headers || {}),
         ...(token ? { Authorization: `Bearer ${token}` } : {}),
     };
 
-    // 기본 요청
+    /// 헤더를 포함하여 요청  전송
     let res = await fetch(url, {
         ...options,
         headers,
         credentials: "include", // refresh_token 쿠키 포함
     });
 
-    // 토큰 만료 시(401) → refresh 호출 후 재시도
+    /// 토큰 재발급 -> RefreshToken 쿠키 바탕으로재시도
     if (res.status === 401) {
-        console.warn("Access token expired — trying to reissue...");
 
-        /// refresh token으로 access token 재발급
+        /// 만료 알리기
+        console.warn("액세스 토큰 만료 — 재발급을 요청합니다.");
+
+        /// AccessToken 재발급
         const refreshed = await reissue();
         if (refreshed) {
+
+            /// AccessToken 토큰 가져오기
             headers.Authorization = `Bearer ${localStorage.getItem("accessToken")}`;
             res = await fetch(url, {
                 ...options,
@@ -35,7 +43,7 @@ export async function authFetch(url, options = {}) {
         }
     }
 
-    // 에러
+    /// 에러
     if (!res.ok) {
         const msg = `요청 실패 (${res.status})`;
         throw new Error(msg);
