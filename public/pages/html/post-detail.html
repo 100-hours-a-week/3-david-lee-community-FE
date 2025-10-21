@@ -7,20 +7,24 @@
     <link rel="stylesheet" href="../css/post.css">
     <link rel="stylesheet" href="../css/comment.css">
     <link rel="stylesheet" href="../css/appbar.css">
+    <link rel="stylesheet" href="../css/appfooter.css">
 </head>
 <body>
 
 <!-- 공통 헤더 -->
-<header class="appbar" style="box-shadow:inset 0 -3px 0 #3b82f6"> </header>
+<header class="appbar"> </header>
 
 <!-- 실제 컨테이너 -->
 <main class="container">
     <div id="postRoot"><p>로딩 중...</p></div>
 </main>
 
-<!-- JS 로직 -->
-<script type="module" src = "/js/post-detail.js"></script>
-<script type="module" src="/pages/common/appbar.js"></script>
+<!-- 공통 풋터 -->
+<footer class="appfooter"></footer>
 
+<!-- JS 로직 -->
+<script type="module" src="/pages/common/appbar.js"></script>
+<script type="module" src="/pages/common/appfooter.js"></script>
+<script type="module" src = "/js/post-detail.js"></script>
 </body>
 </html>
