@@ -23,7 +23,11 @@ export function initAppBar({
                                menuSelector = '#menu',
                                openClass = 'is-open',
                            } = {}) {
+
+    /// 아바타 영역 선택
     const avatarBtn = document.querySelector(avatarSelector);
+
+    /// 메뉴 선택
     const menu = document.querySelector(menuSelector);
 
     if (!avatarBtn || !menu) {
@@ -36,6 +40,7 @@ export function initAppBar({
     avatarBtn.setAttribute('aria-haspopup', 'menu');
     avatarBtn.setAttribute('aria-expanded', 'false');
 
+    /// 토글 열고 닫기
     const open = () => {
         menu.classList.add(openClass);
         avatarBtn.setAttribute('aria-expanded', 'true');
@@ -46,7 +51,7 @@ export function initAppBar({
     };
     const toggle = () => (menu.classList.contains(openClass) ? close() : open());
 
-    // 이벤트
+    // 아바타 선택 시
     const onAvatarClick = (e) => {
         e.stopPropagation();
         toggle();
