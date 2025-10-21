@@ -1,0 +1,26 @@
+/// 로그아웃 가져오기
+import {attachLogout} from "../../js/logout.js";
+import {initAppBar} from "./appbar.js";
+
+/// 헤더 값 가져오기
+const header = document.querySelector('.appbar');
+
+/// 내부에 HTML 넣기
+header.innerHTML = `
+<div class="appbar__inner">
+        <strong class="appbar__title">아무 말 대잔치</strong>
+        <div class="appbar__avatar" id="avatarBtn" title="프로필"></div>
+        <nav class="menu" id="menu">
+            <a href="/pages/html/account-edit.html">회원정보수정</a>
+            <a href="/pages/html/account-password.html">비밀번호수정</a>
+            <a href="/pages/html/login.html" id="logoutLink">로그아웃</a>
+        </nav>
+    </div>
+`
+
+/// 창 실행
+initAppBar();
+
+
+/// 로그아웃 실행
+attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크

@@ -1,0 +1,19 @@
+.appfooter {
+    text-align: center;
+    border-top: 1px solid #e5e7eb;
+    padding: 16px;
+    color: #6b7280;
+    background: #f9fafb;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+}
+.footer__nav a {
+    margin: 0 8px;
+    color: #3b82f6;
+    text-decoration: none;
+}
+.footer__nav a:hover {
+    text-decoration: underline;
+}

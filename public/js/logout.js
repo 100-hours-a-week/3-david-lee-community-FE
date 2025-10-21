@@ -1,18 +1,27 @@
+/// API
 import { logout as apiLogout } from '../api/auth.js';
 
+/// 로그아웃
 export function attachLogout(
+
+    /// 로그아웃 링크 선택
     selector = '#logoutLink',
     {
         onBefore = () => {},
         onAfter = () => {},
         redirectTo = '/pages/html/login.html',
-        clear = defaultClearClientSide,
+        clear = clearAuthentication,
         textDuring = '로그아웃 중...',
     } = {}
 ) {
-    const el = document.querySelector(selector);
-    if (!el) return () => {};
 
+    /// 컴포넌트 선택
+    const el = document.querySelector(selector);
+    if (!el) {
+        return () => {};
+    }
+
+    /// 클릭할 경우
     const onClick = async (e) => {
         e.preventDefault();
         onBefore();
@@ -45,8 +54,8 @@ export function attachLogout(
     return () => el.removeEventListener('click', onClick);
 }
 
-/// 다 지우기, 쿠키는 서버에서 다시 보내준다.
-function defaultClearClientSide() {
+/// 인증 정보 전부 삭제하기
+function clearAuthentication() {
     try {
         localStorage.removeItem('accessToken');
         sessionStorage.clear();

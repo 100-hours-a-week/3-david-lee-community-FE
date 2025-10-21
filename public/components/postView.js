@@ -1,34 +1,56 @@
+/// 템플릿 변수 선언
 let _tpl;
 
 /// 템플릿 로드
 async function ensureTemplate() {
-    if (_tpl) return _tpl;
-    const res = await fetch('/assets/postView.html');
-    if (!res.ok) throw new Error('postView 템플릿 로드 실패');
+
+    if (_tpl) {
+        return _tpl;
+    }
+
+    /// HTML 가져오기
+    const res = await fetch('/components/postView.html');
+    if (!res.ok) {
+        throw new Error('postView 템플릿 로드 실패');
+    }
+
+    /// HTML DOM 파서
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, 'text/html');
     _tpl = doc.getElementById('postView');
-    if (!_tpl) throw new Error("템플릿에 id='postView' 없음");
+
+    if (!_tpl) {
+        throw new Error("템플릿에 id='postView' 없음");
+    }
+
     return _tpl;
 }
 
-/// 상세 컴포넌트 생성
+/// 상세 게시글 만들기
 export async function createPostView(post, opts = {}) {
+
+    /// 수정, 삭제 여부
     const {onLike, onEdit, onDelete, onSubmitComment} = opts;
 
     /// 템플릿 가져오기
     const tpl = await ensureTemplate();
     const node = tpl.content.cloneNode(true);
 
-    // 헤더/메타
-    node.querySelector('.title').textContent = post.title;
+    /// 유저 및 시간
+    node.querySelector('.author__url').textContent = post.author.imageUrl ?? '';
     node.querySelector('.author__name').textContent = post.author;
     node.querySelector('.createdAt').textContent = post.createdAt;
 
-    // 본문
+    /// 본문
+    node.querySelector('.title').textContent = post.title;
     node.querySelector('.content').textContent = post.content ?? '';
 
-    // 미디어(옵션)
+    /// 통계
+    node.querySelector('.likeCount').textContent = post.likeCount;
+    node.querySelector('.viewCount').textContent = post.viewCount;
+    node.querySelector('.commentCount').textContent = post.commentCount;
+
+    /// 미디어(옵션)
     const media = node.querySelector('.media');
     if (Array.isArray(post.images) && post.images.length) {
         media.innerHTML = '';
@@ -40,12 +62,7 @@ export async function createPostView(post, opts = {}) {
         media.appendChild(img);
     }
 
-    // 통계
-    node.querySelector('.likeCount').textContent = post.likeCount;
-    node.querySelector('.viewCount').textContent = post.viewCount;
-    node.querySelector('.commentCount').textContent = post.commentCount;
-
-    // 액션: onEdit, onDelete 핸들러가 있을 때만 버튼을 보여주고 이벤트를 연결합니다.
+    /// 수정 , 삭제 여부
     const editBtn = node.querySelector('[data-action="edit"]');
     const deleteBtn = node.querySelector('[data-action="delete"]');
     const likeBtn = node.querySelector('[data-action="like"]');
@@ -64,10 +81,31 @@ export async function createPostView(post, opts = {}) {
         deleteBtn.remove();
     }
 
-    // 좋아요 버튼은 항상 표시되도록 유지
+    /// 좋아요 버튼은 항상 표시되도록 유지
     likeBtn.addEventListener('click', () => onLike?.(post));
 
-    // 댓글
+    /// 댓글 목록
+    const commentsWrap = node.querySelector('.comments');
+    if (Array.isArray(post.comments)) {
+        /// 목록 이기에
+        for (const c of post.comments) {
+            const item = document.createElement('div');
+            item.className = 'comment';
+            item.innerHTML = `
+        <div class="comment__top">
+          <div class="comment__meta">
+            <div class="author__avatar" style="width:28px;height:28px"></div>
+            <span>${c.author ?? '익명'}</span>
+            <time>${(c.createdAt || '').replace('T', ' ').slice(0, 19)}</time>
+          </div>
+        </div>
+        <div class="comment__body">${c.content ?? ''}</div>
+      `;
+            commentsWrap.appendChild(item);
+        }
+    }
+
+    // 댓글 작성
     node.querySelector('[data-action="comment"]').addEventListener('click', async () => {
         const textarea = node.querySelector('#comment');
         const text = textarea.value.trim();
@@ -80,25 +118,7 @@ export async function createPostView(post, opts = {}) {
         }
     });
 
-    // 기존 댓글(있다면)
-    const commentsWrap = node.querySelector('.comments');
-    if (Array.isArray(post.comments)) {
-        for (const c of post.comments) {
-            const item = document.createElement('div');
-            item.className = 'comment';
-            item.innerHTML = `
-        <div class="comment__top">
-          <div class="comment__meta">
-            <div class="author__avatar" style="width:28px;height:28px"></div>
-            <span>${c.author ?? '익명'}</span>
-            <time>${(c.createdAt || '').replace('T',' ').slice(0,19)}</time>
-          </div>
-        </div>
-        <div class="comment__body">${c.content ?? ''}</div>
-      `;
-            commentsWrap.appendChild(item);
-        }
-    }
 
+    /// 응답
     return node;
 }

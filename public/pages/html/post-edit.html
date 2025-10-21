@@ -8,22 +8,11 @@
     <title>아무 말 대잔치 — 게시글 수정</title>
     <link rel="stylesheet" href="../css/post-editor.css">
     <link rel="stylesheet" href="../css/appbar.css">
+    <link rel="stylesheet" href="../css/appfooter.css">
 </head>
-
-<!-- 상단 앱바 -->
 <body>
-<header class="appbar" style="box-shadow:inset 0 -3px 0 #3b82f6">
-    <div class="appbar__inner">
-        <a class="appbar__back" href="/pages/html/post-list.html" aria-label="뒤로가기">← 뒤로</a>
-        <strong class="appbar__title">아무 말 대잔치</strong>
-        <div class="appbar__avatar" id="avatarBtn" title="프로필"></div>
-        <nav class="menu" id="menu">
-            <a href="/pages/html/account-edit.html">회원정보수정</a>
-            <a href="/pages/html/account-password.html">비밀번호수정</a>
-            <a href="/pages/html/login.html" id="logoutLink">로그아웃</a>
-        </nav>
-    </div>
-</header>
+<!-- 공통 헤더 -->
+<header class="appbar"> </header>
 
 <!-- 컨테이너 -->
 <main class="container">
@@ -57,71 +46,8 @@
 </main>
 
 <!-- JS 로직 -->
-<script type="module">
-
-    import {initAppBar} from '../../assets/appbar.js';
-    import {attachLogout} from '../../assets/logout.js';
-    import { getPostDetail, updatePost } from '../../api/post.js';
-
-    // ───────────── 기본 설정 ─────────────
-    const { menu } = initAppBar();      // #avatarBtn / #menu 기본값 사용
-    attachLogout('#logoutLink');        // 메뉴 안의 로그아웃 링크
-
-    // ───────────── 내부 설정 ─────────────
-
-    const params = new URLSearchParams(location.search);
-    const postId = params.get('id');
-    const titleEl = document.getElementById('e-title');
-    const contentEl = document.getElementById('e-content');
-
-    // ───────────── 기존 값 호출 ─────────────
-    (async function preload() {
-        if (!postId) {
-            alert('잘못된 접근입니다. (id 누락)');
-            location.href = '/pages/html/post-list.html';
-            return;
-        }
-        try {
-            const d = await getPostDetail(postId); // 서버에서 최신 데이터 가져옴
-            titleEl.value = d.title ?? '';
-            contentEl.value = d.content ?? '';
-
-        } catch (e) {
-            console.error(e);
-            alert(e?.message || '기존 내용을 불러오지 못했습니다.');
-        }
-    })();
-
-    // ───────────── 수정 ─────────────
-    document.getElementById('editForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const categoryId = "2";
-        const title = titleEl.value.trim();
-        const content = contentEl.value.trim();
-        const imageUrls = [];
-
-        if (!title) return alert('제목을 입력하세요.');
-        if (!content) return alert('내용을 입력하세요.');
-
-        /// 값
-        const payload = { categoryId, title, content, imageUrls };
-
-        /// 호출
-        try {
-
-            /// 수정
-            await updatePost(postId, payload);
-            alert('글 수정이 완료되었습니다.');
-
-            /// 리다이렉트
-            window.location.href = `/pages/html/post-detail.html?id=${postId}`;
-
-        } catch (err) {
-            console.error(err);
-            alert(err?.message || '글 작성 중 오류가 발생했습니다.');
-        }
-    });
-</script>
+<script type="module" src="/pages/common/appbar.js"></script>
+<script type="module" src="/pages/common/appfooter.js"></script>
+<script type="module" src="/js/post-edit.js"></script>
 </body>
 </html>
