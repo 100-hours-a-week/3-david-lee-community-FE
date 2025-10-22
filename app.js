@@ -12,5 +12,5 @@ app.get('/', (req, res) => {
 
 // 서버 실행
 app.listen(port, () => {
-    console.log(`✅ Server is running on port ${port}`);
+    console.log(`✅ 앱 서버가 ${port}번 포트에서 시작되었습니다.`);
 });
