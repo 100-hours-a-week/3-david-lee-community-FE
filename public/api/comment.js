@@ -10,7 +10,7 @@ export async function saveComments(commentData) {
     /// 인증 요청
     const res = await authFetch(BASE_URL, {
         method: 'POST',
-        body: JSON.stringify({content: commentData}),
+        body: JSON.stringify(commentData),
     });
 
     if (!res.ok) {

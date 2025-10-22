@@ -8,6 +8,7 @@ import {createPostView} from '../components/postView.js';
 
 /// 댓글 조회 JS 사용
 import {loadComments} from './comment-list.js';
+import {registerCommentSubmit} from "./comment-new.js";
 
 // ───────────── 내부 설정 ─────────────
 
@@ -109,8 +110,12 @@ async function load() {
             }
         }
 
+        // ───────────── 댓글 작성 ─────────────
+        await registerCommentSubmit(postId);
+
         // ───────────── 댓글 조회 ─────────────
-        loadComments(postId, root);
+        await loadComments(postId, root);
+
 
     } catch (e) {
         console.error(e);
