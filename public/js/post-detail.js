@@ -7,7 +7,7 @@ import {unlikePost} from "../api/like.js";
 import {createPostView} from '../components/postView.js';
 
 /// 댓글 조회 JS 사용
-import {loadComments} from './comment.js';
+import {loadComments} from './comment-list.js';
 
 // ───────────── 내부 설정 ─────────────
 

@@ -33,10 +33,10 @@ export async function createCommentCard(comment, { onClick, onReply, onEdit, onD
 
     const $card = node.querySelector('.card');
     const $avatar = node.querySelector('.author__avatar');
+    const $createdAt = node.querySelector('.createdAt');
     const $authorName = node.querySelector('.author__name');
     const $authorUrl = node.querySelector('.author__url'); // 있으면 사용, 없으면 무시
     const $content = node.querySelector('.comment__content');
-    const $time = node.querySelector('time');
     const $toolbar = node.querySelector('.toolbar');
     const $replies = node.querySelector('.replies');
 
@@ -55,10 +55,9 @@ export async function createCommentCard(comment, { onClick, onReply, onEdit, onD
 
     // 내용/시간
     if ($content) $content.textContent = comment.content ?? '';
-    if ($time) {
+    if (comment.createdAt) {
         // API에 시간이 없으므로 표시만 비움
-        $time.textContent = '';
-        $time.removeAttribute('dateTime');
+        $createdAt.textContent = comment.createdAt;
     }
 
     // 편집/삭제 권한 표시
