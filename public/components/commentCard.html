@@ -1,31 +1,28 @@
 <template id="commentCard">
   <article class="comment__card card--hover">
     <!-- 헤더 -->
-    <div class="comment__header">
-      <div>
-        <div class="comment__body">
-          <div class="comment__content"></div>
-        </div>
+    <div class="comment__header" style="display: flex; justify-content: space-between; align-items: start; gap: 12px;">
+
+      <div class="author" style="display: flex; align-items: center; gap: 6px; margin-top: 6px;">
+        <div class="author__avatar" aria-hidden="true"></div>
+        <a class="author__url" target="_blank" rel="noopener noreferrer"></a>
+        <div class="author__name"></div>
+        <time class="createdAt" style="font-size: 0.85rem; color: #777;"></time>
+      </div>
+      <!-- 오른쪽: 수정/삭제/답글 -->
+      <div class="toolbar" style="display: flex; gap: 4px;">
+        <button class="btn btn--ghost btn--small" data-action="reply">답글</button>
+        <button class="btn btn--ghost btn--small" data-action="edit">수정</button>
+        <button class="btn btn--ghost btn--small" data-action="delete">삭제</button>
       </div>
     </div>
 
-    <!-- 작성자 -->
-    <div class="author">
-      <div class="author__avatar" aria-hidden="true"></div>
-      <a class="author__url" target="_blank" rel="noopener noreferrer"></a>
-      <div class="author__name"></div>
-    </div>
-
-    <time></time>
-
-    <!-- 수정/삭제/답글 -->
-    <div class="toolbar">
-      <button class="btn btn--ghost btn--small" data-action="reply">답글</button>
-      <button class="btn btn--ghost btn--small" data-action="edit">수정</button>
-      <button class="btn btn--ghost btn--small" data-action="delete">삭제</button>
+    <!-- 본문 -->
+    <div class="comment__body" style="flex: 1;">
+      <div class="comment__content"></div>
     </div>
 
     <!-- 대댓글이 들어갈 영역 -->
-    <div class="replies"></div>
+    <div class="replies" style="margin-left: 24px; margin-top: 8px;"></div>
   </article>
 </template>

@@ -10,17 +10,20 @@ export async function loadComments(postId, root) {
         return;
     }
 
+    /// 스켈레톤 적용
     commentList.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
 
     try {
         /// postId를 인자로 받아 API 호출
         const res = await getComments(postId);
 
-        console.log(res);
-
+        /// 계층형 댓글 구조 만들기
         const threads = res?.data?.content ?? [];
-        commentList.innerHTML = ''; // 스켈레톤 제거
 
+        /// 스켈레톤 제거
+        commentList.innerHTML = '';
+
+        /// 댓글 목록 리스트 만들기
         await renderCommentThreads(threads, commentList, {
             onReply:  (c) => console.log('답글 클릭:', c),
             onEdit:   (c) => console.log('수정 클릭:', c),
