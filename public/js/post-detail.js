@@ -2,13 +2,16 @@
 import {getPostDetail, deletePost} from '../api/post.js';
 import {likePost} from "../api/like.js";
 import {unlikePost} from "../api/like.js";
-import {getComments} from '../api/comment.js';
 
 /// 컴포넌트
 import {createPostView} from '../components/postView.js';
-import {renderCommentThreads} from "../components/commentCard.js";
+
+/// 댓글 조회 JS 사용
+import {loadComments} from './comment.js';
 
 // ───────────── 내부 설정 ─────────────
+
+// DOM으로 postRoot 꺼내기
 const root = document.getElementById('postRoot');
 const params = new URLSearchParams(location.search);
 
@@ -22,11 +25,16 @@ function showError(msg){
 
 // ───────────── 상세 조회 ─────────────
 async function load() {
+
     try {
-        if(!postId) throw new Error('잘못된 접근입니다. (id 누락)');
+        if(!postId) {
+            throw new Error('잘못된 접근입니다. (id 누락)');
+        }
+
+        /// API 호출
         const data = await getPostDetail(postId);
 
-        // 백엔드 응답 → 뷰 모델 매핑
+        // 백엔드 응답
         const post = {
             id: data.id,
             title: data.title,
@@ -70,6 +78,7 @@ async function load() {
 
         // ───────────── 수정/삭제 ─────────────
         if (post.editable) {
+
             // ───────────── 수정 ─────────────
             viewOptions.onEdit = () => location.href = `/pages/html/post-edit.html?id=${postId}`;
 
@@ -101,29 +110,7 @@ async function load() {
         }
 
         // ───────────── 댓글 조회 ─────────────
-        const commentList = root.querySelector('#commentList');
-        if (commentList) {
-            commentList.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
-            try {
-                const res = await getComments(postId);
-
-                console.log(res);
-
-                const threads = res?.data?.content ?? [];
-                commentList.innerHTML = ''; // 스켈레톤 제거
-                await renderCommentThreads(threads, commentList, {
-                    onReply:  (c) => console.log('답글 클릭:', c),
-                    onEdit:   (c) => console.log('수정 클릭:', c),
-                    onDelete: (c) => console.log('삭제 클릭:', c),
-                    onClick:  (c) => console.log('스레드 포커스:', c),
-                });
-            } catch (err) {
-                console.error(err);
-                commentList.innerHTML = `<p style="color:#c00">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
-            }
-        } else {
-            console.warn('#commentList 컨테이너가 뷰에 없습니다. createPostView 템플릿에 추가하세요.');
-        }
+        loadComments(postId, root);
 
     } catch (e) {
         console.error(e);
@@ -131,5 +118,5 @@ async function load() {
     }
 }
 
-/// 게시글 조회 로직
+/// 게시글 조회 로직 실행
 load();

@@ -1,28 +1,34 @@
-// /// API
-// import { getComments } from "../api/comment.js";
-//
-// /// 컴포넌트
-// import { renderCommentThreads } from "../components/commentCard.js";
-//
-// // ───────────── 내부 설정 ─────────────
-// const listEl = document.getElementById('commentList');
-//
-// // ───────────── API 호출 ─────────────
-// try {
-//     const res = await getComments(postId);
-//     console.log(res);
-//
-//     // ✅ API 구조에서 data.content 추출
-//     const threads = res.data?.content ?? [];
-//
-//     // ✅ 렌더링 함수 호출 시 컨테이너 전달
-//     await renderCommentThreads(threads, listEl, {
-//         onReply: (comment) => console.log('답글 클릭:', comment),
-//         onEdit: (comment) => console.log('수정 클릭:', comment),
-//         onDelete: (comment) => console.log('삭제 클릭:', comment),
-//     });
-//
-// } catch (error) {
-//     console.error('댓글 로드 실패:', error);
-//     listEl.innerHTML = `<p style="color:red">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
-// }
+/// API 호출
+import { getComments } from "../api/comment.js";
+import { renderCommentThreads } from "../components/commentCard.js";
+
+/// 댓글 리스트 조회
+export async function loadComments(postId, root) {
+    const commentList = root.querySelector('#commentList');
+    if (!commentList) {
+        console.warn('#commentList 컨테이너가 뷰에 없습니다. createPostView 템플릿에 추가하세요.');
+        return;
+    }
+
+    commentList.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
+
+    try {
+        /// postId를 인자로 받아 API 호출
+        const res = await getComments(postId);
+
+        console.log(res);
+
+        const threads = res?.data?.content ?? [];
+        commentList.innerHTML = ''; // 스켈레톤 제거
+
+        await renderCommentThreads(threads, commentList, {
+            onReply:  (c) => console.log('답글 클릭:', c),
+            onEdit:   (c) => console.log('수정 클릭:', c),
+            onDelete: (c) => console.log('삭제 클릭:', c),
+            onClick:  (c) => console.log('스레드 포커스:', c),
+        });
+    } catch (err) {
+        console.error(err);
+        commentList.innerHTML = `<p style="color:#c00">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
+    }
+}
