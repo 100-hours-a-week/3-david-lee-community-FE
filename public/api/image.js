@@ -24,9 +24,9 @@ export async function getTempUrl(fileName) {
 export async function confirmTempUrl(key) {
 
     const res = await fetch(`${BASE_URL}/temp`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(fileName),
+        body: JSON.stringify(key),
     });
 
     if (!res.ok) {
