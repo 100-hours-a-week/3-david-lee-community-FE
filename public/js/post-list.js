@@ -17,7 +17,6 @@ const seenIds = new Set(); // 중복 방지용
 // 로딩 UI
 function setLoading(loading) {
     isLoading = loading;
-    sentinel.textContent = loading ? '불러오는 중…' : '';
 }
 
 // 에러 UI
@@ -88,7 +87,6 @@ async function loadMore() {
         // 더 없음 판단
         if (content.length < PAGE_SIZE) {
             hasMore = false;
-            sentinel.textContent = '더 이상 게시글이 없습니다.';
         } else {
             setLoading(false);
         }
