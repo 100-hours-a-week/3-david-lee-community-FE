@@ -68,7 +68,7 @@ async function loadMore() {
                 comments: p.commentCount,
                 views: p.viewCount,
                 date: p.createdAt,
-                author: p.user?.nickname,
+                author: p.user,
             };
 
             const card = await createPostCard(post, {
