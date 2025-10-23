@@ -76,8 +76,21 @@ h1.title{ margin:6px 0 18px; text-align:center }
 .avatar-circle{
     width:140px; height:140px; border-radius:50%; margin:8px auto 0;
     background:radial-gradient(circle at 50% 45%,#f0f0f3, #e6e7eb);
-    border:1px solid var(--border); display:grid; place-items:center; color:var(--muted); font-size:38px;
+    border:1px solid var(--border); display:grid; place-items:center; color:var(--muted); font-size:20px;
 }
+
+#avatarPreview{
+    /* 이미지 미리보기 스타일 */
+    width:140px; /* circle과 같은 크기로 설정 */
+    height:140px;
+    border-radius:50%;
+    object-fit:cover;
+    margin:8px auto 0; /* circle과 같은 마진 적용 */
+    border:1px solid var(--border); /* border도 circle과 동일하게 적용 */
+    /* display:none; 는 JS가 제어 */
+}
+
+
 .note{ color:var(--muted); font-size:12px; text-align:center }
 
 .linkrow{ text-align:center; margin-top:6px }

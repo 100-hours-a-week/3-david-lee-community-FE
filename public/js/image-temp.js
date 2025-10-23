@@ -10,6 +10,29 @@ const hiddenKey = document.getElementById("avatarKey");
 const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE_MB = 5;
 
+// 업로드 버튼 자체를 클릭 영역으로 사용하고, 미리보기 이미지를 보여줍니다.
+// 초기에는 미리보기를 숨기고 원을 보이게 합니다.
+function initializeUploader() {
+    // 미리보기 이미지가 없을 때는 원형 버튼을 보이게 하고, 있을 때는 숨깁니다.
+    const hasImage = hiddenKey.value;
+    circle.style.display = hasImage ? 'none' : 'grid';
+    preview.style.display = hasImage ? 'block' : 'none';
+
+    // 클릭 리스너를 root에 달아 영역 전체를 버튼으로 사용합니다.
+    root.style.cursor = 'pointer';
+    root.setAttribute('role', 'button');
+    root.setAttribute('tabindex', '0');
+
+    root.addEventListener("click", handlePickAndUpload);
+    root.addEventListener("keydown", (e) => {
+        if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            handlePickAndUpload();
+        }
+    });
+}
+
+
 /// 파일 선택 input 동적 생성 (접근성/재사용)
 function createFileInput() {
     const input = document.createElement("input");
@@ -22,16 +45,19 @@ function createFileInput() {
 
 /// 업로드 진행 표시 간단 처리
 function setUploading(isUploading) {
+    const targetEl = root.querySelector('.avatar-circle, #avatarPreview') || root;
     if (isUploading) {
-        circle.textContent = "업로드 중…";
-        circle.setAttribute("aria-busy", "true");
-        circle.style.opacity = "0.6";
-        circle.style.pointerEvents = "none";
+        targetEl.textContent = "업로드 중...";
+        targetEl.setAttribute("aria-busy", "true");
+        targetEl.style.opacity = "0.6";
+        targetEl.style.pointerEvents = "none";
     } else {
+        // 업로드 완료 후에는 textContent를 원래대로 돌리거나 (circle의 경우), busy 상태를 제거합니다.
         circle.textContent = "+";
         circle.removeAttribute("aria-busy");
-        circle.style.opacity = "1";
-        circle.style.pointerEvents = "auto";
+        preview.removeAttribute("aria-busy");
+        targetEl.style.opacity = "1";
+        targetEl.style.pointerEvents = "auto";
     }
 }
 
@@ -39,6 +65,7 @@ function setUploading(isUploading) {
 function setPreview(objectUrl) {
     preview.src = objectUrl;
     preview.style.display = "block";
+    circle.style.display = "none"; // 미리보기가 생기면 버튼 숨김
 }
 
 /// 메인 로직: 파일→pre-signed 발급→S3 PUT→confirm
@@ -61,21 +88,21 @@ async function handlePickAndUpload() {
         }
 
         try {
+            // *************** 수정: 업로드 시작 시 미리보기 숨기고 원형 버튼을 보이게 함 ***************
+            preview.style.display = "none";
+            circle.style.display = "grid";
             setUploading(true);
 
-            // 백엔드에 pre-signed URL 발급 요청
+            // 1. 백엔드에 pre-signed URL 발급 요청
             const presign = await getTempUrl({fileName: file.name});
-
-            console.log(presign.data);
-
-            const uploadUrl = presign.data.preSignedUrl; // S3에 PUT할 URL
-            const objectKey = presign.data.key;       // 서버가 부여한 고유 key
+            const uploadUrl = presign.data.preSignedUrl;
+            const objectKey = presign.data.key;
 
             if (!uploadUrl || !objectKey) {
                 throw new Error("업로드 URL 또는 키를 받지 못했습니다.");
             }
 
-            /// S3에 직접 업로드 (PUT)
+            // 2. S3에 직접 업로드 (PUT)
             const putHeaders = {"Content-Type": file.type};
             const putRes = await fetch(uploadUrl, {
                 method: "PUT",
@@ -88,23 +115,16 @@ async function handlePickAndUpload() {
                 throw new Error(`S3 업로드 실패: ${putRes.status} ${text}`);
             }
 
-            // 업로드 성공 후 서버에 확정 처리
+            // 3. 업로드 성공 후 서버에 확정 처리
             const fileName = {key: objectKey};
-            console.log(fileName);
-
             const confirmRes = await confirmTempUrl(fileName);
-            console.log(confirmRes);
-
             const publicUrl = confirmRes.imageUrl;
 
-            // 업데이트: 미리보기 & hidden input 저장
+            // 4. 업데이트: 미리보기 & hidden input 저장
             const objectUrl = URL.createObjectURL(file);
             setPreview(objectUrl);
 
             hiddenKey.value = objectKey;
-            if (publicUrl) {
-                hiddenUrl.value = publicUrl;
-            }
 
             alert("프로필 사진이 업로드되었습니다.");
         } catch (err) {
@@ -119,11 +139,5 @@ async function handlePickAndUpload() {
     fileInput.click();
 }
 
-/// 클릭/키보드 접근성
-circle.addEventListener("click", handlePickAndUpload);
-circle.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handlePickAndUpload();
-    }
-});
+// 초기화 함수 호출
+initializeUploader();

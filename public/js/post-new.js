@@ -9,13 +9,13 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
     const categoryId = "2";
     const title = form.title.value.trim();
     const content = form.content.value.trim();
-    const imageUrls = [];
+    const imageKeys = [];
 
     if (!title) return alert('제목을 입력하세요.');
     if (!content) return alert('내용을 입력하세요.');
 
     /// 값
-    const payload = { categoryId, title, content, imageUrls };
+    const payload = { categoryId, title, content, imageKeys };
 
     /// 호출
     try {

@@ -84,8 +84,13 @@ form?.addEventListener('submit', async (e) => {
     } catch (err) {
         // 서버가 주는 메시지를 우선 사용
         const msg = err?.message || '로그인 중 오류가 발생했습니다.';
+
+        // *************** 변경된 부분: 오류 메시지를 경고창으로 표시 ***************
+        alert(msg);
+
         // 필드에 친절히 안내
         setFieldState(pwEl, { ok: false, msg });
+
         // 이메일 형식이 맞는지 다시 한번 표시(사용자 힌트)
         verifyEmail();
     } finally {
