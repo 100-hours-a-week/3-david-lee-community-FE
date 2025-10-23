@@ -6,7 +6,13 @@ import {unlikePost} from "../api/like.js";
 /// 컴포넌트
 import {createPostView} from '../components/postView.js';
 
+/// 댓글 조회 JS 사용
+import {loadComments} from './comment-list.js';
+import {registerCommentSubmit} from "./comment-new.js";
+
 // ───────────── 내부 설정 ─────────────
+
+// DOM으로 postRoot 꺼내기
 const root = document.getElementById('postRoot');
 const params = new URLSearchParams(location.search);
 
@@ -20,11 +26,16 @@ function showError(msg){
 
 // ───────────── 상세 조회 ─────────────
 async function load() {
+
     try {
-        if(!postId) throw new Error('잘못된 접근입니다. (id 누락)');
+        if(!postId) {
+            throw new Error('잘못된 접근입니다. (id 누락)');
+        }
+
+        /// API 호출
         const data = await getPostDetail(postId);
 
-        // 백엔드 응답 → 뷰 모델 매핑
+        // 백엔드 응답
         const post = {
             id: data.id,
             title: data.title,
@@ -68,6 +79,7 @@ async function load() {
 
         // ───────────── 수정/삭제 ─────────────
         if (post.editable) {
+
             // ───────────── 수정 ─────────────
             viewOptions.onEdit = () => location.href = `/pages/html/post-edit.html?id=${postId}`;
 
@@ -97,10 +109,19 @@ async function load() {
                 likeBtn.classList.add('liked');
             }
         }
+
+        // ───────────── 댓글 작성 ─────────────
+        await registerCommentSubmit(postId);
+
+        // ───────────── 댓글 조회 ─────────────
+        await loadComments(postId, root);
+
+
     } catch (e) {
         console.error(e);
         showError(e.message || '상세 조회 실패');
     }
 }
 
+/// 게시글 조회 로직 실행
 load();

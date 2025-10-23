@@ -1,23 +1,179 @@
+/* ───────────── 댓글 카드 ───────────── */
+.comment__card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
 
-/* 댓글 */
-.commentbox{
-    background:#fff; border:1px solid var(--border); border-radius:var(--radius);
-    padding:14px; box-shadow:var(--shadow); margin-top:10px;
+.comment__card.card--hover:hover {
+    background-color: #f0f2f5;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
-.commentbox textarea{
-    width:100%; min-height:110px; resize:vertical;
-    border:1px solid var(--border); border-radius:10px; padding:10px; outline:none;
-}
-.commentbox textarea:focus{ box-shadow:0 0 0 4px var(--ring) }
-.commentbox .actions{ display:flex; justify-content:flex-end; margin-top:10px }
 
-.commentboxs{ display:grid; gap:12px; margin-top:14px }
-.commentboxs{
-    background:#fff; border:1px solid var(--border); border-radius:12px;
-    padding:12px 14px; box-shadow:var(--shadow);
+/* 댓글 본문 내용 */
+.comment__content {
+    font-size: 1rem;
+    color: #222;
+    line-height: 1.5;
+    white-space: pre-line;
+    word-break: break-word;
 }
-.comment__top{
-    display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:6px;
+
+/* 댓글 헤더 (본문 + 버튼 영역) */
+.comment__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 12px;
 }
-.comment__meta{ color:var(--muted); font-size:13px; display:flex; align-items:center; gap:10px; }
-.comment__body{ white-space:pre-wrap }
+
+.comment__body {
+    margin-left: 40px;
+    flex: 1;
+}
+
+/* ───────────── 작성자 정보 ───────────── */
+.author {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.author__avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    flex-shrink: 0;
+}
+
+.author__name {
+    font-weight: 600;
+    color: #111;
+    font-size: 0.95rem;
+}
+
+.author__url {
+    display: none; /* 필요 시 활성화 */
+}
+
+.createdAt {
+    font-size: 0.85rem;
+    color: #777;
+    margin-left: auto;
+}
+
+/* ───────────── 대댓글 영역 ───────────── */
+.replies {
+    margin-left: 48px;
+    margin-top: 10px;
+    border-left: 2px solid #e0e0e0;
+    padding-left: 12px;
+}
+
+/* ───────────── 공통 버튼 스타일 ───────────── */
+.btn {
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 6px;
+    background: transparent;
+    transition: background 0.15s ease;
+}
+
+.btn--ghost {
+    color: #555;
+}
+
+.btn--ghost:hover {
+    background-color: #e4e6eb;
+    color: #111;
+}
+
+.btn--small {
+    font-size: 0.8rem;
+    padding: 3px 6px;
+}
+
+/* ───────────── 댓글 섹션 제목 ───────────── */
+.comment-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 14px;
+    border-bottom: 2px solid #e0e0e0;
+    padding-bottom: 6px;
+}
+
+/* ───────────── 댓글 입력창 ───────────── */
+.commentbox {
+    position: relative; /* 내부 버튼 위치 기준 */
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    padding: 16px 20px;
+    margin-top: 32px;
+    display: flex;
+    flex-direction: column;
+}
+
+.commentbox textarea {
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 12px 14px 48px 14px; /* 아래쪽 공간 확보 */
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #222;
+    background-color: #fff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.commentbox textarea::placeholder {
+    color: #aaa;
+}
+
+.commentbox textarea:focus {
+    outline: none;
+    border-color: #a28dfc;
+    box-shadow: 0 0 0 2px rgba(162, 141, 252, 0.25);
+}
+
+/* 내부 버튼 */
+.btn--inside {
+    position: absolute;
+    bottom: 22px;
+    right: 32px;
+    background-color: #a28dfc;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 16px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn--inside:hover {
+    background-color: #8f7cf2;
+    box-shadow: 0 2px 6px rgba(162, 141, 252, 0.4);
+}
+
+.btn--inside:active {
+    background-color: #7d6de0;
+}
+
+/* 게시글-댓글 구분선 */
+.divider {
+    border: none;
+    border-top: 1.5px solid #e0e0e0;
+    margin: 25px 0;
+}
