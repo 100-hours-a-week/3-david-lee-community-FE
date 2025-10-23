@@ -21,6 +21,10 @@
     position:absolute; right:20px; top:50%; transform:translateY(-50%);
     width:36px; height:36px; border-radius:50%;
     background:linear-gradient(#eee,#ddd); border:1px solid var(--border);
+
+    background-size: cover;        /* 이미지가 div를 꽉 채우도록 크기 조정 */
+    background-position: center;   /* 이미지를 div 중앙에 위치 */
+    background-repeat: no-repeat;  /* 이미지가 반복되는 것을 방지 */
 }
 
 /* 드롭다운 */

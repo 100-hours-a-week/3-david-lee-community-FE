@@ -1,5 +1,6 @@
 /// 로그아웃 가져오기
 import {attachLogout} from "../../js/logout.js";
+import {getMyPage} from "../../api/user.js";
 
 /// 헤더 값 가져오기
 const header = document.querySelector('.appbar');
@@ -18,17 +19,29 @@ header.innerHTML = `
     </div>
 `
 
-export function initAppBar({
+export async function initAppBar({
                                avatarSelector = '#avatarBtn',
                                menuSelector = '#menu',
                                openClass = 'is-open',
                            } = {}) {
 
-    /// 아바타 영역 선택
-    const avatarBtn = document.querySelector(avatarSelector);
+    /// 아바타 이미지 넣기
+    try {
+        const res = await getMyPage();
 
-    /// 메뉴 선택
-    const menu = document.querySelector(menuSelector);
+        console.log(res.data.imageUrl);
+
+        const avatarDiv = document.getElementById('avatarBtn');
+        const imageUrl = res.data.imageUrl;
+
+        if (avatarDiv) {
+            avatarDiv.style.backgroundImage = `url('${imageUrl}')`;
+        }
+
+    } catch(err) {
+        console.log(err);
+
+    }
 
     if (!avatarBtn || !menu) {
         // 페이지마다 앱바가 없을 수 있으므로 조용히 no-op
