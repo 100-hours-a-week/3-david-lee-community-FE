@@ -19,11 +19,42 @@ h1.page{margin:8px 0 18px; text-align:center}
 .profile{
     width:150px;height:150px;border-radius:50%;margin:8px auto 12px;
     background:radial-gradient(circle at 50% 45%,#f0f0f3,#e6e7eb);
-    border:1px solid var(--border); position:relative; display:grid; place-items:center
+    border:1px solid var(--border);
+    position:relative;
+    display:grid;
+    place-items:center
 }
 .profile button{
     position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
     height:30px; padding:0 12px; border-radius:16px; border:1px solid var(--border); background:#fff; cursor:pointer
+}
+
+/* 💡 수정된 부분: span이 부모와 규격이 같고 이미지를 표시하도록 */
+.profile span {
+    /* 부모 div.profile과 동일한 크기로 설정 */
+    display: block;
+    width: 100%;
+    height: 100%;
+
+    /* 부모와 동일하게 원형 설정 */
+    border-radius: 50%;
+
+    /* 배경색과 테두리는 필요 없으므로 제거 (부모가 처리) */
+    /* border: 1px solid #ddd; */
+    /* background: #ccc; */
+
+    /* 이미지가 없을 때 투명하여 부모의 회색 배경이 보이도록 */
+    background: transparent;
+
+    /* 이미지 표시 설정 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    /* span이 부모 profile 위에 정확히 겹치도록 */
+    position: absolute; /* 절대 위치 지정 */
+    top: 0;
+    left: 0;
 }
 
 /* Form */

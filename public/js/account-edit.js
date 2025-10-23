@@ -4,20 +4,50 @@ import {getMyPage, updateMyPage, withdraw} from '../api/user.js';
 // ───────────── 내부 설정 ─────────────
 const emailEl = document.getElementById('email');
 const nickNameEl = document.getElementById('nickname');
+// 💡 추가: 프로필 이미지 컨테이너 요소
+const profileAvatarEl = document.getElementById('profileAvatar');
+// 💡 추가: 이미지 변경 버튼
+const changeImageBtn = document.getElementById('changeImageBtn');
 
-// ───────────── 기존 값 호출 ─────────────
+// 💡 수정 로직에 사용할 현재 이미지 URL 변수 (전역에서 관리)
+let currentImageUrl = null;
+
+// ───────────── 기존 값 호출 (이미지 출력 포함) ─────────────
 (async function preload() {
 
     try {
         const d = await getMyPage(); // 서버에서 최신 데이터 가져옴
-        emailEl.value = d.data.email;
-        nickNameEl.value = d.data.nickname;
+        const userData = d.data;
+
+        emailEl.value = userData.email;
+        nickNameEl.value = userData.nickname;
+
+        // 💡 프로필 이미지 초기 설정
+        if (userData.imageUrl && profileAvatarEl) {
+            currentImageUrl = userData.imageUrl; // 현재 이미지 URL 저장
+            profileAvatarEl.style.backgroundImage = `url('${currentImageUrl}')`;
+        }
 
     } catch (e) {
         console.error(e);
         alert(e?.message || '기존 내용을 불러오지 못했습니다.');
     }
 })();
+
+// ───────────── 이미지 변경 로직 (더미) ─────────────
+if (changeImageBtn) {
+    changeImageBtn.addEventListener('click', () => {
+        alert("이미지 변경 기능은 아직 구현되지 않았습니다. (파일 업로드 및 미리보기 로직 필요)");
+        // TODO: <input type="file"> 요소를 숨겨서 클릭하고,
+        // 선택된 파일을 읽어 미리보기를 업데이트하고,
+        // 서버에 업로드 후 currentImageUrl을 업데이트하는 로직이 필요합니다.
+
+        // 임시로 기본 이미지 URL로 변경하는 예시
+        // currentImageUrl = 'https://example.com/new-default-avatar.png';
+        // profileAvatarEl.style.backgroundImage = `url('${currentImageUrl}')`;
+    });
+}
+
 
 // ───────────── 수정 로직 ─────────────
 document.getElementById('accountForm').addEventListener('submit', async (e) => {
@@ -27,7 +57,8 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
 
     /// 수정해야하는 값
     const nickname = nickNameEl.value;
-    const imageUrl = null;
+    // 💡 저장된 currentImageUrl 값을 payload에 포함하여 전송 (이미지 미변경 시 기존 이미지 유지)
+    const imageUrl = currentImageUrl;
 
     if (!nickname) {
         alert('닉네임을 입력하세요.');
