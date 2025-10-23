@@ -6,6 +6,7 @@ import {getMyPage} from "../../api/user.js";
 const header = document.querySelector('.appbar');
 
 /// 내부에 HTML 넣기
+// 이 부분이 실행되면서 DOM에 .appbar__avatar 요소가 생성됩니다.
 header.innerHTML = `
 <div class="appbar__inner">
         <a class="appbar__back" href="/pages/html/post-list.html" aria-label="뒤로가기">← 뒤로</a>
@@ -17,36 +18,48 @@ header.innerHTML = `
             <a href="/pages/html/login.html" id="logoutLink">로그아웃</a>
         </nav>
     </div>
-`
+`;
 
 export async function initAppBar({
-                               avatarSelector = '#avatarBtn',
-                               menuSelector = '#menu',
-                               openClass = 'is-open',
-                           } = {}) {
+                                     avatarSelector = '#avatarBtn',
+                                     menuSelector = '#menu',
+                                     openClass = 'is-open',
+                                 } = {}) {
 
-    /// 아바타 이미지 넣기
-    try {
-        const res = await getMyPage();
-
-        console.log(res.data.imageUrl);
-
-        const avatarDiv = document.getElementById('avatarBtn');
-        const imageUrl = res.data.imageUrl;
-
-        if (avatarDiv) {
-            avatarDiv.style.backgroundImage = `url('${imageUrl}')`;
-        }
-
-    } catch(err) {
-        console.log(err);
-
-    }
+    // 💡 1. DOM 요소들을 함수 시작 부분에서 먼저 찾습니다. (클릭 이벤트 적용을 위해 필수)
+    const avatarBtn = document.querySelector(avatarSelector);
+    const menu = document.querySelector(menuSelector);
 
     if (!avatarBtn || !menu) {
         // 페이지마다 앱바가 없을 수 있으므로 조용히 no-op
         return { open(){}, close(){}, destroy(){} };
     }
+
+    /// 아바타 이미지 넣기 (비동기)
+    try {
+        const res = await getMyPage();
+
+        // console.log("이미지 URL:", res.data.imageUrl); // 디버깅용
+
+        const imageUrl = res.data.imageUrl;
+
+        // 💡 2. imageUrl이 존재하고 (null, undefined, 빈 문자열이 아닌 경우)에만 스타일 적용
+        if (imageUrl) {
+            // CSS의 기본 배경을 덮어쓰고 이미지를 적용합니다.
+            avatarBtn.style.backgroundImage = `url('${imageUrl}')`;
+
+            // CSS에서 background-size 등을 처리하지 않았다면 여기서 설정합니다.
+            avatarBtn.style.backgroundSize = 'cover';
+            avatarBtn.style.backgroundPosition = 'center';
+            avatarBtn.style.backgroundRepeat = 'no-repeat';
+        }
+
+    } catch(err) {
+        console.log("프로필 이미지 로드 오류:", err);
+        // 오류 발생 시 기본 회색 배경이 유지됩니다.
+    }
+
+    // 💡 3. 이벤트 리스너 및 접근성 속성 설정 (요소를 찾은 후에 실행)
 
     // 접근성 속성
     avatarBtn.setAttribute('role', 'button');
@@ -76,6 +89,7 @@ export async function initAppBar({
         if (e.key === 'Escape') close();
     };
 
+    // 💡 4. 이벤트 리스너 부착
     avatarBtn.addEventListener('click', onAvatarClick);
     document.addEventListener('click', onDocClick);
     document.addEventListener('keydown', onKey);
