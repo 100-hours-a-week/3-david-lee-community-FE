@@ -35,18 +35,24 @@ async function load() {
         /// API 호출
         const data = await getPostDetail(postId);
 
+        /// 상세 조회 결과 → 이미지 목록 매핑 부분만 교체/추가
+        const rawImages = Array.isArray(data.image) ? data.image : [];
+        const sortedImages = rawImages
+            .slice()
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        const imageUrls = sortedImages.map(it => it.imageUrl);
+
         // 백엔드 응답
         const post = {
             id: data.id,
             title: data.title,
             content: data.content,
-            author: data.author?.nickname,
+            author: data.author,
             createdAt: data.createdAt,
             likeCount: data.likeCount ?? 0,
             viewCount: data.viewCount ?? 0,
             commentCount: data.commentCount ?? 0,
-            images: data.image ?? [],
-            comments: data.comments ?? [],
+            images: imageUrls,
             editable: data.editable,
             liked: data.liked,
         };
