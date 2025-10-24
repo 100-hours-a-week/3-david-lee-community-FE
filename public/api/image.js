@@ -42,7 +42,7 @@ export async function getUrls(fileNames) {
     /// 인증 요청
     const res = await authFetch(BASE_URL, {
         method: 'POST',
-        body: JSON.stringify(fileNames),
+        body: JSON.stringify({fileNames}),
     });
 
     if (!res.ok) {
@@ -59,7 +59,7 @@ export async function confirmUrls(keys) {
     /// 인증 요청
     const res = await authFetch(BASE_URL, {
         method: 'PATCH',
-        body: JSON.stringify(keys),
+        body: JSON.stringify({keys}),
     });
 
     if (!res.ok) {
