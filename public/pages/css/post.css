@@ -95,10 +95,6 @@ body{
     font-weight: bold;
     color: var(--border); /* 구분점 색상 */
 }
-.media{
-    margin:16px 0; height:260px; border-radius:var(--radius); border:1px dashed var(--border);
-    background:repeating-linear-gradient(45deg,#efeff3,#efeff3 12px,#f8f8fb 12px,#f8f8fb 24px);
-}
 
 .content{
     background:#fff; border:1px solid var(--border); border-radius:var(--radius);
@@ -130,22 +126,59 @@ button[data-action="like"].liked {
     font-weight: bold;
     transition: color 0.2s ease;
 }
-
-.post__gallery { margin: 16px 0; }
-
-.gallery__main { position: relative; display: grid; place-items: center; background: #fafafa; border-radius: 12px; overflow: hidden; }
-.gallery__main img { width: 100%; max-height: 420px; object-fit: contain; display: block; }
-
-.gallery__nav {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    width: 40px; height: 40px; border-radius: 999px;
-    background: rgba(0,0,0,0.4); color: #fff; border: 0; font-size: 24px; cursor: pointer;
+.author__avatar img{
+    width:100%; height:100%; object-fit:cover; display:block;
 }
-.gallery__nav--prev { left: 8px; }
-.gallery__nav--next { right: 8px; }
+.author__name{ color:var(--muted) }
 
-.gallery__thumbs { display: flex; gap: 8px; margin-top: 10px; overflow-x: auto; padding-bottom: 6px; }
+/* 이미지를 author__url 안에 넣어도 균형 유지 */
+.author__url{ display:inline-flex; align-items:center; gap:6px }
+.author__url img{
+    width:32px; height:32px; border-radius:50%; object-fit:cover; display:block;
+}
 
-.thumb { border: 2px solid transparent; padding: 0; border-radius: 8px; background: none; cursor: pointer; }
-.thumb img { width: 84px; height: 84px; object-fit: cover; display: block; border-radius: 6px; }
-.thumb.is-active { border-color: #6b8afd; }
+/* =============== Media & Gallery =============== */
+.media{
+    margin:16px 0;
+    border-radius:var(--radius);
+    /* 갤러리 있을 때는 배경/점선/패딩 없음 */
+    border:none;
+    background:none;
+    padding:0;
+}
+
+/* 이미지가 없을 때만 보이는 플레이스홀더 상태 */
+.media--placeholder{
+    padding:8px;
+    border:1px dashed var(--border);
+    background:repeating-linear-gradient(
+            45deg,#efeff3,#efeff3 12px,#f8f8fb 12px,#f8f8fb 24px
+    );
+    min-height:220px;
+    display:grid; place-items:center;
+}
+
+
+
+/* 갤러리 – 안쪽 여백/배경은 갤러리에서 처리 */
+.post__gallery{ margin:0 }
+.gallery__main{
+    position:relative; display:grid; place-items:center;
+    border-radius:12px; overflow:hidden;
+    background:#fafafa; /* 필요 없으면 none 으로 */
+    min-height:220px;
+}
+.gallery__main img{
+    width:100%; max-height:420px; object-fit:contain; display:block;
+}
+
+.gallery__nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:40px; height:40px; border-radius:999px;
+    background:rgba(0,0,0,.4); color:#fff; border:0; font-size:24px; cursor:pointer;
+}
+.gallery__nav--prev{ left:8px } .gallery__nav--next{ right:8px }
+.gallery__thumbs{ display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:6px }
+.thumb{ border:2px solid transparent; padding:0; border-radius:8px; background:none; cursor:pointer }
+.thumb img{ width:84px; height:84px; object-fit:cover; display:block; border-radius:6px }
+.thumb.is-active{ border-color:#6b8afd }
