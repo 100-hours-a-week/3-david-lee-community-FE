@@ -79,3 +79,7 @@ h1.page{margin:8px 0 18px; text-align:center}
 .input.is-invalid{ border-color:#ef4444 !important; outline-color:#ef4444 !important; }
 .input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12); }
 .field__error{ color:#ef4444; font-size:12px; margin-top:6px; min-height:1em; }
+
+/* 선택 사항: field 컨테이너에도 반응 */
+.field.is-invalid .input{ border-color:#ef4444 !important; }
+.field.is-invalid .input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12); }

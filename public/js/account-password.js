@@ -2,8 +2,6 @@
 import {updatePassword} from "../api/user.js";
 
 // ───────── 내부 설정 ─────────
-const PW_MIN = 8, PW_MAX = 20;
-
 const form  = document.getElementById('pwForm');
 const oldEl = document.getElementById('pw');
 const pwEl  = document.getElementById('pw1');
@@ -13,12 +11,34 @@ const pw2El = document.getElementById('pw2');
 let touchedPw1 = false;
 let touchedPw2 = false;
 
-// 공통: 필드 상태/메시지 세팅
+const PW_MIN = 8, PW_MAX = 20;
+
+// ───────────────── 비밀번호 복잡성 ─────────────────
+
+// 8~20자, 대문자, 소문자, 숫자, 특수문자를 각각 최소 1개 이상 포함
+const PW_COMPLEXITY_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
+
 function setFieldState(inputEl, { ok, msg }) {
-    inputEl.classList.toggle('is-invalid', !ok);
+    // 컨테이너 찾기
+    const field = inputEl.closest('.field') || inputEl.parentElement;
+
+    // 메시지 박스: .field__error 사용
+    let err = field.querySelector('.field__error');
+    if (!err) {
+        err = document.createElement('div');
+        err.className = 'field__error';
+        err.setAttribute('aria-live', 'polite');
+        field.appendChild(err);
+    }
+    err.textContent = msg || '';
+
+    // 인풋에 직접 표시 (← 이게 핵심: 테두리 빨강)
+    inputEl.classList.toggle('is-invalid', ok === false);
     inputEl.setAttribute('aria-invalid', ok ? 'false' : 'true');
-    const errEl = inputEl.parentElement.querySelector('.field__error');
-    if (errEl) errEl.textContent = msg || '';
+
+    // 필드 컨테이너에도 상태 클래스(선택이지만 유용)
+    field.classList.toggle('is-valid', !!ok);
+    field.classList.toggle('is-invalid', ok === false);
 }
 
 // 제출 가능 여부 갱신
@@ -41,35 +61,29 @@ function verifyOld() {
 
 // 검증: 새 비밀번호 길이
 function verifyPassword() {
-    const len = pwEl.value.length;
-    const lenOk = len >= PW_MIN && len <= PW_MAX;
+    const pw = pwEl.value;
+    const lenAndComplexityOk = PW_COMPLEXITY_RE.test(pw);
 
-    if (!touchedPw1 && len === 0) {
-        // 아직 안 만졌으면 경고 숨김
-        setFieldState(pwEl, { ok:true, msg:'' });
-    } else {
-        setFieldState(pwEl, lenOk
-            ? { ok:true, msg:'' }
-            : { ok:false, msg:`비밀번호는 ${PW_MIN}~${PW_MAX}자로 입력하세요.` }
-        );
-    }
+    // 메시지 강화
+    const msg = lenAndComplexityOk ? '' :
+        `비밀번호는 ${PW_MIN}~${PW_MAX}자, 대문자·소문자·숫자·특수문자 중 각각 최소 1개 이상 포함해야 합니다.`;
+
+    setFieldState(pwEl, { ok: lenAndComplexityOk, msg: msg });
     verifyPasswordMatch();
 }
 
-// 검증: 새 비밀번호 일치
 function verifyPasswordMatch() {
-    const v1 = pwEl.value;
-    const v2 = pw2El.value;
+    const same = pwEl.value && pw2El.value && pwEl.value === pw2El.value;
+    // *************** 변경: 비밀번호1이 유효한지 확인하는 방식 개선 ***************
+    const pw1IsCorrect = pwEl.closest('.field')?.classList.contains('is-valid');
 
-    if (!touchedPw2 && v2.length === 0) {
-        setFieldState(pw2El, { ok:true, msg:'' });
-    } else {
-        const same = v1.length > 0 && v2.length > 0 && v1 === v2;
-        setFieldState(pw2El, same
-            ? { ok:true, msg:'' }
-            : { ok:false, msg:'비밀번호가 일치하지 않습니다.' }
-        );
-    }
+    // 비밀번호1이 복잡성 조건을 통과하고, 비밀번호1과 비밀번호2가 일치할 때만 true
+    const ok = same && pw1IsCorrect;
+
+    setFieldState(pw2El, {
+        ok: ok,
+        msg: same ? '' : '비밀번호가 일치하지 않습니다.'
+    });
     refreshFormValidity();
 }
 
