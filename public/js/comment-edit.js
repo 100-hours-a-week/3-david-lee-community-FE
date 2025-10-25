@@ -4,59 +4,65 @@ import {deleteComment, saveComments, updateComment} from "../api/comment.js";
 import {showToast} from "../pages/common/toast.js";
 
 export async function handleEdit(comment, ctx) {
-    const { node, contentEl } = ctx;
-    if (!node || !contentEl) return;
+    const { node, contentEl, editForm, editTextarea, editCancelBtn } = ctx || {};
+    if (!node || !contentEl || !editForm || !editTextarea) return;
 
-    if (node.dataset.editing === '1') return;
-    node.dataset.editing = '1';
+    // ✅ 삭제 상태면 수정 불가
+    const deletedText = "삭제된 메시지입니다.";
+    const isDeleted =
+        node.classList.contains('is-deleted') ||
+        (contentEl.textContent && contentEl.textContent.trim() === deletedText) ||
+        comment.deleted === true || comment.isDeleted === true; // 서버 플래그가 있다면
 
+    if (isDeleted) {
+        // 버튼도 비활성화/제거 (방어적)
+        node.querySelector('.toolbar [data-action="edit"]')?.setAttribute('disabled', 'true');
+        await showToast('삭제된 댓글은 수정할 수 없습니다.');
+        return;
+    }
+
+    // 이미 편집 중이면 포커스만
+    if (!editForm.classList.contains('hidden')) {
+        editTextarea.focus();
+        return;
+    }
+
+    // 본문 숨기고 폼 보이기 + 값 세팅
     const original = contentEl.textContent ?? '';
-    const textarea = document.createElement('textarea');
-    textarea.value = original;
-    textarea.className = 'comment__edit';
-    textarea.rows = 3;
-
-    const actions = document.createElement('div');
-    actions.className = 'comment__edit-actions';
-
-    const saveBtn = document.createElement('button');
-    saveBtn.textContent = '저장';
-    saveBtn.className = 'btn btn--primary btn--small';
-
-    const cancelBtn = document.createElement('button');
-    cancelBtn.textContent = '취소';
-    cancelBtn.className = 'btn btn--ghost btn--small';
-
-    actions.append(saveBtn, cancelBtn);
-
     contentEl.style.display = 'none';
-    contentEl.insertAdjacentElement('afterend', textarea);
-    textarea.insertAdjacentElement('afterend', actions);
-    textarea.focus();
+    editTextarea.value = original;
+    editForm.classList.remove('hidden');
+    editTextarea.focus();
 
-    const cleanup = () => {
-        textarea.remove();
-        actions.remove();
+    // 중복 바인딩 방지
+    if (editForm.dataset.bound === '1') return;
+    editForm.dataset.bound = '1';
+
+    // 취소
+    editCancelBtn?.addEventListener('click', (e) => {
+        e.preventDefault(); e.stopPropagation();
+        editForm.classList.add('hidden');
         contentEl.style.display = '';
-        delete node.dataset.editing;
-    };
-
-    saveBtn.addEventListener('click', async () => {
-        const next = textarea.value.trim();
-        if (!next) return alert('내용을 입력해주세요.');
-        try {
-            await updateComment(comment.id, { content: next });
-            contentEl.textContent = next;
-            await showToast('댓글이 수정되었습니다.');
-        } catch (e) {
-            console.error(e);
-            alert('수정 중 오류가 발생했습니다.');
-        } finally {
-            cleanup();
-        }
     });
 
-    cancelBtn.addEventListener('click', cleanup);
+    // 저장
+    editForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); e.stopPropagation();
+        const next = editTextarea.value.trim();
+        if (!next) { alert('내용을 입력해주세요.'); return; }
+
+        try {
+            await updateComment(comment.id, {content: next});
+            node.classList.remove('is-deleted');
+            contentEl.textContent = next;
+            await showToast('댓글이 수정되었습니다.');
+            editForm.classList.add('hidden');
+            contentEl.style.display = '';
+        } catch (err) {
+            console.error(err);
+            alert(err?.message || '수정 중 오류가 발생했습니다.');
+        }
+    });
 }
 
 export async function handleDelete(comment, ctx) {
