@@ -158,6 +158,9 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
         if (imageState.changed) {
             imageState.originalUrl = imageState.finalUrl || imageState.originalUrl;
             imageState.changed = false;
+
+            /// 목록으로 이동
+            location.href = '/pages/html/post-list.html';
         }
     } catch (err) {
         console.error(err);
