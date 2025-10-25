@@ -1,14 +1,20 @@
-/// API 호출
+// =================
+//  API
+// =================
 import { getComments } from "../api/comment.js";
+
+// =================
+//  컴포넌트
+// =================
 import { renderCommentThreads } from "../components/commentCard.js";
 
-/// 댓글 리스트 조회
+// =================
+//  댓글 리스트 조회
+// =================
 export async function loadComments(postId, root) {
+
+    /// commentList 조회
     const commentList = root.querySelector('#commentList');
-    if (!commentList) {
-        console.warn('#commentList 컨테이너가 뷰에 없습니다. createPostView 템플릿에 추가하세요.');
-        return;
-    }
 
     /// 스켈레톤 적용
     commentList.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';

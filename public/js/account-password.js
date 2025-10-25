@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import {updatePassword} from "../api/user.js";
 
 // ───────── 내부 설정 ─────────

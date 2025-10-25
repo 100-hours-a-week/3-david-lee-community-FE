@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import {getPostDetail, deletePost} from '../api/post.js';
 import {likePost} from "../api/like.js";
 import {unlikePost} from "../api/like.js";
@@ -32,7 +32,7 @@ async function load() {
             throw new Error('잘못된 접근입니다. (id 누락)');
         }
 
-        /// API 호출
+        // ───────────── API ─────────────
         const data = await getPostDetail(postId);
 
         /// 상세 조회 결과 → 이미지 목록 매핑 부분만 교체/추가

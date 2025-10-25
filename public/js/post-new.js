@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { createPost } from '../api/post.js';
 import { getUrls, confirmUrls } from '../api/image.js';
 

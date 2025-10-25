@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { getPostDetail, updatePost } from '../api/post.js';
 
 // ───────────── 내부 설정 ─────────────

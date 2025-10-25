@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import {signUp, checkDuplicateNickname, checkDuplicateEmail} from '../api/user.js';
 
 // ───────────────── 헬퍼들 ─────────────────
@@ -85,7 +85,7 @@ async function verifyEmail() {
     }
 
     try {
-        /// API 호출
+        // ───────────── API ─────────────
         const res = await checkDuplicateEmail(v);
         const duplicated = res?.data?.duplicate ?? res?.duplicate ?? res === true;
         emailEl.dataset.duplicate = duplicated ? 'true' : '';

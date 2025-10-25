@@ -1,4 +1,4 @@
-/// API 호출
+// ───────────── API ─────────────
 import { saveComments } from "../api/comment.js";
 
 /**

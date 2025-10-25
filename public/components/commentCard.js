@@ -1,33 +1,14 @@
 /// 템플릿 정의
 let _template;
 
-/// 템플릿 가져오기
-async function ensureTemplate() {
-    if (_template) {
-        return _template;
-    }
-
-    /// HTML 가져오기
-    const res = await fetch('/components/commentCard.html');
-
-    if (!res.ok) {
-        throw new Error('commentCard 템플릿 로드 실패');
-    }
-
-    const html = await res.text();
-
-    /// HTML DOM 파서
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    _template = doc.getElementById('commentCard');
-    if (!_template) {
-        throw new Error("템플릿에 id='commentCard' 없음");
-    }
-
-    return _template;
-}
+// =================
+//  외부 사용 로직
+// =================
 
 /// 댓글 목록 만들기
 export async function createCommentCard(comment, { onClick, onReply, onEdit, onDelete } = {}) {
+
+    ///
     const tpl = await ensureTemplate();
     const node = tpl.content.cloneNode(true);
 
@@ -110,11 +91,11 @@ export async function renderCommentThreads(threads, container, handlers = {}) {
     for (const thread of threads) {
         const { root, children = [] } = thread;
 
-        // 1) 루트 댓글 카드
+        // 루트 댓글 카드
         const rootRendered = await createCommentCard(root, handlers);
         const { node: rootNode, repliesContainer } = rootRendered;
 
-        // 2) 대댓글(1 depth) 렌더
+        // 대댓글 렌더
         if (children.length > 0) {
             const childFrag = document.createDocumentFragment();
             for (const child of children) {
@@ -128,4 +109,33 @@ export async function renderCommentThreads(threads, container, handlers = {}) {
     }
 
     container.appendChild(frag);
+}
+
+// =================
+//  내부 사용 로직
+// =================
+
+/// 템플릿 가져오기
+async function ensureTemplate() {
+    if (_template) {
+        return _template;
+    }
+
+    /// HTML 가져오기
+    const res = await fetch('/components/commentCard.html');
+
+    if (!res.ok) {
+        throw new Error('commentCard 템플릿 로드 실패');
+    }
+
+    const html = await res.text();
+
+    /// HTML DOM 파서
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    _template = doc.getElementById('commentCard');
+    if (!_template) {
+        throw new Error("템플릿에 id='commentCard' 없음");
+    }
+
+    return _template;
 }

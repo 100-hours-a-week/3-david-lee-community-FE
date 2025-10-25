@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { logout as apiLogout } from '../api/auth.js';
 
 /// 로그아웃
