@@ -180,11 +180,90 @@
     border-top: 1.5px solid #e0e0e0;
     margin: 25px 0;
 }
+/* ===== 답글 폼: 기존 스타일과 동일 톤 ===== */
 
+/* 폼 컨테이너 */
+.reply-form{
+    margin-top: 12px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    padding: 12px 12px 14px;
+    border: 1px solid #eee; /* 살짝 경계 */
+}
+
+/* 텍스트영역: commentbox textarea와 톤 통일 */
+.reply-form textarea{
+    width: 100%;
+    min-height: 80px;         /* 댓글보단 약간 컴팩트 */
+    resize: vertical;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: #222;
+    background-color: #fff;
+    transition: border-color .2s ease, box-shadow .2s ease;
+    box-sizing: border-box;
+}
+
+.reply-form textarea::placeholder{ color:#aaa; }
+
+.reply-form textarea:focus{
+    outline: none;
+    border-color: #a28dfc;
+    box-shadow: 0 0 0 2px rgba(162,141,252,.25);
+}
+
+/* 액션 영역: 오른쪽 정렬 + 버튼 간격 */
+.reply-actions{
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* 버튼 토큰: 기존 .btn / .btn--ghost 재사용 */
+.reply-actions .btn{
+    border: none;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: background .15s ease, box-shadow .15s ease;
+}
+
+/* 기본/강조 버튼 팔레트: commentbox 내부 버튼과 동일 톤 */
+.btn--primary{
+    background-color: #a28dfc;
+    color: #fff;
+    font-weight: 600;
+}
+.btn--primary:hover{
+    background-color: #8f7cf2;
+    box-shadow: 0 2px 6px rgba(162,141,252,.35);
+}
+.btn--primary:active{ background-color:#7d6de0; }
+
+.btn--ghost{ color:#555; background: transparent; }
+.btn--ghost:hover{ background:#e4e6eb; color:#111; }
+
+/* 숨김 유틸 */
 .hidden{ display:none; }
-.reply-form{ margin-top:8px; }
-.reply-form textarea{ width:100%; box-sizing:border-box; }
-.reply-actions{ display:flex; gap:8px; margin-top:6px; }
+
+/* 들여쓰기 라인과 간격 유지 (이미 존재하는 규칙과 조화) */
+.replies{
+    margin-left: 48px;
+    margin-top: 10px;
+    border-left: 2px solid #e0e0e0;
+    padding-left: 12px;
+}
+
+/* 삭제 표시(선택적) */
+.comment__card.is-deleted .comment__content{
+    color:#777; font-style: italic;
+}
 
 .writer-badge {
     font-size: 11px;

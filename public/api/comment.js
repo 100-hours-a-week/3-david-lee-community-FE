@@ -39,8 +39,8 @@ export async function getComments(postId) {
 export async function updateComment(commentId, content) {
 
     const res = await authFetch(`${BASE_URL}/${encodeURIComponent(commentId)}`, {
-        method: 'PUT',
-        body: JSON.stringify({ content }),
+        method: 'PATCH',
+        body: JSON.stringify(content),
     });
     if (!res.ok) {
         throw new Error(`댓글 수정 실패 (${res.status})`);

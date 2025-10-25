@@ -70,11 +70,9 @@ export async function handleDelete(comment, ctx) {
     try {
         await deleteComment(comment.id);
 
-        // 1) 화면 기준으로 "대댓글 존재여부" 판단
+        // "대댓글 존재여부" 판단
         const hasReplies =
-                (repliesContainer?.children?.length ?? 0) > 0
-            // 서버가 주면 더 신뢰도 높음: || !!comment.hasChildren || (Array.isArray(comment.children) && comment.children.length > 0)
-        ;
+                (repliesContainer?.children?.length ?? 0) > 0;
 
         if (!hasReplies) {
             // 하드 삭제 UI: 카드 통째로 제거
