@@ -6,6 +6,21 @@ import { getUrls, confirmUrls } from '../api/image.js';
 const fileInput = document.getElementById('image');
 const nameSpan = document.getElementById('filename');
 
+// 입력 표시
+const titleInput = document.getElementById('title');
+const contentInput = document.getElementById('content');
+const titleCount = document.getElementById('titleCount');
+const contentCount = document.getElementById('contentCount');
+
+titleInput.addEventListener('input', () => {
+    titleCount.textContent = `${titleInput.value.length} / ${titleInput.maxLength}`;
+});
+
+contentInput.addEventListener('input', () => {
+    contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
+});
+
+
 fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files || []);
     if (files.length === 0) {
@@ -15,6 +30,14 @@ fileInput.addEventListener('change', () => {
     } else {
         nameSpan.textContent = `${files[0].name} 외 ${files.length - 1}개`;
     }
+});
+
+titleInput.addEventListener('input', () => {
+    titleCount.textContent = `${titleInput.value.length} / ${titleInput.maxLength}`;
+});
+
+contentInput.addEventListener('input', () => {
+    contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
 });
 
 // ───────────── 제출 로직 ─────────────
@@ -69,14 +92,12 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
                     body: file,
                 });
                 if (!putRes.ok) {
-                    // 403(SignatureDoesNotMatch/Expired) 등도 여기서 잡힘
                     throw new Error(`S3 업로드 실패: ${file.name}`);
                 }
 
                 uploadedKeys.push(key);
             }
 
-            // 확정 (confirmUrls 래퍼가 { keys: [...] }로 보내도록 구현되어 있어야 함)
             await confirmUrls(uploadedKeys);
             imageKeys = uploadedKeys;
         }
@@ -91,7 +112,6 @@ document.getElementById('postForm').addEventListener('submit', async (e) => {
     } catch (err) {
         console.error(err);
         alert(err?.message || '글 작성 중 오류가 발생했습니다.');
-        // 필요시: 고아 이미지 정리 API 호출
     } finally {
         submitBtn.disabled = false;
     }
