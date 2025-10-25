@@ -6,23 +6,16 @@ const form  = document.getElementById('pwForm');
 const oldEl = document.getElementById('pw');
 const pwEl  = document.getElementById('pw1');
 const pw2El = document.getElementById('pw2');
-
-// 사용자가 해당 필드를 만졌는지(빈칸일 때 경고 숨김 UX)
-let touchedPw1 = false;
-let touchedPw2 = false;
+const submitBtn = document.getElementById('submitBtn');
 
 const PW_MIN = 8, PW_MAX = 20;
 
-// ───────────────── 비밀번호 복잡성 ─────────────────
-
-// 8~20자, 대문자, 소문자, 숫자, 특수문자를 각각 최소 1개 이상 포함
+// 8~20자, 대문자, 소문자, 숫자, 특수문자 각각 ≥1
 const PW_COMPLEXITY_RE = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,20}$/;
 
 function setFieldState(inputEl, { ok, msg }) {
-    // 컨테이너 찾기
     const field = inputEl.closest('.field') || inputEl.parentElement;
 
-    // 메시지 박스: .field__error 사용
     let err = field.querySelector('.field__error');
     if (!err) {
         err = document.createElement('div');
@@ -32,21 +25,27 @@ function setFieldState(inputEl, { ok, msg }) {
     }
     err.textContent = msg || '';
 
-    // 인풋에 직접 표시 (← 이게 핵심: 테두리 빨강)
     inputEl.classList.toggle('is-invalid', ok === false);
     inputEl.setAttribute('aria-invalid', ok ? 'false' : 'true');
 
-    // 필드 컨테이너에도 상태 클래스(선택이지만 유용)
     field.classList.toggle('is-valid', !!ok);
     field.classList.toggle('is-invalid', ok === false);
 }
 
-// 제출 가능 여부 갱신
+// ✅ 필드 유효 여부 헬퍼
+const isFieldValid = (inputEl) =>
+    inputEl.closest('.field')?.classList.contains('is-valid') === true;
+
+// ✅ 제출 가능 여부 갱신(모든 체크 통과 전까지 버튼 비활성)
 function refreshFormValidity() {
     const submitBtn = form.querySelector('.btn--primary');
-    const anyInvalid = form.querySelector('.is-invalid') != null;
-    const anyEmpty = !oldEl.value || !pwEl.value || !pw2El.value;
-    submitBtn.disabled = anyInvalid || anyEmpty;
+
+    const checksOk =
+        isFieldValid(oldEl) &&    // 기존 비밀번호 입력됨
+        isFieldValid(pwEl)  &&    // 새 비밀번호 복잡성 통과
+        isFieldValid(pw2El);      // 새 비밀번호 일치
+
+    submitBtn.disabled = !checksOk;
 }
 
 // 검증: 기존 비밀번호(빈 값만 체크)
@@ -59,46 +58,43 @@ function verifyOld() {
     refreshFormValidity();
 }
 
-// 검증: 새 비밀번호 길이
+// 검증: 새 비밀번호 복잡성
 function verifyPassword() {
     const pw = pwEl.value;
     const lenAndComplexityOk = PW_COMPLEXITY_RE.test(pw);
-
-    // 메시지 강화
     const msg = lenAndComplexityOk ? '' :
-        `비밀번호는 ${PW_MIN}~${PW_MAX}자, 대문자·소문자·숫자·특수문자 중 각각 최소 1개 이상 포함해야 합니다.`;
+        `비밀번호는 ${PW_MIN}~${PW_MAX}자, 대문자·소문자·숫자·특수문자 각각 최소 1개 이상 포함해야 합니다.`;
 
-    setFieldState(pwEl, { ok: lenAndComplexityOk, msg: msg });
+    setFieldState(pwEl, { ok: lenAndComplexityOk, msg });
     verifyPasswordMatch();
 }
 
+// 검증: 새 비밀번호 일치
 function verifyPasswordMatch() {
     const same = pwEl.value && pw2El.value && pwEl.value === pw2El.value;
-    // *************** 변경: 비밀번호1이 유효한지 확인하는 방식 개선 ***************
-    const pw1IsCorrect = pwEl.closest('.field')?.classList.contains('is-valid');
-
-    // 비밀번호1이 복잡성 조건을 통과하고, 비밀번호1과 비밀번호2가 일치할 때만 true
+    const pw1IsCorrect = isFieldValid(pwEl);
     const ok = same && pw1IsCorrect;
 
-    setFieldState(pw2El, {
-        ok: ok,
-        msg: same ? '' : '비밀번호가 일치하지 않습니다.'
-    });
+    setFieldState(pw2El, { ok, msg: same ? '' : '비밀번호가 일치하지 않습니다.' });
     refreshFormValidity();
 }
 
 // 이벤트 바인딩
 oldEl.addEventListener('input', verifyOld);
-pwEl.addEventListener('input', () => { touchedPw1 = true; verifyPassword(); });
-pw2El.addEventListener('input', () => { touchedPw2 = true; verifyPasswordMatch(); });
+pwEl.addEventListener('input', verifyPassword);
+pw2El.addEventListener('input', verifyPasswordMatch);
 
-// 초기 1회
+// 초기 1회 실행 + 초기 비활성화
 verifyOld();
 verifyPassword(); // 내부에서 verifyPasswordMatch 호출
+refreshFormValidity(); // 페이지 로드시 버튼 잠금 보장
 
 // ───────── 제출 로직 ─────────
 form.addEventListener('submit', async (e) => {
     e.preventDefault();
+
+    // 가드: 혹시나 DOM 조작으로 버튼을 활성화했을 경우 대비
+    if (!isFieldValid(oldEl) || !isFieldValid(pwEl) || !isFieldValid(pw2El)) return;
 
     const submitBtn = form.querySelector('.btn--primary');
 
@@ -106,7 +102,6 @@ form.addEventListener('submit', async (e) => {
     const newPassword = pwEl.value.trim();
     const confirmPassword = pw2El.value.trim();
 
-    /// 수정중
     submitBtn.disabled = true;
     const prevText = submitBtn.textContent;
     submitBtn.textContent = '수정 중...';
@@ -118,10 +113,13 @@ form.addEventListener('submit', async (e) => {
         submitBtn.textContent = '수정완료';
         alert('비밀번호가 변경되었습니다.');
 
-        // 민감정보 초기화
+        // 민감정보 초기화 및 상태 재검증
         oldEl.value = '';
         pwEl.value  = '';
         pw2El.value = '';
+        verifyOld();
+        verifyPassword(); // match 포함
+        refreshFormValidity();
 
         // 이동 (선택)
         location.href = '/pages/html/account-password.html';
@@ -129,7 +127,9 @@ form.addEventListener('submit', async (e) => {
         console.error(err);
         alert('비밀번호 변경 실패: ' + (err?.message || '알 수 없는 오류'));
         submitBtn.textContent = prevText;
+        refreshFormValidity();
     } finally {
-        submitBtn.disabled = false;
+        submitBtn.disabled = true; // 실패 시도 이후에도 다시 잠가두고, 입력이 바뀌면 해제되도록
+        refreshFormValidity();
     }
 });

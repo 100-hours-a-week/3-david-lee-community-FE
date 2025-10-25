@@ -54,14 +54,14 @@ function refreshFormValidity() {
 
     // 개별 유효성 상태를 .is-valid 클래스로 체크
     const emailValid = isFieldValid(emailEl);
-    const nickValid  = isFieldValid(nickEl);
-    const pwLenOk   = isFieldValid(pwEl);
-    const pwMatch   = isFieldValid(pw2El);
+    const nickValid = isFieldValid(nickEl);
+    const pwLenOk= isFieldValid(pwEl);
+    const pwMatch = isFieldValid(pw2El);
 
     // 중복 체크는 dataset으로 확인
     const noEmailDup = emailEl.dataset.duplicate !== 'true';
-    const noNickDup  = nickEl.dataset.duplicate !== 'true';
-    const nameOk     = nameEl?.value?.trim().length > 0;
+    const noNickDup = nickEl.dataset.duplicate !== 'true';
+    const nameOk = nameEl?.value?.trim().length > 0;
 
     // 모든 필수 조건이 충족되어야 함 (이미지 제외)
     const allOk = emailValid && nickValid && pwLenOk && pwMatch && noEmailDup && noNickDup && nameOk;

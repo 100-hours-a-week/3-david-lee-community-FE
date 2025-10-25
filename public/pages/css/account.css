@@ -66,12 +66,19 @@ h1.page{margin:8px 0 18px; text-align:center}
 .input:focus{box-shadow:0 0 0 4px var(--ring)}
 .help{color:var(--muted); font-size:12px}
 
-.btn{display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 16px;
-    border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:700; transition:.15s ease}
+.btn{
+    display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 16px;
+    border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:700; transition:.15s ease;
+}
+.btn:disabled { opacity:.6; cursor:not-allowed; box-shadow:none; }
+.btn--primary:disabled { background:#cdb8ff; } /* 살짝 흐리게 */
+
 .btn--primary{background:var(--primary); color:#fff; box-shadow:0 6px 14px rgba(155,92,255,.25)}
 .btn--primary:active{background:var(--primary-pressed); transform:translateY(1px)}
+
 .btn--ghost{background:#fff; border-color:var(--border); color:var(--text)}
 .btn--danger{background:#fff; border-color:#ef4444; color:#ef4444}
+
 .actions{display:grid; gap:10px; margin-top:8px}
 
 .notice{margin-top:18px; color:#6b7280; font-weight:700}
