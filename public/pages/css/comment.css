@@ -185,3 +185,12 @@
 .reply-form{ margin-top:8px; }
 .reply-form textarea{ width:100%; box-sizing:border-box; }
 .reply-actions{ display:flex; gap:8px; margin-top:6px; }
+
+.writer-badge {
+    font-size: 11px;
+    background: #007bff;
+    color: #fff;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 4px;
+}
