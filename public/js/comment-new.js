@@ -1,6 +1,7 @@
 // ───────────── API ─────────────
-import { saveComments } from "../api/comment.js";
-import { createCommentCard } from "../components/commentCard.js";
+import {saveComments} from "../api/comment.js";
+import {createCommentCard} from "../components/commentCard.js";
+import {handleDelete, handleEdit, handleReply} from "./comment-edit.js";
 
 // =================
 //  새로운 댓글 생성
@@ -39,10 +40,10 @@ export async function registerCommentSubmit(postId) {
             const commentList = document.querySelector('#commentList');
             if (commentList && newComment) {
                 // 댓글 카드 생성
-                const { node } = await createCommentCard(newComment, {
-                    onCommentReply: (c) => console.log("답글 클릭:", c),
-                    onCommentEdit: (c) => console.log("수정 클릭:", c),
-                    onCommentDelete: (c) => console.log("삭제 클릭:", c),
+                const {node} = await createCommentCard(newComment, {
+                    onCommentReply: (c, ctx, e) => handleReply(c, ctx, postId, e),
+                    onCommentEdit: (c, ctx, e) => handleEdit(c, ctx, e),
+                    onCommentDelete: (c, ctx, e) => handleDelete(c, ctx, e),
                 });
 
                 // 맨 앞에 추가 (최신순)

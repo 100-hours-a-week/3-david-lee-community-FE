@@ -22,6 +22,11 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
     const $toolbar = node.querySelector('.toolbar');
     const $replies = node.querySelector('.replies');
 
+    // 내장 답글 폼 참조
+    const $replyForm      = rootEl.querySelector('.reply-form');
+    const $replyTextarea  = $replyForm?.querySelector('textarea');
+    const $replyCancelBtn = $replyForm?.querySelector('[data-action="reply-cancel"]');
+
     /// comment 들어온 값을 사용하게끔 수정
     const user = comment.user ?? {};
 
@@ -39,6 +44,9 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
         node: rootEl,
         repliesContainer: $replies,
         contentEl: $content,
+        replyForm: $replyForm,
+        replyTextarea: $replyTextarea,
+        replyCancelBtn: $replyCancelBtn,
     };
 
     // 편집/삭제/답글 버튼 표시

@@ -180,3 +180,8 @@
     border-top: 1.5px solid #e0e0e0;
     margin: 25px 0;
 }
+
+.hidden{ display:none; }
+.reply-form{ margin-top:8px; }
+.reply-form textarea{ width:100%; box-sizing:border-box; }
+.reply-actions{ display:flex; gap:8px; margin-top:6px; }
