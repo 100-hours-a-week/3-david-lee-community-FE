@@ -1,16 +1,30 @@
 /// API
 import {getMyPage, updateMyPage, withdraw} from '../api/user.js';
+import {getUrls, confirmUrls} from "../api/image.js";
 
 // ───────────── 내부 설정 ─────────────
 const emailEl = document.getElementById('email');
 const nickNameEl = document.getElementById('nickname');
-// 💡 추가: 프로필 이미지 컨테이너 요소
+//  프로필 이미지 컨테이너 요소
 const profileAvatarEl = document.getElementById('profileAvatar');
-// 💡 추가: 이미지 변경 버튼
+// 이미지 변경 버튼
 const changeImageBtn = document.getElementById('changeImageBtn');
 
-// 💡 수정 로직에 사용할 현재 이미지 URL 변수 (전역에서 관리)
+// 이미지 URL 변수
+let currentImageKey = null;
 let currentImageUrl = null;
+
+// 이미지 미리보기 적용
+function setAvatarPreview(url) {
+    const avatar = $('#profileAvatar');
+    if (!avatar) return;
+
+    if (url) {
+        avatar.style.backgroundImage = `url("${url}")`;
+    } else {
+        avatar.style.backgroundImage = '';
+    }
+}
 
 // ───────────── 기존 값 호출 (이미지 출력 포함) ─────────────
 (async function preload() {
@@ -22,9 +36,11 @@ let currentImageUrl = null;
         emailEl.value = userData.email;
         nickNameEl.value = userData.nickname;
 
-        // 💡 프로필 이미지 초기 설정
+        // 프로필 이미지 초기 설정
         if (userData.imageUrl && profileAvatarEl) {
-            currentImageUrl = userData.imageUrl; // 현재 이미지 URL 저장
+
+            // 현재 이미지 URL 저장
+            currentImageUrl = userData.imageUrl;
             profileAvatarEl.style.backgroundImage = `url('${currentImageUrl}')`;
         }
 
@@ -34,19 +50,79 @@ let currentImageUrl = null;
     }
 })();
 
-// ───────────── 이미지 변경 로직 (더미) ─────────────
-if (changeImageBtn) {
-    changeImageBtn.addEventListener('click', () => {
-        alert("이미지 변경 기능은 아직 구현되지 않았습니다. (파일 업로드 및 미리보기 로직 필요)");
-        // TODO: <input type="file"> 요소를 숨겨서 클릭하고,
-        // 선택된 파일을 읽어 미리보기를 업데이트하고,
-        // 서버에 업로드 후 currentImageUrl을 업데이트하는 로직이 필요합니다.
-
-        // 임시로 기본 이미지 URL로 변경하는 예시
-        // currentImageUrl = 'https://example.com/new-default-avatar.png';
-        // profileAvatarEl.style.backgroundImage = `url('${currentImageUrl}')`;
+// ──────────────────────────  파일 선택기 열기 ──────────────────────────
+function pickImageFile() {
+    return new Promise((resolve) => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = () => resolve(input.files?.[0] || null);
+        input.click();
     });
 }
+
+// ────────────────────────── Presigned URL 일반 PUT 업로드 ──────────────────────────
+async function uploadByPresignedPut(uploadUrl, file) {
+
+    const putHeaders = {"Content-Type": file.type};
+    const putRes = await fetch(uploadUrl, {
+        method: "PUT",
+        headers: putHeaders,
+        body: file,
+    });
+    if (!putRes.ok) {
+        throw new Error(`S3 업로드 실패: ${file.name}`);
+    }
+}
+
+// ────────────────────────── 이미지 변경 ──────────────────────────
+$('#changeImageBtn')?.addEventListener('click', async () => {
+    try {
+        const file = await pickImageFile();
+        if (!file) {
+            return;
+        }
+
+        // 간단 검증 (필요시 크기/확장자 제한 추가)
+        if (file.size > 10 * 1024 * 1024) {
+            alert('이미지 크기가 너무 큽니다. (최대 10MB)');
+            return;
+        }
+
+        // 업로드 URL 발급
+        // 프로젝트 응답 형태에 유연하게 대응 (uploads[0] / [0] / 단일 객체 등)
+        const issue = await getUrls([file.name]);
+        const first =
+            (Array.isArray(issue) && issue[0]) ||
+            issue?.uploads?.[0] ||
+            issue;
+
+        console.log(first);
+
+        // 응답 케이스들 커버: uploadUrl|url, key 필수
+        const uploadUrl = first.preSignedUrl || first.url;
+        const fileKey = first.key;
+
+        if (!uploadUrl || !fileKey) {
+            throw new Error('업로드 URL 또는 key가 응답에 없습니다.');
+        }
+
+        // S3 Presigned URL로 업로드
+        await uploadByPresignedPut(uploadUrl, file);
+
+        // 사용 확정
+        await confirmUrls([fileKey]);
+
+        // 미리보기 & 상태 갱신
+        const localPreviewUrl = URL.createObjectURL(file);
+        setAvatarPreview(localPreviewUrl);
+
+        currentImageKey = fileKey;
+    } catch (e) {
+        console.error(e);
+        alert(e?.message || '이미지 변경 중 오류가 발생했습니다.');
+    }
+});
 
 
 // ───────────── 수정 로직 ─────────────
@@ -57,8 +133,7 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
 
     /// 수정해야하는 값
     const nickname = nickNameEl.value;
-    // 💡 저장된 currentImageUrl 값을 payload에 포함하여 전송 (이미지 미변경 시 기존 이미지 유지)
-    const imageUrl = currentImageUrl;
+    const imageKey = currentImageUrl;
 
     if (!nickname) {
         alert('닉네임을 입력하세요.');
@@ -66,7 +141,7 @@ document.getElementById('accountForm').addEventListener('submit', async (e) => {
     }
 
     /// 값
-    const payload = {nickname, imageUrl};
+    const payload = {nickname, imageUrl: imageKey};
 
     // 버튼 요소 참조
     const submitBtn = e.target.querySelector('.btn--primary');
