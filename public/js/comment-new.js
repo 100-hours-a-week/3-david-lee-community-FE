@@ -40,9 +40,9 @@ export async function registerCommentSubmit(postId) {
             if (commentList && newComment) {
                 // 댓글 카드 생성
                 const { node } = await createCommentCard(newComment, {
-                    onReply: (c) => console.log("답글 클릭:", c),
-                    onEdit: (c) => console.log("수정 클릭:", c),
-                    onDelete: (c) => console.log("삭제 클릭:", c),
+                    onCommentReply: (c) => console.log("답글 클릭:", c),
+                    onCommentEdit: (c) => console.log("수정 클릭:", c),
+                    onCommentDelete: (c) => console.log("삭제 클릭:", c),
                 });
 
                 // 맨 앞에 추가 (최신순)

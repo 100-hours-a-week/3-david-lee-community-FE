@@ -6,7 +6,7 @@ let _template;
 // =================
 
 /// 댓글 목록 만들기
-export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {}) {
+export async function createCommentCard(comment, {onCommentReply, onCommentEdit, onCommentDelete} = {}) {
 
     /// 템플릿 가져와서 복제하기
     const tpl = await ensureTemplate();
@@ -42,12 +42,12 @@ export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {
         /// 수정 버튼 클릭
         editBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
-            onEdit?.(comment);
+            onCommentEdit?.(comment);
         });
         ///삭제 버튼 클릭
         delBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
-            onDelete?.(comment);
+            onCommentDelete?.(comment);
         });
     } else {
         /// 권한이 없으면 삭제
@@ -59,7 +59,7 @@ export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {
     if (comment.parentId == null) {
         replyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            onReply?.(comment);
+            onCommentReply?.(comment);
         });
     } else {
         replyBtn?.remove();
