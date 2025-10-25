@@ -12,13 +12,11 @@ export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {
     const tpl = await ensureTemplate();
     const node = tpl.content.cloneNode(true);
 
-
     /// HTML 요소를 선택
-    const $card = node.querySelector('.card');
     const $avatar = node.querySelector('.author__avatar');
     const $createdAt = node.querySelector('.createdAt');
     const $authorName = node.querySelector('.author__name');
-    const $authorUrl = node.querySelector('.author__url'); // 있으면 사용, 없으면 무시
+    const $authorUrl = node.querySelector('.author__url');
     const $content = node.querySelector('.comment__content');
     const $toolbar = node.querySelector('.toolbar');
     const $replies = node.querySelector('.replies');
@@ -34,7 +32,6 @@ export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {
     $authorUrl.removeAttribute('href');
     $content.textContent = comment.content ?? '';
     $createdAt.textContent = comment.createdAt ?? '';
-
 
     // 편집/삭제/답글 버튼 표시
     const editBtn = $toolbar.querySelector('[data-action="edit"]');
@@ -58,12 +55,14 @@ export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {
         delBtn?.remove();
     }
 
-    // 답글 버튼은 항상 보이게
-    if (replyBtn) {
+    // 답글 버튼은 루트에서 항상 보이게
+    if (comment.parentId == null) {
         replyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             onReply?.(comment);
         });
+    } else {
+        replyBtn?.remove();
     }
 
     // replies 컨테이너 없으면 만들어서 반환(템플릿 미수정 대비)
@@ -77,10 +76,7 @@ export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {
     return {node, repliesContainer};
 }
 
-/**
- * threads: API의 data.content (배열)
- * container: 렌더 대상 DOM
- */
+/// 렌더링
 export async function renderCommentThreads(threads, container, handlers = {}) {
     container.innerHTML = '';
     const frag = document.createDocumentFragment();

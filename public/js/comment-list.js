@@ -6,7 +6,7 @@ import { getComments } from "../api/comment.js";
 // =================
 //  컴포넌트
 // =================
-import { renderCommentThreads } from "../components/commentCard.js";
+import {renderCommentThreads} from "../components/commentCard.js";
 import {showToast} from "../pages/common/toast.js";
 
 // =================
@@ -37,6 +37,7 @@ export async function loadComments(postId, root) {
             onCommentDelete: (c) => console.log('삭제 클릭:', c),
         });
     } catch (err) {
+        console.error(err);
         await showToast(err);
         commentList.innerHTML = `<p style="color:#c00">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
     }
