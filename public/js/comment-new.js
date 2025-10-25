@@ -1,64 +1,49 @@
 // ───────────── API ─────────────
-import {saveComments} from "../api/comment.js";
-import {createCommentCard} from "../components/commentCard.js";
-import {handleDelete, handleEdit, handleReply} from "./comment-edit.js";
+import { saveComments } from "../api/comment.js";
 
-// =================
-//  새로운 댓글 생성
-// =================
+// ───────────── 의존성 ─────────────
+import { loadComments } from "./comment-list.js";
 
 export async function registerCommentSubmit(postId) {
+    // 중복 바인딩 방지
+    if (document.body.dataset.commentSubmitBound === "1") return;
+    document.body.dataset.commentSubmitBound = "1";
+
     document.addEventListener("click", async (e) => {
-        if (!e.target.matches('[data-action="comment"]')) {
-            return;
-        }
+        if (!e.target.matches('[data-action="comment"]')) return;
 
         e.preventDefault();
-
         const textarea = document.getElementById("comment");
         const content = textarea?.value.trim();
 
+        /// 없으면 요청
         if (!content) {
-            alert("댓글 내용을 입력해주세요!");
-            return;
+            return alert("댓글 내용을 입력해주세요!");
         }
 
-        const newCommentData = {
-            parentId: null, // 루트 댓글만 등록
-            postId: postId,
-            content: content,
-        };
+        const newCommentData = { parentId: null, postId, content };
+
+        // UX: 버튼 비활성화
+        const btn = e.target;
+        btn.disabled = true;
 
         try {
-            // ───────────── 서버에 저장 ─────────────
-            const res = await saveComments(newCommentData);
-
-            // 서버에서 방금 생성된 댓글 객체가 응답으로 온다고 가정
-            const newComment = res.data;
-
-            // ───────────── DOM에 즉시 추가 ─────────────
-            const commentList = document.querySelector('#commentList');
-            if (commentList && newComment) {
-                // 댓글 카드 생성
-                const {node} = await createCommentCard(newComment, {
-                    onCommentReply: (c, ctx, e) => handleReply(c, ctx, postId, e),
-                    onCommentEdit: (c, ctx, e) => handleEdit(c, ctx, e),
-                    onCommentDelete: (c, ctx, e) => handleDelete(c, ctx, e),
-                });
-
-                // 맨 앞에 추가 (최신순)
-                commentList.prepend(node);
-            }
+            await saveComments(newCommentData);
 
             // 입력창 초기화
             textarea.value = "";
 
-            // 성공 알림
-            alert("댓글이 등록되었습니다!");
+            // 전체 목록 재조회 + 렌더
+            const root = document.getElementById("postRoot");
+            await loadComments(postId, root);
 
+            // 스크롤/포커스 보정(선택)
+            document.querySelector("#commentList")?.scrollIntoView({ behavior: "smooth", block: "start" });
         } catch (err) {
             console.error(err);
             alert(err?.message || "댓글 작성 중 오류가 발생했습니다.");
+        } finally {
+            btn.disabled = false;
         }
     });
 }

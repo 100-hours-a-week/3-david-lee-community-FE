@@ -60,15 +60,51 @@ export async function handleEdit(comment, ctx) {
 }
 
 export async function handleDelete(comment, ctx) {
-    const { node } = ctx || {};
-    if (!confirm('정말 삭제하시겠습니까?')) return;
+    const { node, contentEl, repliesContainer } = ctx || {};
+    if (!node) return;
+
+    if (!confirm("정말 삭제하시겠습니까?")) {
+        return;
+    }
+
     try {
         await deleteComment(comment.id);
-        node?.remove();
-        await showToast('댓글이 삭제되었습니다.');
+
+        // 1) 화면 기준으로 "대댓글 존재여부" 판단
+        const hasReplies =
+                (repliesContainer?.children?.length ?? 0) > 0
+            // 서버가 주면 더 신뢰도 높음: || !!comment.hasChildren || (Array.isArray(comment.children) && comment.children.length > 0)
+        ;
+
+        if (!hasReplies) {
+            // 하드 삭제 UI: 카드 통째로 제거
+            node.remove();
+        } else {
+            // 소프트 삭제 UI: 내용 치환 + 툴바 비활성
+            const deletedText = "삭제된 메시지입니다.";
+
+            if (contentEl) {
+                contentEl.textContent = deletedText;
+            } else {
+                // 혹시 contentEl 못 찾은 경우 fallback
+                const $content = node.querySelector(".comment__content");
+                if ($content) $content.textContent = deletedText;
+            }
+
+            // 스타일 표시(선택)
+            node.classList.add("is-deleted");
+
+            // 편집/삭제 버튼 숨기기
+            const toolbar = node.querySelector(".toolbar");
+            toolbar?.querySelector('[data-action="edit"]')?.remove();
+            toolbar?.querySelector('[data-action="delete"]')?.remove();
+
+        }
+
+        await showToast("댓글이 삭제되었습니다.");
     } catch (e) {
         console.error(e);
-        alert('삭제 중 오류가 발생했습니다.');
+        alert(e?.message || "삭제 중 오류가 발생했습니다.");
     }
 }
 
