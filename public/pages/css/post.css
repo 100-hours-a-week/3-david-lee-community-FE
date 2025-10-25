@@ -206,6 +206,9 @@ button[data-action="like"].liked {
     cursor: pointer;
     font: inherit;
     transition: all 0.25s ease;
+    background:#fff; border:1px solid var(--border); border-radius:12px;
+    padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+    color:var(--muted); font-size:12px
 }
 
 /* ───────── 하트 + 숫자 영역 ───────── */

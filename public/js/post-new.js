@@ -32,14 +32,6 @@ fileInput.addEventListener('change', () => {
     }
 });
 
-titleInput.addEventListener('input', () => {
-    titleCount.textContent = `${titleInput.value.length} / ${titleInput.maxLength}`;
-});
-
-contentInput.addEventListener('input', () => {
-    contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
-});
-
 // ───────────── 제출 로직 ─────────────
 document.getElementById('postForm').addEventListener('submit', async (e) => {
     e.preventDefault();
