@@ -95,9 +95,6 @@ export async function handleDelete(comment, ctx) {
                 if ($content) $content.textContent = deletedText;
             }
 
-            // 스타일 표시(선택)
-            node.classList.add("is-deleted");
-
             // 편집/삭제 버튼 숨기기
             const toolbar = node.querySelector(".toolbar");
             toolbar?.querySelector('[data-action="edit"]')?.remove();
