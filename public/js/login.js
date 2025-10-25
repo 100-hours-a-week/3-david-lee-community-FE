@@ -1,4 +1,5 @@
 import { login } from '../api/auth.js';
+import {showToast} from "../pages/common/toast.js";
 
 // ───────────── 헬퍼 ─────────────
 const $ = (sel) => document.querySelector(sel);
@@ -86,7 +87,7 @@ form?.addEventListener('submit', async (e) => {
         const msg = err?.message || '로그인 중 오류가 발생했습니다.';
 
         // *************** 변경된 부분: 오류 메시지를 경고창으로 표시 ***************
-        alert(msg);
+        await showToast(msg);
 
         // 필드에 친절히 안내
         setFieldState(pwEl, { ok: false, msg });
