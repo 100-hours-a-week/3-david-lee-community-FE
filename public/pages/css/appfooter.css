@@ -1,3 +1,5 @@
+:root { --footer-h: 60px; } /* footer 실제 높이로 맞추세요 */
+
 .appfooter {
     text-align: center;
     border-top: 1px solid #e5e7eb;
@@ -8,12 +10,11 @@
     bottom: 0;
     left: 0;
     width: 100%;
+    height: var(--footer-h);
+    box-sizing: border-box;
 }
-.footer__nav a {
-    margin: 0 8px;
-    color: #3b82f6;
-    text-decoration: none;
-}
-.footer__nav a:hover {
-    text-decoration: underline;
+
+/* 콘텐츠가 footer 뒤로 숨지지 않도록 하단 패딩 보강 */
+main.container {
+    padding-bottom: calc(var(--footer-h) + 15px); /* 살짝 여유분 */
 }
