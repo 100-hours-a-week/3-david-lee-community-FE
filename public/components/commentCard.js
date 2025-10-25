@@ -11,6 +11,7 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
     /// 템플릿 가져와서 복제하기
     const tpl = await ensureTemplate();
     const node = tpl.content.cloneNode(true);
+    const rootEl = node.firstElementChild;
 
     /// HTML 요소를 선택
     const $avatar = node.querySelector('.author__avatar');
@@ -33,6 +34,13 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
     $content.textContent = comment.content ?? '';
     $createdAt.textContent = comment.createdAt ?? '';
 
+    /// 컨택스트 구성
+    const ctx = {
+        node: rootEl,
+        repliesContainer: $replies,
+        contentEl: $content,
+    };
+
     // 편집/삭제/답글 버튼 표시
     const editBtn = $toolbar.querySelector('[data-action="edit"]');
     const delBtn = $toolbar.querySelector('[data-action="delete"]');
@@ -42,12 +50,12 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
         /// 수정 버튼 클릭
         editBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
-            onCommentEdit?.(comment);
+            onCommentEdit?.(comment, ctx, e);
         });
         ///삭제 버튼 클릭
         delBtn?.addEventListener('click', (e) => {
             e.stopPropagation();
-            onCommentDelete?.(comment);
+            onCommentDelete?.(comment, ctx, e);
         });
     } else {
         /// 권한이 없으면 삭제
@@ -59,7 +67,7 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
     if (comment.parentId == null) {
         replyBtn.addEventListener('click', (e) => {
             e.stopPropagation();
-            onCommentReply?.(comment);
+            onCommentReply?.(comment, ctx, e);
         });
     } else {
         replyBtn?.remove();
@@ -73,7 +81,7 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
         node.querySelector('article.card')?.appendChild(repliesContainer);
     }
 
-    return {node, repliesContainer};
+    return { node: rootEl, repliesContainer: ctx.repliesContainer, contentEl: $content };
 }
 
 /// 렌더링
