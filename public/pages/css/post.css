@@ -190,3 +190,59 @@ button[data-action="like"].liked {
     font-size: 12px;
     text-align: right;
 }
+
+/* 기본 상태 */
+.stat--like {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    color: #555;
+    font: inherit;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+/* 하트 아이콘 (가상 요소로 추가) */
+.stat--like::before {
+    content: "♡";
+    font-size: 20px;
+    line-height: 1;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+/* 호버 시 */
+.stat--like:hover {
+    background-color: rgba(255, 75, 75, 0.1);
+    transform: translateY(-2px);
+}
+
+/* 좋아요 활성 상태 */
+.stat--like[aria-pressed="true"],
+.stat--like.liked {
+    color: #ff4b4b;
+    background-color: rgba(255, 75, 75, 0.15);
+    font-weight: 600;
+    box-shadow: 0 0 10px rgba(255, 75, 75, 0.2);
+}
+
+/* 활성 시 하트 채워짐 */
+.stat--like[aria-pressed="true"]::before,
+.stat--like.liked::before {
+    content: "❤️";
+    transform: scale(1.2);
+}
+
+/* 활성 + 호버 시 조금 더 강조 */
+.stat--like[aria-pressed="true"]:hover,
+.stat--like.liked:hover {
+    background-color: rgba(255, 75, 75, 0.25);
+    box-shadow: 0 0 15px rgba(255, 75, 75, 0.4);
+    transform: scale(1.05);
+}
