@@ -25,11 +25,13 @@
                 <label class="label required" for="title">제목</label>
                 <input class="input" id="title" name="title" type="text" maxlength="26"
                        placeholder="제목을 입력해주세요. (최대 26글자)" required>
+                <small id="titleCount" class="count">0 / 26</small>
             </div>
 
             <div class="field">
                 <label class="label required" for="content">내용</label>
-                <textarea class="textarea" id="content" name="content" placeholder="내용을 입력해주세요." required></textarea>
+                <textarea class="textarea" id="content" name="content" maxlength="1000" placeholder="내용을 입력해주세요.(최대 1000글자)" required></textarea>
+                <small id="contentCount" class="count">0 / 1000</small>
             </div>
 
             <div class="field">

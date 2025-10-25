@@ -182,3 +182,11 @@ button[data-action="like"].liked {
 .thumb{ border:2px solid transparent; padding:0; border-radius:8px; background:none; cursor:pointer }
 .thumb img{ width:84px; height:84px; object-fit:cover; display:block; border-radius:6px }
 .thumb.is-active{ border-color:#6b8afd }
+
+.count {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 12px;
+    text-align: right;
+}
