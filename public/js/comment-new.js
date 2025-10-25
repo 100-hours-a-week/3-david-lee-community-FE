@@ -1,10 +1,11 @@
 // ───────────── API ─────────────
 import { saveComments } from "../api/comment.js";
+import { createCommentCard } from "../components/commentCard.js";
 
-/**
- * 댓글 등록 버튼 클릭 이벤트 핸들러
- * @param {string|number} postId - 게시글 ID
- */
+// =================
+//  새로운 댓글 생성
+// =================
+
 export async function registerCommentSubmit(postId) {
     document.addEventListener("click", async (e) => {
         if (!e.target.matches('[data-action="comment"]')) {
@@ -28,13 +29,32 @@ export async function registerCommentSubmit(postId) {
         };
 
         try {
-            await saveComments(newCommentData);
-            alert("댓글이 등록되었습니다!");
+            // ───────────── 서버에 저장 ─────────────
+            const res = await saveComments(newCommentData);
+
+            // 서버에서 방금 생성된 댓글 객체가 응답으로 온다고 가정
+            const newComment = res.data;
+
+            // ───────────── DOM에 즉시 추가 ─────────────
+            const commentList = document.querySelector('#commentList');
+            if (commentList && newComment) {
+                // 댓글 카드 생성
+                const { node } = await createCommentCard(newComment, {
+                    onReply: (c) => console.log("답글 클릭:", c),
+                    onEdit: (c) => console.log("수정 클릭:", c),
+                    onDelete: (c) => console.log("삭제 클릭:", c),
+                });
+
+                // 맨 앞에 추가 (최신순)
+                commentList.prepend(node);
+            }
 
             // 입력창 초기화
             textarea.value = "";
 
-            // 필요 시 댓글 새로고침 로직
+            // 성공 알림
+            alert("댓글이 등록되었습니다!");
+
         } catch (err) {
             console.error(err);
             alert(err?.message || "댓글 작성 중 오류가 발생했습니다.");

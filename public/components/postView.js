@@ -191,8 +191,7 @@ export async function createPostView(post, opts = {}) {
     if (commentBtn) {
         commentBtn.addEventListener('click', async () => {
             const textarea = node.querySelector('#comment');
-            const text = (textarea?.value || '').trim();
-            if (!text) return alert('댓글을 입력하세요.');
+
             try {
                 await onSubmitComment?.(post, text);
                 if (textarea) textarea.value = '';
