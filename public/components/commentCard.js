@@ -6,12 +6,14 @@ let _template;
 // =================
 
 /// 댓글 목록 만들기
-export async function createCommentCard(comment, { onClick, onReply, onEdit, onDelete } = {}) {
+export async function createCommentCard(comment, {onReply, onEdit, onDelete} = {}) {
 
-    ///
+    /// 템플릿 가져와서 복제하기
     const tpl = await ensureTemplate();
     const node = tpl.content.cloneNode(true);
 
+
+    /// HTML 요소를 선택
     const $card = node.querySelector('.card');
     const $avatar = node.querySelector('.author__avatar');
     const $createdAt = node.querySelector('.createdAt');
@@ -21,52 +23,47 @@ export async function createCommentCard(comment, { onClick, onReply, onEdit, onD
     const $toolbar = node.querySelector('.toolbar');
     const $replies = node.querySelector('.replies');
 
-    // ----- API 구조: comment.user.nickname / imageUrl / userId -----
+    /// comment 들어온 값을 사용하게끔 수정
     const user = comment.user ?? {};
-    if ($authorName) $authorName.textContent = user.nickname ?? '익명';
-    if ($avatar && user.imageUrl) {
-        $avatar.style.backgroundImage = `url("${user.imageUrl}")`;
-        $avatar.style.backgroundSize = 'cover';
-        $avatar.style.backgroundPosition = 'center';
-    }
-    if ($authorUrl) {
-        $authorUrl.textContent = '';        // 프로필 URL이 없으니 비워둠
-        $authorUrl.removeAttribute('href'); // a 태그라면 링크 제거
-    }
 
-    // 내용/시간
-    if ($content) $content.textContent = comment.content ?? '';
-    if (comment.createdAt) {
-        // API에 시간이 없으므로 표시만 비움
-        $createdAt.textContent = comment.createdAt;
-    }
+    $authorName.textContent = user.nickname ?? '익명';
+    $avatar.style.backgroundImage = `url("${user.imageUrl}")`;
+    $avatar.style.backgroundSize = 'cover';
+    $avatar.style.backgroundPosition = 'center';
+    $authorUrl.textContent = '';
+    $authorUrl.removeAttribute('href');
+    $content.textContent = comment.content ?? '';
+    $createdAt.textContent = comment.createdAt ?? '';
 
-    // 편집/삭제 권한 표시
-    if ($toolbar) {
-        if (comment.editable) {
-            const editBtn = $toolbar.querySelector('[data-action="edit"]');
-            const delBtn  = $toolbar.querySelector('[data-action="delete"]');
-            editBtn?.addEventListener('click', (e) => { e.stopPropagation(); onEdit?.(comment); });
-            delBtn?.addEventListener('click', (e) => { e.stopPropagation(); onDelete?.(comment); });
-        } else {
-            $toolbar.style.display = 'none';
-        }
-    }
 
-    // 카드 클릭
-    if (onClick && $card) {
-        $card.style.cursor = 'pointer';
-        $card.addEventListener('click', () => onClick(comment));
-    }
-
-    // 답글 버튼(옵션)
+    // 편집/삭제/답글 버튼 표시
+    const editBtn = $toolbar.querySelector('[data-action="edit"]');
+    const delBtn = $toolbar.querySelector('[data-action="delete"]');
     const replyBtn = node.querySelector('[data-action="reply"]');
+
+    if (comment.editable) {
+        /// 수정 버튼 클릭
+        editBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onEdit?.(comment);
+        });
+        ///삭제 버튼 클릭
+        delBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onDelete?.(comment);
+        });
+    } else {
+        /// 권한이 없으면 삭제
+        editBtn?.remove();
+        delBtn?.remove();
+    }
+
+    // 답글 버튼은 항상 보이게
     if (replyBtn) {
-        if (onReply) {
-            replyBtn.addEventListener('click', (e) => { e.stopPropagation(); onReply(comment); });
-        } else {
-            replyBtn.remove(); // 핸들러 없으면 버튼 제거
-        }
+        replyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onReply?.(comment);
+        });
     }
 
     // replies 컨테이너 없으면 만들어서 반환(템플릿 미수정 대비)
@@ -77,7 +74,7 @@ export async function createCommentCard(comment, { onClick, onReply, onEdit, onD
         node.querySelector('article.card')?.appendChild(repliesContainer);
     }
 
-    return { node, repliesContainer };
+    return {node, repliesContainer};
 }
 
 /**
