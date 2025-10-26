@@ -190,3 +190,81 @@ button[data-action="like"].liked {
     font-size: 12px;
     text-align: right;
 }
+/* 기본 상태 */
+/* ───────── 기본 상태 ───────── */
+.stat--like {
+    display: flex;
+    flex-direction: column;       /* 세로 정렬 */
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: transparent;
+    color: #555;
+    cursor: pointer;
+    font: inherit;
+    transition: all 0.25s ease;
+    background:#fff; border:1px solid var(--border); border-radius:12px;
+    padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+    color:var(--muted); font-size:12px
+}
+
+/* ───────── 하트 + 숫자 영역 ───────── */
+.stat--like .top {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 16px;
+    line-height: 1;
+}
+
+/* 하트 */
+.stat--like .heart::before {
+    content: "♡";
+    font-size: 20px;
+    line-height: 1;
+    transition: transform 0.25s ease, color 0.25s ease;
+}
+
+/* 숫자 */
+.stat--like .likeCount {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* 라벨 (좋아요 수) */
+.stat--like .label {
+    font-size: 13px;
+    color: #777;
+}
+
+/* ───────── 호버 상태 ───────── */
+.stat--like:hover {
+    background-color: rgba(255, 75, 75, 0.1);
+    transform: translateY(-2px);
+}
+
+/* ───────── 눌린(좋아요 활성) 상태 ───────── */
+.stat--like[aria-pressed="true"],
+.stat--like.liked {
+    color: #ff4b4b;
+    background-color: rgba(255, 75, 75, 0.15);
+    box-shadow: 0 0 8px rgba(255, 75, 75, 0.2);
+    font-weight: 600;
+}
+
+/* 하트 채워짐 */
+.stat--like[aria-pressed="true"] .heart::before,
+.stat--like.liked .heart::before {
+    content: "❤️";
+    transform: scale(1.2);
+}
+
+/* 호버 시 강조 */
+.stat--like[aria-pressed="true"]:hover,
+.stat--like.liked:hover {
+    background-color: rgba(255, 75, 75, 0.25);
+    transform: scale(1.05);
+}

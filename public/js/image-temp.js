@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { getTempUrl, confirmTempUrl } from "../api/image.js";
 
 /// 설정

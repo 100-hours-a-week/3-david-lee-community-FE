@@ -1,6 +1,144 @@
 /// 템플릿 정의
 let _template;
 
+// =================
+//  외부 사용 로직
+// =================
+
+/// 댓글 목록 만들기
+export async function createCommentCard(comment, {onCommentReply, onCommentEdit, onCommentDelete} = {}) {
+
+    /// 템플릿 가져와서 복제하기
+    const tpl = await ensureTemplate();
+    const node = tpl.content.cloneNode(true);
+    const rootEl = node.firstElementChild;
+
+    /// HTML 요소를 선택
+    const $avatar = node.querySelector('.author__avatar');
+    const $createdAt = node.querySelector('.createdAt');
+    const $authorName = node.querySelector('.author__name');
+    const $authorUrl = node.querySelector('.author__url');
+    const $content = node.querySelector('.comment__content');
+    const $toolbar = node.querySelector('.toolbar');
+    const $replies = node.querySelector('.replies');
+
+    // 내장 답글 폼
+    const $replyForm      = rootEl.querySelector('.reply-form');
+    const $replyTextarea  = $replyForm?.querySelector('textarea');
+    const $replyCancelBtn = $replyForm?.querySelector('[data-action="reply-cancel"]');
+
+    // 내장 수정 폼
+    const $editForm      = rootEl.querySelector('.edit-form');
+    const $editTextarea  = $editForm?.querySelector('.edit-textarea');
+    const $editCancelBtn = $editForm?.querySelector('[data-action="edit-cancel"]');
+
+    /// comment 들어온 값을 사용하게끔 수정
+    const user = comment.user ?? {};
+
+    $authorName.textContent = user.nickname ?? '익명';
+    $avatar.style.backgroundImage = `url("${user.imageUrl}")`;
+    $avatar.style.backgroundSize = 'cover';
+    $avatar.style.backgroundPosition = 'center';
+    $authorUrl.textContent = '';
+    $authorUrl.removeAttribute('href');
+    $content.textContent = comment.content ?? '';
+    $createdAt.textContent = comment.createdAt ?? '';
+
+    /// 컨택스트 구성
+    const ctx = {
+        node: rootEl,
+        repliesContainer: $replies,
+        contentEl: $content,
+        replyForm: $replyForm,
+        replyTextarea: $replyTextarea,
+        replyCancelBtn: $replyCancelBtn,
+        editForm: $editForm,
+        editTextarea: $editTextarea,
+        editCancelBtn: $editCancelBtn,
+    };
+
+    // 편집/삭제/답글 버튼 표시
+    const editBtn = $toolbar.querySelector('[data-action="edit"]');
+    const delBtn = $toolbar.querySelector('[data-action="delete"]');
+    const replyBtn = node.querySelector('[data-action="reply"]');
+
+    console.log(comment);
+
+    /// 게시글 작성자와 동일하다면, 색깔을 파랗게 처리
+    if (comment.writer === true) {
+        $authorName.insertAdjacentHTML('beforeend', ' <span class="writer-badge">작성자</span>');
+    }
+
+    if (comment.editable) {
+        /// 수정 버튼 클릭
+        editBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onCommentEdit?.(comment, ctx, e);
+        });
+        ///삭제 버튼 클릭
+        delBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onCommentDelete?.(comment, ctx, e);
+        });
+    } else {
+        /// 권한이 없으면 삭제
+        editBtn?.remove();
+        delBtn?.remove();
+    }
+
+    // 답글 버튼은 루트에서 항상 보이게
+    if (comment.parentId == null) {
+        replyBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            onCommentReply?.(comment, ctx, e);
+        });
+    } else {
+        replyBtn?.remove();
+    }
+
+    // replies 컨테이너 없으면 만들어서 반환(템플릿 미수정 대비)
+    let repliesContainer = $replies;
+    if (!repliesContainer) {
+        repliesContainer = document.createElement('div');
+        repliesContainer.className = 'replies';
+        node.querySelector('article.card')?.appendChild(repliesContainer);
+    }
+
+    return { node: rootEl, repliesContainer: ctx.repliesContainer, contentEl: $content };
+}
+
+/// 렌더링
+export async function renderCommentThreads(threads, container, handlers = {}) {
+    container.innerHTML = '';
+    const frag = document.createDocumentFragment();
+
+    for (const thread of threads) {
+        const { root, children = [] } = thread;
+
+        // 루트 댓글 카드
+        const rootRendered = await createCommentCard(root, handlers);
+        const { node: rootNode, repliesContainer } = rootRendered;
+
+        // 대댓글 렌더
+        if (children.length > 0) {
+            const childFrag = document.createDocumentFragment();
+            for (const child of children) {
+                const childRendered = await createCommentCard(child, handlers);
+                childFrag.appendChild(childRendered.node);
+            }
+            repliesContainer.appendChild(childFrag);
+        }
+
+        frag.appendChild(rootNode);
+    }
+
+    container.appendChild(frag);
+}
+
+// =================
+//  내부 사용 로직
+// =================
+
 /// 템플릿 가져오기
 async function ensureTemplate() {
     if (_template) {
@@ -24,108 +162,4 @@ async function ensureTemplate() {
     }
 
     return _template;
-}
-
-/// 댓글 목록 만들기
-export async function createCommentCard(comment, { onClick, onReply, onEdit, onDelete } = {}) {
-    const tpl = await ensureTemplate();
-    const node = tpl.content.cloneNode(true);
-
-    const $card = node.querySelector('.card');
-    const $avatar = node.querySelector('.author__avatar');
-    const $createdAt = node.querySelector('.createdAt');
-    const $authorName = node.querySelector('.author__name');
-    const $authorUrl = node.querySelector('.author__url'); // 있으면 사용, 없으면 무시
-    const $content = node.querySelector('.comment__content');
-    const $toolbar = node.querySelector('.toolbar');
-    const $replies = node.querySelector('.replies');
-
-    // ----- API 구조: comment.user.nickname / imageUrl / userId -----
-    const user = comment.user ?? {};
-    if ($authorName) $authorName.textContent = user.nickname ?? '익명';
-    if ($avatar && user.imageUrl) {
-        $avatar.style.backgroundImage = `url("${user.imageUrl}")`;
-        $avatar.style.backgroundSize = 'cover';
-        $avatar.style.backgroundPosition = 'center';
-    }
-    if ($authorUrl) {
-        $authorUrl.textContent = '';        // 프로필 URL이 없으니 비워둠
-        $authorUrl.removeAttribute('href'); // a 태그라면 링크 제거
-    }
-
-    // 내용/시간
-    if ($content) $content.textContent = comment.content ?? '';
-    if (comment.createdAt) {
-        // API에 시간이 없으므로 표시만 비움
-        $createdAt.textContent = comment.createdAt;
-    }
-
-    // 편집/삭제 권한 표시
-    if ($toolbar) {
-        if (comment.editable) {
-            const editBtn = $toolbar.querySelector('[data-action="edit"]');
-            const delBtn  = $toolbar.querySelector('[data-action="delete"]');
-            editBtn?.addEventListener('click', (e) => { e.stopPropagation(); onEdit?.(comment); });
-            delBtn?.addEventListener('click', (e) => { e.stopPropagation(); onDelete?.(comment); });
-        } else {
-            $toolbar.style.display = 'none';
-        }
-    }
-
-    // 카드 클릭
-    if (onClick && $card) {
-        $card.style.cursor = 'pointer';
-        $card.addEventListener('click', () => onClick(comment));
-    }
-
-    // 답글 버튼(옵션)
-    const replyBtn = node.querySelector('[data-action="reply"]');
-    if (replyBtn) {
-        if (onReply) {
-            replyBtn.addEventListener('click', (e) => { e.stopPropagation(); onReply(comment); });
-        } else {
-            replyBtn.remove(); // 핸들러 없으면 버튼 제거
-        }
-    }
-
-    // replies 컨테이너 없으면 만들어서 반환(템플릿 미수정 대비)
-    let repliesContainer = $replies;
-    if (!repliesContainer) {
-        repliesContainer = document.createElement('div');
-        repliesContainer.className = 'replies';
-        node.querySelector('article.card')?.appendChild(repliesContainer);
-    }
-
-    return { node, repliesContainer };
-}
-
-/**
- * threads: API의 data.content (배열)
- * container: 렌더 대상 DOM
- */
-export async function renderCommentThreads(threads, container, handlers = {}) {
-    container.innerHTML = '';
-    const frag = document.createDocumentFragment();
-
-    for (const thread of threads) {
-        const { root, children = [] } = thread;
-
-        // 1) 루트 댓글 카드
-        const rootRendered = await createCommentCard(root, handlers);
-        const { node: rootNode, repliesContainer } = rootRendered;
-
-        // 2) 대댓글(1 depth) 렌더
-        if (children.length > 0) {
-            const childFrag = document.createDocumentFragment();
-            for (const child of children) {
-                const childRendered = await createCommentCard(child, handlers);
-                childFrag.appendChild(childRendered.node);
-            }
-            repliesContainer.appendChild(childFrag);
-        }
-
-        frag.appendChild(rootNode);
-    }
-
-    container.appendChild(frag);
 }

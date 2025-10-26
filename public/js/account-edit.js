@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { getMyPage, updateMyPage, withdraw } from '../api/user.js';
 import { getUrls, confirmUrls } from "../api/image.js";
 

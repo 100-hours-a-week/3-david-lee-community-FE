@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { createPost } from '../api/post.js';
 import { getUrls, confirmUrls } from '../api/image.js';
 
@@ -30,14 +30,6 @@ fileInput.addEventListener('change', () => {
     } else {
         nameSpan.textContent = `${files[0].name} 외 ${files.length - 1}개`;
     }
-});
-
-titleInput.addEventListener('input', () => {
-    titleCount.textContent = `${titleInput.value.length} / ${titleInput.maxLength}`;
-});
-
-contentInput.addEventListener('input', () => {
-    contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
 });
 
 // ───────────── 제출 로직 ─────────────

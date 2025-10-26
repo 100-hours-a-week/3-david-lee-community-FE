@@ -84,48 +84,42 @@ function createImageGallery(imageUrls = [], title = 'post image') {
 }
 
 /// 상세 게시글 만들기
+/// 상세 게시글 만들기
 export async function createPostView(post, opts = {}) {
-    const { onLike, onEdit, onDelete, onSubmitComment } = opts;
+    const { onToggleLike, onEdit, onDelete, onSubmitComment } = opts;
 
     // 템플릿 가져오기
     const tpl = await ensureTemplate();
     const node = tpl.content.cloneNode(true);
 
-    // 작성자/시간 (post.author는 닉네임 문자열을 가정)
+    // 작성자/시간
     const authorUrlEl = node.querySelector('.author__url');
     const authorNameEl = node.querySelector('.author__name');
     const createdAtEl  = node.querySelector('.createdAt');
 
-    console.log(post.author.imageUrl);
-
-    if (authorUrlEl) {
-        if (post.author.imageUrl) {
-            const img = document.createElement('img');
-            img.src = post.author.imageUrl;
-            img.alt = post.author.nickname ?? '작성자 프로필';
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            img.referrerPolicy = 'no-referrer';
-
-            authorUrlEl.textContent = '';
-            authorUrlEl.appendChild(img);
-        }
+    if (authorUrlEl && post.author?.imageUrl) {
+        const img = document.createElement('img');
+        img.src = post.author.imageUrl;
+        img.alt = post.author.nickname ?? '작성자 프로필';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        img.referrerPolicy = 'no-referrer';
+        authorUrlEl.textContent = '';
+        authorUrlEl.appendChild(img);
     }
-
-    if (authorNameEl) authorNameEl.textContent = post.author.nickname ?? '익명';
+    if (authorNameEl) authorNameEl.textContent = post.author?.nickname ?? '익명';
     if (createdAtEl)  createdAtEl.textContent  = post.createdAt ?? '';
 
     // 아바타(옵션)
     const avatarImg = node.querySelector('.author__avatar img');
     if (avatarImg) {
-        if (post.author.imageUrl) {
+        if (post.author?.imageUrl) {
             avatarImg.src = post.author.imageUrl;
             avatarImg.alt = post.author.nickname ?? '작성자';
             avatarImg.referrerPolicy = 'no-referrer';
             avatarImg.loading = 'lazy';
             avatarImg.decoding = 'async';
         } else {
-            // 이미지가 없으면 부모 컨테이너만 남기거나 숨김
             avatarImg.remove();
         }
     }
@@ -137,14 +131,15 @@ export async function createPostView(post, opts = {}) {
     if (contentEl) contentEl.textContent = post.content ?? '';
 
     // 통계
+    const likeBtnEl      = node.querySelector('[data-action="toggle-like"]');
     const likeCountEl    = node.querySelector('.likeCount');
     const viewCountEl    = node.querySelector('.viewCount');
     const commentCountEl = node.querySelector('.commentCount');
-    if (likeCountEl)    likeCountEl.textContent    = String(post.likeCount ?? 0);
+
     if (viewCountEl)    viewCountEl.textContent    = String(post.viewCount ?? 0);
     if (commentCountEl) commentCountEl.textContent = String(post.commentCount ?? 0);
 
-    // 미디어(전체 이미지 갤러리)
+    // 미디어
     const media = node.querySelector('.media');
     if (media) {
         media.innerHTML = '';
@@ -153,20 +148,71 @@ export async function createPostView(post, opts = {}) {
         }
     }
 
-    // 수정/삭제/좋아요
-    const editBtn  = node.querySelector('[data-action="edit"]');
-    const deleteBtn= node.querySelector('[data-action="delete"]');
-    const likeBtn  = node.querySelector('[data-action="like"]');
+    // 내부 상태
+    let liked = !!post.liked;
+    let likeCount = Number(post.likeCount ?? 0);
+    let busy = false; // 중복 클릭 방지
 
+    // 수정/삭제
+    const editBtn   = node.querySelector('[data-action="edit"]');
+    const deleteBtn = node.querySelector('[data-action="delete"]');
     if (onEdit && editBtn)   editBtn.addEventListener('click', () => onEdit(post));
     else if (editBtn)        editBtn.remove();
 
     if (onDelete && deleteBtn) deleteBtn.addEventListener('click', () => onDelete(post));
     else if (deleteBtn)        deleteBtn.remove();
 
-    if (likeBtn) likeBtn.addEventListener('click', () => onLike?.(post));
+    // 좋아요 UI 렌더
+    function renderLikeUI() {
+        if (likeCountEl) likeCountEl.textContent = String(likeCount);
+        if (likeBtnEl) {
+            likeBtnEl.setAttribute('aria-pressed', liked ? 'true' : 'false');
+            likeBtnEl.classList.toggle('liked', liked);
+            likeBtnEl.disabled = !!busy;
+        }
+    }
+    renderLikeUI();
 
-    // 댓글 목록
+    // 좋아요 토글 핸들러 (낙관적 갱신 → 실패 시 롤백)
+    async function handleToggleLike() {
+        if (!likeBtnEl || busy) return;
+
+        const prevLiked = liked;
+        const prevCount = likeCount;
+
+        // UI 먼저 토글
+        liked = !liked;
+        likeCount = liked ? prevCount + 1 : Math.max(0, prevCount - 1);
+        busy = true;
+        renderLikeUI();
+
+        try {
+            // 현재 상태(prevLiked 기준으로 서버 호출)
+            // prevLiked=false 였으면 like 요청, true 였으면 unlike 요청
+            await onToggleLike?.(prevLiked);
+            busy = false;
+            renderLikeUI();
+        } catch (e) {
+            // 실패하면 되돌림
+            liked = prevLiked;
+            likeCount = prevCount;
+            busy = false;
+            renderLikeUI();
+            alert('좋아요 처리 중 오류가 발생했습니다: ' + (e?.message || ''));
+        }
+    }
+
+    if (likeBtnEl) {
+        likeBtnEl.addEventListener('click', handleToggleLike);
+        likeBtnEl.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Enter' || evt.key === ' ') {
+                evt.preventDefault();
+                handleToggleLike();
+            }
+        });
+    }
+
+    // 댓글 목록 (있다면 렌더)
     const commentsWrap = node.querySelector('.comments');
     if (commentsWrap && Array.isArray(post.comments)) {
         for (const c of post.comments) {
@@ -186,13 +232,16 @@ export async function createPostView(post, opts = {}) {
         }
     }
 
-    // 댓글 작성
+    // 댓글 작성 (버그 수정: text -> textarea.value.trim())
     const commentBtn = node.querySelector('[data-action="comment"]');
     if (commentBtn) {
         commentBtn.addEventListener('click', async () => {
             const textarea = node.querySelector('#comment');
-            const text = (textarea?.value || '').trim();
-            if (!text) return alert('댓글을 입력하세요.');
+            const text = textarea?.value?.trim() ?? '';
+            if (!text) {
+                alert('댓글 내용을 입력해주세요!');
+                return;
+            }
             try {
                 await onSubmitComment?.(post, text);
                 if (textarea) textarea.value = '';

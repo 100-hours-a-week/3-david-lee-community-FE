@@ -25,7 +25,6 @@
       <div class="toolbar">
         <button class="btn btn--ghost btn--small" data-action="edit">수정</button>
         <button class="btn btn--ghost btn--small" data-action="delete">삭제</button>
-        <button class="btn btn--ghost btn--small" data-action="like">좋아요</button>
       </div>
     </div>
 
@@ -40,10 +39,17 @@
 
     <!-- 통계 -->
     <div class="stats">
-      <div class="stat">
-        <div class="num likeCount">0</div>
-        <div class="label">좋아요수</div>
-      </div>
+      <!-- 통계 첫 칸을 버튼으로 변경 -->
+      <button class="stat--like" type="button"
+              data-action="toggle-like" aria-pressed="false">
+        <div class="top">
+          <span class="heart"></span>
+          <span class="likeCount">12</span>
+        </div>
+        <div class="label">좋아요 수</div>
+      </button>
+
+
       <div class="stat">
         <div class="num viewCount">0</div>
         <div class="label">조회수</div>

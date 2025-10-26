@@ -23,18 +23,20 @@
             <div class="field">
                 <label class="label required" for="e-title">제목</label>
                 <input class="input" id="e-title" name="title" type="text" maxlength="26" value="제목 1" required>
+                <small id="titleCount" class="count">0 / 26</small>
             </div>
 
             <div class="field">
                 <label class="label required" for="e-content">내용</label>
-                <textarea class="textarea" id="e-content" name="content"  placeholder="수정할 내용을 입력해주세요." required></textarea>
+                <textarea class="textarea" id="e-content" name="content"   maxlength="1000" placeholder="수정할 내용을 입력해주세요." required></textarea>
+                <small id="contentCount" class="count">0 / 1000</small>
             </div>
 
             <div class="field">
                 <label class="label" for="e-image">이미지</label>
                 <div class="filebox">
                     <label for="e-image" class="fake">파일 선택</label>
-                    <input id="e-image" name="image" type="file" accept="image/*">
+                    <input id="e-image" name="image" type="file" accept="image/*" multiple>
                 </div>
             </div>
 

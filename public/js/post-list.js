@@ -1,4 +1,4 @@
-/// API
+// ───────────── API ─────────────
 import { getPosts } from '../api/post.js';
 
 /// 컴포넌트

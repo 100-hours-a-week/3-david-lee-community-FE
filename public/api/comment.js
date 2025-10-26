@@ -36,17 +36,17 @@ export async function getComments(postId) {
 }
 
 /// 댓글 수정
-export async function updateComment(commentId) {
+export async function updateComment(commentId, content) {
 
-    /// 인증 요청
-    const res = await authFetch(`${BASE_URL}/comment/${commentId}`, {
-        method: 'PUT'
+    const res = await authFetch(`${BASE_URL}/${encodeURIComponent(commentId)}`, {
+        method: 'PATCH',
+        body: JSON.stringify(content),
     });
-
     if (!res.ok) {
         throw new Error(`댓글 수정 실패 (${res.status})`);
     }
 
+    return await res.json();
 }
 
 /// 댓글 삭제
