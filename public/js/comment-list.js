@@ -6,25 +6,16 @@ import { getComments } from "../api/comment.js";
 // =================
 //  컴포넌트
 // =================
-import { renderCommentThreads } from "../components/commentCard.js";
 import { showToast } from "../pages/common/toast.js";
 import { handleDelete, handleEdit, handleReply } from "./comment-edit.js";
 
 // =================
 //  옵션
 // =================
-const COOLDOWN_MS = 350;    // 연속 트리거 방지(옵션)
+const COOLDOWN_MS = 350;    // 연속 트리거 방지
 
 // 포스트별 상태: { loading, ended, cursor, listEl, sentinel, postId, observer, lastFiredAt }
 const stateMap = new Map();
-
-// 서버 응답(content: [{root:{id,..}, children:[]}...])에서 다음 커서(lastId) 추출
-function extractCursorFromThreads(threads) {
-    if (!Array.isArray(threads) || threads.length === 0) return null;
-    // 서버가 최신 → 오래된 순으로 내려주므로, 마지막 요소의 root.id를 커서로 사용
-    const last = threads[threads.length - 1];
-    return last?.root?.id ?? null;
-}
 
 // 댓글 렌더 콜백 공통
 function handlers(postId) {
@@ -42,27 +33,124 @@ function detectObserverRoot(listEl) {
     return isScrollable ? listEl : null;
 }
 
+// 다음 커서: 이번 페이지의 root.id 중 "최솟값"(오름/내림 정렬 모두 안전)
+function nextCursorFrom(threads, currentCursor) {
+    if (!Array.isArray(threads) || threads.length === 0) return null;
+    const ids = threads.map(t => t?.root?.id).filter(id => typeof id === 'number');
+    if (ids.length === 0) return null;
+    let candidate = Math.min(...ids);
+    if (typeof currentCursor === 'number') {
+        const smaller = ids.filter(id => id < currentCursor);
+        if (smaller.length > 0) candidate = Math.min(...smaller);
+    }
+    return candidate;
+}
+
+// ====== 핵심: 덧붙이기 렌더러 ======
+function appendThreads(threads, listEl, h) {
+    const frag = document.createDocumentFragment();
+
+    for (const t of threads) {
+        const r = t.root;
+        if (!r) continue;
+
+        // thread 컨테이너
+        const thread = document.createElement('div');
+        thread.className = 'comment-thread';
+        thread.dataset.id = r.id;
+
+        // 루트 댓글
+        const root = document.createElement('div');
+        root.className = 'comment comment--root';
+        root.innerHTML = `
+      <div class="comment__header">
+        <img class="comment__avatar" src="${r.user?.imageUrl || ''}" alt="">
+        <b class="comment__nickname">${r.user?.nickname || '익명'}</b>
+        <span class="comment__time">${r.createdAt || ''}</span>
+      </div>
+      <div class="comment__body">${escapeHTML(r.content || '')}</div>
+      <div class="comment__actions">
+        <button class="btn-reply">답글</button>
+        ${r.editable ? '<button class="btn-edit">수정</button><button class="btn-del">삭제</button>' : ''}
+      </div>
+    `;
+
+        // 액션 바인딩
+        const ctx = { threadEl: thread, rootEl: root, commentId: r.id };
+        root.querySelector('.btn-reply')?.addEventListener('click', (e) => h.onCommentReply(r, ctx, e));
+        if (r.editable) {
+            root.querySelector('.btn-edit')?.addEventListener('click', (e) => h.onCommentEdit(r, ctx, e));
+            root.querySelector('.btn-del')?.addEventListener('click', (e) => h.onCommentDelete(r, ctx, e));
+        }
+
+        thread.appendChild(root);
+
+        // 자식 댓글들
+        const children = Array.isArray(t.children) ? t.children : [];
+        if (children.length > 0) {
+            const ul = document.createElement('div');
+            ul.className = 'comment-children';
+            for (const c of children) {
+                const child = document.createElement('div');
+                child.className = 'comment comment--child';
+                child.dataset.id = c.id;
+                child.innerHTML = `
+          <div class="comment__header">
+            <img class="comment__avatar" src="${c.user?.imageUrl || ''}" alt="">
+            <b class="comment__nickname">${c.user?.nickname || '익명'}</b>
+            <span class="comment__time">${c.createdAt || ''}</span>
+          </div>
+          <div class="comment__body">${escapeHTML(c.content || '')}</div>
+          <div class="comment__actions">
+            ${c.editable ? '<button class="btn-edit">수정</button><button class="btn-del">삭제</button>' : ''}
+          </div>
+        `;
+                const cctx = { threadEl: thread, rootEl: child, commentId: c.id, parentId: r.id };
+                if (c.editable) {
+                    child.querySelector('.btn-edit')?.addEventListener('click', (e) => h.onCommentEdit(c, cctx, e));
+                    child.querySelector('.btn-del')?.addEventListener('click', (e) => h.onCommentDelete(c, cctx, e));
+                }
+                ul.appendChild(child);
+            }
+            thread.appendChild(ul);
+        }
+
+        frag.appendChild(thread);
+    }
+
+    listEl.appendChild(frag);
+}
+
+// 간단한 XSS 방지용 escape
+function escapeHTML(s) {
+    return String(s)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+}
+
 // 옵저버 세팅
 function setupObserver(st) {
     if (st.ended || st.observer) return;
 
     const rootEl = detectObserverRoot(st.listEl);
-
     st.lastFiredAt = 0;
+
     st.observer = new IntersectionObserver((entries) => {
         const e = entries[0];
         if (!e.isIntersecting) return;
 
-        // 쿨타임으로 연속 호출 방지
         const now = Date.now();
         if (now - st.lastFiredAt < COOLDOWN_MS) return;
         st.lastFiredAt = now;
 
         void loadMore(st);
     }, {
-        root: rootEl,     // 내부 스크롤 박스면 그 요소, 아니면 null(윈도우)
-        rootMargin: "0px",
-        threshold: 1.0,   // sentinel이 완전히 보일 때만
+        root: rootEl,
+        rootMargin: '0px',
+        threshold: 1.0,
     });
 
     st.observer.observe(st.sentinel);
@@ -74,28 +162,24 @@ async function loadMore(st) {
     st.loading = true;
 
     try {
-        // 서버는 lastId 쿼리를 받음: (없으면 첫 페이지)
         const page = await getComments(st.postId, st.cursor ?? undefined);
         const threads = page?.data?.content ?? [];
 
-        // 비었으면 끝
         if (threads.length === 0) {
-            st.ended = true;
-            st.observer?.disconnect();
+            st.ended = !Boolean(page?.data?.hasNext);
+            if (st.ended) st.observer?.disconnect();
             return;
         }
 
         // 덧붙이기
-        await renderCommentThreads(threads, st.listEl, handlers(st.postId));
-        st.listEl.appendChild(st.sentinel); // sentinel을 항상 맨 끝으로
+        appendThreads(threads, st.listEl, handlers(st.postId));
+        // sentinel을 항상 맨 끝으로
+        st.listEl.appendChild(st.sentinel);
 
-        // 서버가 hasNext만 줌 → 그대로 신뢰
-        const hasNext = !!page?.data?.hasNext;
-        st.ended = !hasNext;
-
-        // 다음 커서: 마지막 스레드의 root.id
-        st.cursor = extractCursorFromThreads(threads);
-
+        // 커서/종료 갱신
+        const prevCursor = st.cursor;
+        st.cursor = nextCursorFrom(threads, prevCursor);
+        st.ended = !Boolean(page?.data?.hasNext);
         if (st.ended) st.observer?.disconnect();
     } catch (err) {
         console.error(err);
@@ -116,23 +200,23 @@ export async function loadComments(postId, root) {
         stateMap.delete(postId);
     }
 
-    const list = root.querySelector("#commentList");
+    const list = root.querySelector('#commentList');
     list.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
 
     // sentinel 준비
-    let sentinel = list.querySelector("#commentSentinel");
+    let sentinel = list.querySelector('#commentSentinel');
     if (!sentinel) {
-        sentinel = document.createElement("div");
-        sentinel.id = "commentSentinel";
-        sentinel.style.height = "1px";
-        sentinel.style.marginTop = "8px";
+        sentinel = document.createElement('div');
+        sentinel.id = 'commentSentinel';
+        sentinel.style.height = '1px';
+        sentinel.style.marginTop = '8px';
         list.appendChild(sentinel);
     }
 
     const st = {
         loading: false,
         ended: false,
-        cursor: null, // 첫 페이지 커서 없음
+        cursor: null,
         listEl: list,
         sentinel,
         postId,
@@ -142,20 +226,17 @@ export async function loadComments(postId, root) {
     stateMap.set(postId, st);
 
     try {
-        // 첫 페이지
         const page = await getComments(postId);
         const threads = page?.data?.content ?? [];
 
-        list.innerHTML = "";
-        await renderCommentThreads(threads, list, handlers(postId));
+        // 초기엔 비우고 → append
+        list.innerHTML = '';
+        appendThreads(threads, list, handlers(postId));
         list.appendChild(sentinel);
 
-        // hasNext 그대로 사용
-        const hasNext = !!page?.data?.hasNext;
-        st.ended = !hasNext;
-
-        // 다음 커서: 마지막 스레드의 root.id
-        st.cursor = extractCursorFromThreads(threads);
+        // 커서/종료
+        st.cursor = nextCursorFrom(threads, null);
+        st.ended = !Boolean(page?.data?.hasNext);
 
         // 옵저버 시작
         setupObserver(st);
