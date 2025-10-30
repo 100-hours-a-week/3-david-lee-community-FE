@@ -20,26 +20,36 @@
 
     <section class="panel">
         <form id="editForm" class="form">
+            <!-- 제목 -->
+
             <div class="field">
                 <label class="label required" for="e-title">제목</label>
-                <input class="input" id="e-title" name="title" type="text" maxlength="26" value="제목 1" required>
+                <input class="input" id="e-title" name="title" type="text" maxlength="26"
+                       placeholder="수정할 제목을 입력해주세요. (최대 26글자)" required>
                 <small id="titleCount" class="count">0 / 26</small>
             </div>
 
+            <!-- 내용 -->
             <div class="field">
                 <label class="label required" for="e-content">내용</label>
-                <textarea class="textarea" id="e-content" name="content"   maxlength="1000" placeholder="수정할 내용을 입력해주세요." required></textarea>
+                <textarea class="textarea" id="e-content" name="content"
+                          maxlength="1000" placeholder="수정할 내용을 입력해주세요." required></textarea>
                 <small id="contentCount" class="count">0 / 1000</small>
             </div>
 
+            <!-- 이미지 -->
             <div class="field">
                 <label class="label" for="e-image">이미지</label>
                 <div class="filebox">
                     <label for="e-image" class="fake">파일 선택</label>
                     <input id="e-image" name="image" type="file" accept="image/*" multiple>
                 </div>
+
+                <!-- 이미지 썸네일 영역-->
+                <div id="imageList" class="image-list"></div>
             </div>
 
+            <!-- 수정 버튼 -->
             <div class="actions">
                 <button type="submit" class="btn btn--primary">수정하기</button>
             </div>
