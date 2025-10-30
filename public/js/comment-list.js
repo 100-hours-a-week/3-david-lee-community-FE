@@ -13,7 +13,7 @@ import { handleDelete, handleEdit, handleReply } from "./comment-edit.js";
 // =================
 //  옵션
 // =================
-const COOLDOWN_MS = 350; // 옵저버 연속 트리거 방지
+const COOLDOWN_MS = 5; // 옵저버 연속 트리거 방지
 const stateMap = new Map(); // 포스트별 상태 저장
 
 // ---------- 유틸 ----------
