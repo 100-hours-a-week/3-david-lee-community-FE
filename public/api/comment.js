@@ -22,17 +22,14 @@ export async function saveComments(commentData) {
 
 /// 댓글 목록 조회
 export async function getComments(postId, lastId) {
+    const params = new URLSearchParams();
+    params.set('postId', postId);
+    params.set('offSet', 10); // 서버가 offSet=10 사용 중이므로 그대로
+    if (lastId != null && lastId !== '') params.set('lastId', lastId); // undefined 방지
 
-    /// 인증 요청
-    const res = await authFetch(`${BASE_URL}?lastId=${encodeURIComponent(lastId)}&offSet=10&postId=${encodeURIComponent(postId)}`, {
-        method: 'GET',
-    });
-
-    if (!res.ok) {
-        throw new Error(`댓글 목록 조회 실패 (${res.status})`);
-    }
+    const res = await authFetch(`${BASE_URL}?${params.toString()}`, { method: 'GET' });
+    if (!res.ok) throw new Error(`댓글 목록 조회 실패 (${res.status})`);
     return await res.json();
-
 }
 
 /// 댓글 수정
