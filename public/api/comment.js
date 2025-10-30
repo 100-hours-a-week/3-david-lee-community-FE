@@ -21,10 +21,10 @@ export async function saveComments(commentData) {
 }
 
 /// 댓글 목록 조회
-export async function getComments(postId) {
+export async function getComments(postId, lastId) {
 
     /// 인증 요청
-    const res = await authFetch(`${BASE_URL}?lastId=&offSet=10&postId=${encodeURIComponent(postId)}`, {
+    const res = await authFetch(`${BASE_URL}?lastId=${encodeURIComponent(lastId)}&offSet=10&postId=${encodeURIComponent(postId)}`, {
         method: 'GET',
     });
 
