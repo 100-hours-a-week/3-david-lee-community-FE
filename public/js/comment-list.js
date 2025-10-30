@@ -6,18 +6,17 @@ import { getComments } from "../api/comment.js";
 // =================
 //  컴포넌트
 // =================
+import { renderCommentThreads } from "../components/commentCard.js";
 import { showToast } from "../pages/common/toast.js";
 import { handleDelete, handleEdit, handleReply } from "./comment-edit.js";
 
 // =================
 //  옵션
 // =================
-const COOLDOWN_MS = 350;    // 연속 트리거 방지
+const COOLDOWN_MS = 350; // 옵저버 연속 트리거 방지
+const stateMap = new Map(); // 포스트별 상태 저장
 
-// 포스트별 상태: { loading, ended, cursor, listEl, sentinel, postId, observer, lastFiredAt }
-const stateMap = new Map();
-
-// 댓글 렌더 콜백 공통
+// ---------- 유틸 ----------
 function handlers(postId) {
     return {
         onCommentReply:  (c, ctx, e) => handleReply(c, ctx, postId, e),
@@ -26,112 +25,33 @@ function handlers(postId) {
     };
 }
 
-// 내부 스크롤 컨테이너 감지(없으면 윈도우 스크롤)
+// 서버 응답 threads -> 다음 커서(lastId): 마지막 스레드의 root.id 사용
+function extractCursor(threads) {
+    if (!Array.isArray(threads) || threads.length === 0) return null;
+    const last = threads[threads.length - 1];
+    return last?.root?.id ?? null;
+}
+
+// 컨테이너가 내부 스크롤 박스면 root로, 아니면 윈도우
 function detectObserverRoot(listEl) {
     const st = getComputedStyle(listEl);
     const isScrollable = st.overflowY === "auto" || st.overflowY === "scroll";
     return isScrollable ? listEl : null;
 }
 
-// 다음 커서: 이번 페이지의 root.id 중 "최솟값"(오름/내림 정렬 모두 안전)
-function nextCursorFrom(threads, currentCursor) {
-    if (!Array.isArray(threads) || threads.length === 0) return null;
-    const ids = threads.map(t => t?.root?.id).filter(id => typeof id === 'number');
-    if (ids.length === 0) return null;
-    let candidate = Math.min(...ids);
-    if (typeof currentCursor === 'number') {
-        const smaller = ids.filter(id => id < currentCursor);
-        if (smaller.length > 0) candidate = Math.min(...smaller);
+// 임시 컨테이너에 렌더 → 실제 리스트로 “옮겨 붙이기(append)”
+async function safeAppendWithRenderer(threads, listEl, postId) {
+    if (!threads || threads.length === 0) return;
+    const temp = document.createElement("div");
+    // renderCommentThreads가 컨테이너를 비워도 temp만 영향을 받음
+    await renderCommentThreads(threads, temp, handlers(postId));
+    // 이벤트 리스너가 유지된 상태로 자식들을 실제 리스트에 이동
+    while (temp.firstChild) {
+        listEl.appendChild(temp.firstChild);
     }
-    return candidate;
 }
 
-// ====== 핵심: 덧붙이기 렌더러 ======
-function appendThreads(threads, listEl, h) {
-    const frag = document.createDocumentFragment();
-
-    for (const t of threads) {
-        const r = t.root;
-        if (!r) continue;
-
-        // thread 컨테이너
-        const thread = document.createElement('div');
-        thread.className = 'comment-thread';
-        thread.dataset.id = r.id;
-
-        // 루트 댓글
-        const root = document.createElement('div');
-        root.className = 'comment comment--root';
-        root.innerHTML = `
-      <div class="comment__header">
-        <img class="comment__avatar" src="${r.user?.imageUrl || ''}" alt="">
-        <b class="comment__nickname">${r.user?.nickname || '익명'}</b>
-        <span class="comment__time">${r.createdAt || ''}</span>
-      </div>
-      <div class="comment__body">${escapeHTML(r.content || '')}</div>
-      <div class="comment__actions">
-        <button class="btn-reply">답글</button>
-        ${r.editable ? '<button class="btn-edit">수정</button><button class="btn-del">삭제</button>' : ''}
-      </div>
-    `;
-
-        // 액션 바인딩
-        const ctx = { threadEl: thread, rootEl: root, commentId: r.id };
-        root.querySelector('.btn-reply')?.addEventListener('click', (e) => h.onCommentReply(r, ctx, e));
-        if (r.editable) {
-            root.querySelector('.btn-edit')?.addEventListener('click', (e) => h.onCommentEdit(r, ctx, e));
-            root.querySelector('.btn-del')?.addEventListener('click', (e) => h.onCommentDelete(r, ctx, e));
-        }
-
-        thread.appendChild(root);
-
-        // 자식 댓글들
-        const children = Array.isArray(t.children) ? t.children : [];
-        if (children.length > 0) {
-            const ul = document.createElement('div');
-            ul.className = 'comment-children';
-            for (const c of children) {
-                const child = document.createElement('div');
-                child.className = 'comment comment--child';
-                child.dataset.id = c.id;
-                child.innerHTML = `
-          <div class="comment__header">
-            <img class="comment__avatar" src="${c.user?.imageUrl || ''}" alt="">
-            <b class="comment__nickname">${c.user?.nickname || '익명'}</b>
-            <span class="comment__time">${c.createdAt || ''}</span>
-          </div>
-          <div class="comment__body">${escapeHTML(c.content || '')}</div>
-          <div class="comment__actions">
-            ${c.editable ? '<button class="btn-edit">수정</button><button class="btn-del">삭제</button>' : ''}
-          </div>
-        `;
-                const cctx = { threadEl: thread, rootEl: child, commentId: c.id, parentId: r.id };
-                if (c.editable) {
-                    child.querySelector('.btn-edit')?.addEventListener('click', (e) => h.onCommentEdit(c, cctx, e));
-                    child.querySelector('.btn-del')?.addEventListener('click', (e) => h.onCommentDelete(c, cctx, e));
-                }
-                ul.appendChild(child);
-            }
-            thread.appendChild(ul);
-        }
-
-        frag.appendChild(thread);
-    }
-
-    listEl.appendChild(frag);
-}
-
-// 간단한 XSS 방지용 escape
-function escapeHTML(s) {
-    return String(s)
-        .replaceAll('&', '&amp;')
-        .replaceAll('<', '&lt;')
-        .replaceAll('>', '&gt;')
-        .replaceAll('"', '&quot;')
-        .replaceAll("'", '&#39;');
-}
-
-// 옵저버 세팅
+// ---------- 옵저버 ----------
 function setupObserver(st) {
     if (st.ended || st.observer) return;
 
@@ -149,14 +69,14 @@ function setupObserver(st) {
         void loadMore(st);
     }, {
         root: rootEl,
-        rootMargin: '0px',
-        threshold: 1.0,
+        rootMargin: "0px",
+        threshold: 1.0, // sentinel이 완전히 보일 때만
     });
 
     st.observer.observe(st.sentinel);
 }
 
-// 다음 페이지 로드
+// ---------- 다음 페이지 로드 ----------
 async function loadMore(st) {
     if (st.loading || st.ended) return;
     st.loading = true;
@@ -171,14 +91,10 @@ async function loadMore(st) {
             return;
         }
 
-        // 덧붙이기
-        appendThreads(threads, st.listEl, handlers(st.postId));
-        // sentinel을 항상 맨 끝으로
-        st.listEl.appendChild(st.sentinel);
+        await safeAppendWithRenderer(threads, st.listEl, st.postId);
+        st.listEl.appendChild(st.sentinel); // sentinel을 항상 맨 끝으로
 
-        // 커서/종료 갱신
-        const prevCursor = st.cursor;
-        st.cursor = nextCursorFrom(threads, prevCursor);
+        st.cursor = extractCursor(threads);
         st.ended = !Boolean(page?.data?.hasNext);
         if (st.ended) st.observer?.disconnect();
     } catch (err) {
@@ -190,26 +106,27 @@ async function loadMore(st) {
 }
 
 // =================
-//  초기 로드
+//  초기 로드 (첫 페이지 + 무한스크롤 시작)
 // =================
 export async function loadComments(postId, root) {
-    // 중복 초기화 방지
+    // 기존 상태 정리
     const prev = stateMap.get(postId);
     if (prev) {
         prev.observer?.disconnect();
         stateMap.delete(postId);
     }
 
-    const list = root.querySelector('#commentList');
+    const list = root.querySelector("#commentList");
     list.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
 
-    // sentinel 준비
-    let sentinel = list.querySelector('#commentSentinel');
+    // sentinel 준비(보이지 않지만 공간 차지)
+    let sentinel = list.querySelector("#commentSentinel");
     if (!sentinel) {
-        sentinel = document.createElement('div');
-        sentinel.id = 'commentSentinel';
-        sentinel.style.height = '1px';
-        sentinel.style.marginTop = '8px';
+        sentinel = document.createElement("div");
+        sentinel.id = "commentSentinel";
+        sentinel.style.height = "1px";
+        sentinel.style.marginTop = "8px";
+        sentinel.style.visibility = "hidden";
         list.appendChild(sentinel);
     }
 
@@ -226,19 +143,16 @@ export async function loadComments(postId, root) {
     stateMap.set(postId, st);
 
     try {
-        const page = await getComments(postId);
-        const threads = page?.data?.content ?? [];
+        const res = await getComments(postId);
+        const threads = res?.data?.content ?? [];
 
-        // 초기엔 비우고 → append
-        list.innerHTML = '';
-        appendThreads(threads, list, handlers(postId));
+        list.innerHTML = ""; // 스켈레톤 제거
+        await safeAppendWithRenderer(threads, list, postId);
         list.appendChild(sentinel);
 
-        // 커서/종료
-        st.cursor = nextCursorFrom(threads, null);
-        st.ended = !Boolean(page?.data?.hasNext);
+        st.cursor = extractCursor(threads);
+        st.ended = !Boolean(res?.data?.hasNext);
 
-        // 옵저버 시작
         setupObserver(st);
     } catch (err) {
         console.error(err);
