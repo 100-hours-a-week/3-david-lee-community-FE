@@ -98,6 +98,9 @@ h1.page, h1.title{
     font-weight:600; transition:.15s ease;
 }
 
+/* 버튼 위치 */
+.actions{display:flex;justify-content:center;margin-top:4px}
+
 /* Primary */
 .btn--primary {
     background:var(--btn-primary);
@@ -181,6 +184,7 @@ h1.page, h1.title{
 .btn--inside:active {
     background-color: var(--btn-primary-active);
 }
+
 
 /* 7) Forms */
 .form{ display:grid; gap:14px; text-align:left }
