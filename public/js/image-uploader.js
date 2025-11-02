@@ -10,7 +10,6 @@ function moveItem(arr, from, to) {
 export function createImageGalleryUploader({
                                                listEl,          // 필수
                                                fileInputEl,     // 선택
-                                               addMoreBtnEl,    // 선택
                                                maxSizeMB = 5,
                                                onError  = (msg) => alert(msg),
                                                onToast  = async (msg) => showToast(msg),
@@ -103,14 +102,14 @@ export function createImageGalleryUploader({
         return files;
     }
 
-    // ✅ 업로드 상태 노출(원하면 밖에서 읽을 수 있게)
+    // 업로드 상태 노출(원하면 밖에서 읽을 수 있게)
     let isUploading = false;
 
     async function upload(filesLike) {
         const files = filterValid(filesLike);
         if (files.length === 0) return [];
 
-        // ✅ 로딩 시작
+        // 로딩 시작
         isUploading = true;
         onUploadStart();
 
@@ -168,10 +167,6 @@ export function createImageGalleryUploader({
                 await upload(e.currentTarget.files || []);
             } catch (_) {}
         });
-    }
-
-    if (addMoreBtnEl && fileInputEl) {
-        addMoreBtnEl.addEventListener("click", () => fileInputEl.click());
     }
 
     return {

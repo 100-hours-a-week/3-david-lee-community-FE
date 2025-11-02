@@ -1,13 +1,11 @@
 // ───────────── API ─────────────
 import {updatePassword} from "../api/user.js";
-import {showToast} from "../pages/common/toast.js";
 
 // ───────── 내부 설정 ─────────
 const form  = document.getElementById('pwForm');
 const oldEl = document.getElementById('pw');
 const pwEl  = document.getElementById('pw1');
 const pw2El = document.getElementById('pw2');
-const submitBtn = document.getElementById('submitBtn');
 
 const PW_MIN = 8, PW_MAX = 20;
 
