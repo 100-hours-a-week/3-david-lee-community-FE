@@ -113,11 +113,12 @@ h1.page, h1.title{
     transform:translateY(1px);
 }
 .btn--primary:disabled {
-    background:#cdb8ff;
-    color:#fff;
-    border-color:transparent;
-    box-shadow:none;
-    transform:none;
+    background: var(--border);
+    color: var(--muted);
+    border-color: var(--border);
+    box-shadow: none;
+    transform: none;
+    pointer-events: none; /* 클릭 완전히 차단 */
 }
 
 /* Ghost */
