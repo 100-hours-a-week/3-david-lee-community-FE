@@ -197,6 +197,33 @@ h1.page, h1.title{
 /* 7) Forms */
 .form{ display:grid; gap:14px; text-align:left }
 .field{ display:grid; gap:6px }
+
+/* 유효한 상태 (성공) */
+.field.is-valid .note {
+    color: #2e7d32;
+}
+
+/* 유효하지 않은 상태 (에러) */
+.field.is-invalid .note {
+    color: #d32f2f;
+}
+
+/* 인풋 테두리 강조 */
+.field.is-valid input,
+.field.is-valid textarea {
+    border-color: #2e7d32;
+}
+
+.field.is-invalid input,
+.field.is-invalid textarea {
+    border-color: #d32f2f;
+}
+
+/* 전환 부드럽게 */
+.field input,
+.field textarea {
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
 .label{ font-weight:700 }
 .required::after{ content:"*"; margin-left:4px; color:#c00 }
 

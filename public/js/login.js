@@ -1,100 +1,56 @@
-import { login } from '../api/auth.js';
-import {showToast} from "../pages/common/toast.js";
+// ───────────── API ─────────────
+import { login } from "../api/auth.js";
 
-// ───────────── 헬퍼 ─────────────
-const $ = (sel) => document.querySelector(sel);
+// ───────────── 컴포넌트 ─────────────
+import { showToast } from "../pages/common/toast.js";
+import {$, setFieldState, verifyEmailField, verifyPasswordLengthField, createFormEnabler} from "../utils/validators.js";
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PW_MIN = 8, PW_MAX = 20;
-
-function setFieldState(inputEl, { ok, msg }) {
-    const field = inputEl.closest('.field') || inputEl.parentElement;
-    let hint = field.querySelector('.note');
-    if (!hint) {
-        hint = document.createElement('div');
-        hint.className = 'note';
-        hint.setAttribute('aria-live', 'polite');
-        field.appendChild(hint);
-    }
-    hint.textContent = msg || '';
-    field.classList.toggle('is-valid', !!ok);
-    field.classList.toggle('is-invalid', ok === false);
-}
-
-// ───────────── 엘리먼트 ─────────────
-const form = $('#loginForm');
-const emailEl = $('#email');
-const pwEl = $('#password');
-const submitBtn = form?.querySelector('button[type="submit"]');
+// ───────────── 폼 ─────────────
+const form = $("#loginForm");
+const emailEl = $("#email");
+const pwEl = $("#password");
+const submit = form?.querySelector('button[type="submit"]');
 
 // ───────────── 유효성 검사 ─────────────
-function verifyEmail() {
-    const v = emailEl.value.trim();
-    if (!v) {
-        setFieldState(emailEl, { ok: false, msg: '이메일을 입력하세요.' });
-        return false;
-    }
-    if (!EMAIL_RE.test(v)) {
-        setFieldState(emailEl, { ok: false, msg: '이메일 형식이 올바르지 않습니다.' });
-        return false;
-    }
-    setFieldState(emailEl, { ok: true, msg: '' });
-    return true;
-}
+const refresh = createFormEnabler(submit, () => {
+    const emailOk = verifyEmailField(emailEl);
+    const pwOk = verifyPasswordLengthField(pwEl);
+    return [emailOk, pwOk];
+});
 
-function verifyPassword() {
-    const len = pwEl.value.length;
-    if (len < PW_MIN || len > PW_MAX) {
-        setFieldState(pwEl, { ok: false, msg: `비밀번호는 ${PW_MIN}~${PW_MAX}자로 입력하세요.` });
-        return false;
-    }
-    setFieldState(pwEl, { ok: true, msg: '' });
-    return true;
-}
+emailEl?.addEventListener("input", refresh);
+pwEl?.addEventListener("input", refresh);
+submit && (submit.disabled = true);
 
-function refreshFormValidity() {
-    const ok = verifyEmail() & verifyPassword(); // 둘 다 실행되도록 단항 & 사용
-    if (submitBtn) submitBtn.disabled = !ok;
-}
-
-// ───────────── 이벤트 바인딩 ─────────────
-emailEl?.addEventListener('input', refreshFormValidity);
-pwEl?.addEventListener('input', refreshFormValidity);
-submitBtn && (submitBtn.disabled = true);
-
-// ───────────── 제출 ─────────────
-form?.addEventListener('submit', async (e) => {
+form?.addEventListener("submit", async (e) => {
     e.preventDefault();
-    refreshFormValidity();
-    if (submitBtn?.disabled) return;
+    if (!refresh()) return;
 
-    const payload = {
-        email: emailEl.value.trim(),
-        password: pwEl.value,
-    };
+    const payload = { email: emailEl.value.trim(), password: pwEl.value };
 
-    // 로딩 상태(중복 클릭 방지)
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = '로그인 중...';
+    const original = submit.textContent;
+    submit.disabled = true;
+    submit.textContent = "로그인 중...";
 
     try {
         await login(payload);
-        window.location.href = '/pages/html/post-list.html?toast=login';
+        // 다음 페이지에서 토스트 띄우기
+        location.href = "/pages/html/post-list.html?toast=login";
     } catch (err) {
-        // 서버가 주는 메시지를 우선 사용
-        const msg = err?.message || '로그인 중 오류가 발생했습니다.';
-
-        // *************** 변경된 부분: 오류 메시지를 경고창으로 표시 ***************
+        const msg = err?.message || "로그인 중 오류가 발생했습니다.";
         await showToast(msg);
-
-        // 필드에 친절히 안내
         setFieldState(pwEl, { ok: false, msg });
-
-        // 이메일 형식이 맞는지 다시 한번 표시(사용자 힌트)
-        verifyEmail();
+        verifyEmailField(emailEl); // 힌트 유지
     } finally {
-        submitBtn.textContent = originalText;
-        refreshFormValidity(); // 값 유지 시 다시 활성화될 수 있음
+        submit.textContent = original;
+        refresh();
     }
 });
+
+const params = new URLSearchParams(location.search);
+if (params.get('toast') === 'logout') {
+    showToast('로그아웃 되었습니다.');
+}
+if (params.get('toast') === 'signup') {
+    showToast('회원가입 되었습니다.');
+}
