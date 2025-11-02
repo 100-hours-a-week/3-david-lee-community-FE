@@ -45,6 +45,8 @@ async function loadMore() {
         const res = await getPosts(cursor, PAGE_SIZE, 2);
         const content = res?.data?.content ?? [];
 
+        content.sort((a, b) => b.id - a.id);
+
         // 첫 페이지에서 비어있으면 빈 상태 표시
         if (cursor === '' && content.length === 0) {
             listEl.innerHTML = `<p class="empty">게시글이 없습니다.</p>`;
@@ -67,6 +69,7 @@ async function loadMore() {
                 likes: p.likeCount,
                 comments: p.commentCount,
                 views: p.viewCount,
+                thumbnailUrl: p.thumbnailUrl,
                 date: p.createdAt,
                 author: p.user,
             };

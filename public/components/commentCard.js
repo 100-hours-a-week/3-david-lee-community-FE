@@ -62,8 +62,6 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
     const delBtn = $toolbar.querySelector('[data-action="delete"]');
     const replyBtn = node.querySelector('[data-action="reply"]');
 
-    console.log(comment);
-
     /// 게시글 작성자와 동일하다면, 색깔을 파랗게 처리
     if (comment.writer === true) {
         $authorName.insertAdjacentHTML('beforeend', ' <span class="writer-badge">작성자</span>');
