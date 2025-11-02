@@ -13,7 +13,6 @@
               <div class="author__avatar">
                 <img alt="작성자" />
               </div>
-              <span class="author__url"></span>
               <span class="author__name"></span>
               <div class="createdAt"></div>
             </div>
@@ -32,7 +31,17 @@
 
 
     <!-- 미디어 -->
-    <div class="media" aria-label="이미지 자리"></div>
+    <div class="media">
+      <section class="post__gallery" data-gallery>
+        <div class="gallery__main" tabindex="0">
+          <img alt="" />
+          <button class="gallery__nav gallery__nav--prev" type="button" aria-label="이전 이미지">‹</button>
+          <button class="gallery__nav gallery__nav--next" type="button" aria-label="다음 이미지">›</button>
+        </div>
+        <div class="gallery__thumbs" role="list"></div>
+      </section>
+    </div>
+
 
     <!-- 본문 -->
     <article class="content"></article>
@@ -44,7 +53,7 @@
               data-action="toggle-like" aria-pressed="false">
         <div class="top">
           <span class="heart"></span>
-          <span class="likeCount">12</span>
+          <span class="likeCount">0</span>
         </div>
         <div class="label">좋아요 수</div>
       </button>
