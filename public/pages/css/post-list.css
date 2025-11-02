@@ -69,18 +69,6 @@
 }
 .post__tags{ color:var(--muted); font-size:12px; display:flex; gap:8px }
 
-/* 작성자(목록용 작은 아바타) */
-.author{ display:flex; align-items:center; gap:10px }
-.author__avatar{
-    width:28px; height:28px; border-radius:50%;
-    overflow:hidden; background:#eee; flex:none;
-}
-.author__avatar img{ width:100%; height:100%; object-fit:cover; display:block }
-.author__name{ font-weight:600; font-size:13px }
-.author__url{ display:inline-flex; align-items:center; gap:6px } /* 필요 시 color:var(--muted) 추가 */
-
-
-
 /* 모바일 최적화 */
 @media (max-width:480px){
     .post-row{ grid-template-columns:140px 1fr; gap:10px }
