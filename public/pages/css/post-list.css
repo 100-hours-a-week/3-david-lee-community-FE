@@ -1,0 +1,56 @@
+/* 헤더 영역(목록 상단) */
+.hero{
+    text-align:center;
+    margin-bottom:20px;
+}
+.hero h1{ margin:8px 0 6px; font-size:28px }
+.hero p{ margin:0; color:var(--muted) }
+
+/* 카드(목록 아이템) 컨테이너 */
+.list{
+    display:grid;
+    gap:10px;
+    margin-top:24px;
+}
+
+/* 행 레이아웃: 썸네일 왼쪽, 텍스트 오른쪽 */
+.post-row{
+    display:grid;
+    grid-template-columns:168px 1fr; /* 썸네일 고정 폭 */
+    padding: 12px 10px; /* 기존 10px 8px → 조금만 넓혀줌 */
+    gap: 28px;          /* 썸네일과 본문 사이 간격도 살짝 */
+    border-radius:10px;
+    align-items:start;
+}
+
+/* 썸네일 */
+.post__thumbnail{
+    width:168px;
+    aspect-ratio:16 / 9;
+    border-radius:8px;
+    overflow:hidden;
+    background:#e5e7eb; /* 이미지 없을 때 기본 회색 */
+    display:flex; justify-content:center; align-items:center;
+}
+
+/*  */
+.post__title{
+    font-size:16px;
+    line-height:1.35;
+    margin:0;
+    display:-webkit-box;
+    -webkit-line-clamp:2;
+    -webkit-box-orient:vertical;
+    overflow:hidden;
+}
+
+/* 메타/태그 */
+.post__meta{
+    color:var(--muted);
+    font-size:13px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.post__tags .dot{
+    width:3px; height:3px; background:#c5cad3; border-radius:50%; display:inline-block;
+}
+.post__tags{ color:var(--muted); font-size:12px; display:flex; gap:8px }

@@ -1,44 +1,4 @@
-:root{
-    --bg:#f4f5f7; --card:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
-    --primary:#9b5cff; --primary-pressed:#824bff; --ring:#e4d5ff;
-    --radius:16px; --shadow:0 10px 20px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.05);
-}
-*{box-sizing:border-box} html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--text);
-    font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
-
-/* Layout */
-.container{width:min(980px,100%);margin:24px auto 48px;padding:0 20px}
-.panel{width:min(720px,100%);margin:0 auto;background:var(--card);border:1px solid var(--border);
-    border-radius:var(--radius);box-shadow:var(--shadow);padding:22px 20px}
-h1.page{margin:6px 0 18px;text-align:center}
-
-/* Form */
-.form{display:grid;gap:16px}
-.field{display:grid;gap:6px}
-.label{font-weight:700}
-.required::after{content:"*";margin-left:4px;color:#c00}
-.input, .textarea{
-    width:100%;border:1px solid var(--border);border-radius:10px;background:#fff;outline:none;
-    padding:10px 12px;min-height:42px
-}
-.textarea{min-height:200px;resize:vertical}
-.input:focus, .textarea:focus{box-shadow:0 0 0 4px var(--ring)}
-.help{color:var(--muted);font-size:12px}
-
-.filebox{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.filebox input[type="file"]{display:none}
-.filebox .fake{height:34px;padding:0 12px;border:1px solid var(--border);border-radius:8px;background:#fff;cursor:pointer}
-.filebox .name{color:var(--muted);font-size:13px}
-
-/* Actions */
-.btn{display:inline-flex;align-items:center;justify-content:center;height:44px;padding:0 16px;
-    border-radius:10px;border:1px solid transparent;cursor:pointer;font-weight:700;transition:.15s ease}
-.btn--primary{background:var(--primary);color:#fff;box-shadow:0 6px 14px rgba(155,92,255,.25)}
-.btn--primary:active{background:var(--primary-pressed);transform:translateY(1px)}
-.actions{display:flex;justify-content:center;margin-top:4px}
-
-/* post-editor.css 예시 */
+/* 이미지 CSS */
 .image-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
@@ -65,7 +25,7 @@ h1.page{margin:6px 0 18px;text-align:center}
     background: rgba(0,0,0,0.6);
     color: #fff;
     width: 22px;
-    height: 22px;
+    height: 24px;
     line-height: 22px;
     border-radius: 50%;
     cursor: pointer;
@@ -78,7 +38,3 @@ h1.page{margin:6px 0 18px;text-align:center}
     text-overflow: ellipsis;
     overflow: hidden;
 }
-
-
-/* Responsive */
-@media (max-width:560px){ .panel{padding:18px 16px} }

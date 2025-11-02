@@ -6,7 +6,6 @@ const form  = document.getElementById('pwForm');
 const oldEl = document.getElementById('pw');
 const pwEl  = document.getElementById('pw1');
 const pw2El = document.getElementById('pw2');
-const submitBtn = document.getElementById('submitBtn');
 
 const PW_MIN = 8, PW_MAX = 20;
 
@@ -111,7 +110,6 @@ form.addEventListener('submit', async (e) => {
     try {
         await updatePassword(payload);
         submitBtn.textContent = '수정완료';
-        alert('비밀번호가 변경되었습니다.');
 
         // 민감정보 초기화 및 상태 재검증
         oldEl.value = '';
@@ -121,8 +119,8 @@ form.addEventListener('submit', async (e) => {
         verifyPassword(); // match 포함
         refreshFormValidity();
 
-        // 이동 (선택)
-        location.href = '/pages/html/account-password.html';
+        // 이동
+        location.href = '/pages/html/post-list.html?toast=password';
     } catch (err) {
         console.error(err);
         alert('비밀번호 변경 실패: ' + (err?.message || '알 수 없는 오류'));

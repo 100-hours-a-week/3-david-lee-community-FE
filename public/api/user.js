@@ -1,8 +1,9 @@
 /// 서버 요청 주소
-const BASE_URL = 'http://localhost:8080/v1/users';
+import {USER_URL} from "./config.js";
+const BASE_URL = USER_URL;
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 회원가입
 export async function signUp(userData) {

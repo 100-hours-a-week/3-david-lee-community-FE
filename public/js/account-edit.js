@@ -1,187 +1,245 @@
-// ───────────── API ─────────────
-import { getMyPage, updateMyPage, withdraw } from '../api/user.js';
-import { getUrls, confirmUrls } from "../api/image.js";
+import { checkDuplicateNickname, getMyPage, updateMyPage, withdraw } from "../api/user.js";
+import { showToast } from "../pages/common/toast.js";
+import { createImageGalleryUploader } from "./image-uploader.js";
+import { createSpinnerOverlay } from "../pages/common/spinner-overlay.js";
 
-// ───────────── 헬퍼/DOM ─────────────
-const $ = (sel) => document.querySelector(sel);
+import {
+    $,
+    debounce,
+    verifyNicknameField,
+    verifyDupAsync,
+    createFormEnabler,
+    setFieldState,
+    NICK_RE
+} from "../utils/validators.js";
 
-const emailEl = $('#email');
-const nickNameEl = $('#nickname');
-const profileAvatarEl = $('#profileAvatar');
-const changeImageBtn = $('#changeImageBtn');
+// ===== DOM =====
+const formEl          = $("#accountForm");
+const emailEl         = $("#email");
+const nickNameEl      = $("#nickname");
+const profileAvatarEl = $("#profileAvatar");
+const changeImageBtn  = $("#changeImageBtn");
+const withdrawBtn     = $("#withdrawBtn");
+const submitBtn       = formEl?.querySelector(".btn--primary");
 
-// 이미지 상태 일원화
-const imageState = {
-    changed: false,     // 업로드로 이미지가 바뀌었는지
-    imageKey: null,     // 서버가 발급한 key (서버가 key를 받는 계약이면 이걸 보냄)
-    finalUrl: null,     // 확정 후 접근 URL(서버가 URL을 받는 계약이면 이걸 보냄)
-    previewUrl: null,   // ObjectURL(미리보기용)
-    originalUrl: null,  // 최초 마이페이지의 기존 URL
-};
+let currentImageKey = null;
+let originalNickname = ""; // 서버에서 받은 "내 기존 닉네임" 저장
 
-// 미리보기 적용/정리
+// ===== 숨김 업로드 컨테이너 구성 =====
+const hiddenList = document.createElement("div");
+hiddenList.style.display = "none";
+document.body.appendChild(hiddenList);
+
+const hiddenFile = document.createElement("input");
+hiddenFile.type = "file";
+hiddenFile.accept = "image/*";
+hiddenFile.style.display = "none";
+document.body.appendChild(hiddenFile);
+
+// ===== 작동 스피너 =====
+const overlay = createSpinnerOverlay({
+    spinnerSize: 30,
+    border: 6,
+    borderColor: "#fff",
+    backdrop: "rgba(0,0,0,.45)",
+});
+
+// ===== 업로더 =====
+const uploader = createImageGalleryUploader({
+    listEl: hiddenList,
+    fileInputEl: hiddenFile,
+    maxSizeMB: 10,
+    onError: (msg) => showToast(msg),
+    onToast: (msg) => showToast(msg),
+    onUploadStart: () =>
+        overlay.show({
+            lockSelectors: ["#accountForm input", "#accountForm button", "#accountForm textarea", "#accountForm select"],
+        }),
+    onUploadEnd: () => overlay.hide(),
+});
+
+// ===== 아바타 미리보기 =====
 function setAvatarPreview(url) {
     if (!profileAvatarEl) return;
-
-    if (imageState.previewUrl?.startsWith('blob:')) {
-        URL.revokeObjectURL(imageState.previewUrl);
-    }
-    imageState.previewUrl = url || null;
-    profileAvatarEl.style.backgroundImage = url ? `url("${url}")` : '';
+    profileAvatarEl.style.backgroundImage = `url("${url}")`;
+    profileAvatarEl.style.backgroundSize = "cover";
+    profileAvatarEl.style.backgroundPosition = "center";
+    profileAvatarEl.style.backgroundRepeat = "no-repeat";
 }
 
-// ───────────── 기존 값 호출 (이미지 출력 포함) ─────────────
+// ===== 1장만 유지 & 미리보기 =====
+function keepOnlyOneAndPreview() {
+    const state = uploader.getState();
+    if (state.length === 0) {
+        currentImageKey = null;
+        return;
+    }
+    const last = state[state.length - 1];
+
+    uploader.setInitial([{ imageKey: last.key, imageUrl: last.url, order: 0 }]);
+    currentImageKey = last.key || null;
+    setAvatarPreview(last.url);
+}
+
+// ===== 닉네임 중복체크 래퍼 =====
+async function isNickDuplicated(value) {
+    const res = await checkDuplicateNickname(value);
+    return res?.data?.duplicate ?? res?.duplicate ?? res === true;
+}
+
+// ===== 제출 버튼 활성화(순수 체크만) =====
+const refreshSubmit = createFormEnabler(submitBtn, () => {
+    const v = (nickNameEl?.value || "").trim();
+    const formatOk = NICK_RE.test(v);
+    const notDup   = nickNameEl?.dataset.duplicate !== "true";
+    return [formatOk, notDup];
+});
+
+// ===== 입력/블러 시 공통 닉네임 처리 =====
+async function handleNicknameCheck() {
+    if (!nickNameEl) return;
+
+    // 형식 검증(UI 갱신 OK)
+    const ok = verifyNicknameField(nickNameEl, { re: NICK_RE });
+    if (!ok) {
+        delete nickNameEl.dataset.duplicate;
+        return refreshSubmit();
+    }
+
+    const v = nickNameEl.value.trim();
+
+    // 내 원래 닉네임과 같으면 중복검사 스킵 (사용 가능 처리)
+    if (v === originalNickname && v.length > 0) {
+        nickNameEl.dataset.duplicate = ""; // 중복 아님
+        setFieldState(nickNameEl, { ok: true, msg: "현재 사용 중인 닉네임입니다." });
+        return refreshSubmit();
+    }
+
+    // 형식 통과 & 기존과 다르면 서버 중복확인
+    await verifyDupAsync(nickNameEl, isNickDuplicated, {
+        okMsg: "사용 가능한 닉네임입니다.",
+        dupMsg: "이미 사용 중인 닉네임입니다."
+    });
+
+    refreshSubmit();
+}
+
+// ===== 닉네임 입력 핸들링 (디바운스) =====
+const onNicknameInput = debounce(handleNicknameCheck, 250);
+nickNameEl?.addEventListener("input", onNicknameInput);
+nickNameEl?.addEventListener("blur", handleNicknameCheck);
+
+// ===== 초기 데이터 로드 =====
 (async function preload() {
     try {
-        const d = await getMyPage(); // 서버에서 최신 데이터
-        const user = d.data || {};
+        const d = await getMyPage();
+        const user = d?.data || {};
 
-        emailEl.value = user.email || '';
-        nickNameEl.value = user.nickname || '';
+        if (emailEl)    emailEl.value = user.email ?? "";
+        if (nickNameEl) {
+            originalNickname = user.nickname ?? "";
+            nickNameEl.value = originalNickname;
 
-        if (user.imageUrl && profileAvatarEl) {
-            imageState.originalUrl = user.imageUrl;
-            profileAvatarEl.style.backgroundImage = `url("${user.imageUrl}")`;
+            // 형식 검사 후, 프리로드 즉시 중복 로직까지 수행
+            await handleNicknameCheck();
         }
+
+        // 서버 이미지 → 업로더 초기값 + 아바타 반영
+        if (user.imageUrl) {
+            uploader.setInitial([{ imageKey: user.imageKey, imageUrl: user.imageUrl, order: 0 }]);
+            currentImageKey = user.imageKey ?? null;
+            setAvatarPreview(user.imageUrl);
+        } else {
+            uploader.setInitial([]);
+            currentImageKey = null;
+        }
+
+        refreshSubmit();
     } catch (e) {
-        console.error(e);
-        alert(e?.message || '기존 내용을 불러오지 못했습니다.');
+        await showToast(e?.message || "기존 내용을 불러오지 못했습니다.");
     }
 })();
 
-// ────────────────────────── 파일 선택기 ──────────────────────────
-function pickImageFile() {
-    return new Promise((resolve) => {
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = () => resolve(input.files?.[0] || null);
-        input.click();
-    });
-}
+// ===== 이미지 변경 =====
+changeImageBtn?.addEventListener("click", async () => {
+    hiddenFile.value = "";
+    hiddenFile.click();
+});
 
-// ────────────────────────── Presigned URL PUT 업로드 ──────────────────────────
-async function uploadByPresignedPut(uploadUrl, file) {
-    const headers = file.type ? { 'Content-Type': file.type } : undefined;
+hiddenFile.addEventListener("change", async (e) => {
+    const files = e.currentTarget.files || [];
+    if (!files.length) return;
 
-    const res = await fetch(uploadUrl, {
-        method: 'PUT',
-        headers,
-        body: file,
-    });
-    if (!res.ok) throw new Error(`S3 업로드 실패: ${file.name}`);
-}
-
-// ────────────────────────── 이미지 변경 ──────────────────────────
-changeImageBtn?.addEventListener('click', async () => {
     try {
-        const file = await pickImageFile();
-        if (!file) return;
-
-        if (file.size > 10 * 1024 * 1024) {
-            alert('이미지 크기가 너무 큽니다. (최대 10MB)');
-            return;
-        }
-
-        // 업로드 URL/키 발급 (여러 형태 지원)
-        const issued = await getUrls([file.name]);
-
-        const first =
-            (Array.isArray(issued) && issued[0]) ||
-            issued?.data?.[0] ||
-            issued;
-
-        const uploadUrl = first.preSignedUrl;
-        const fileKey = first.key;
-
-        if (!uploadUrl || !fileKey) {
-            throw new Error('업로드 URL 또는 key가 응답에 없습니다.');
-        }
-
-        // S3 업로드
-        await uploadByPresignedPut(uploadUrl, file);
-
-        // 사용 확정(확정 후 최종 URL을 리턴하는 구현도 존재)
-        const confirmed = await confirmUrls([fileKey]);
-
-        console.log(confirmed.data[0]);
-
-        const confirmedFirst =
-            (Array.isArray(confirmed) && confirmed[0]) ||
-            confirmed?.data?.[0] ||
-            confirmed;
-
-        const confirmedUrl = confirmedFirst?.imageUrl;
-
-        // 상태 갱신
-        imageState.changed = true;
-        imageState.imageKey = fileKey;
-        imageState.finalUrl = confirmedUrl;
-
-        // 미리보기(있으면 서버 URL, 없으면 로컬 ObjectURL)
-        const preview = confirmedUrl || URL.createObjectURL(file);
-        setAvatarPreview(preview);
-    } catch (e) {
-        console.error(e);
-        alert(e?.message || '이미지 변경 중 오류가 발생했습니다.');
+        await uploader.upload(files);    // presign → PUT → confirm
+        keepOnlyOneAndPreview();         // 마지막 1장만 유지 + 미리보기
+        await showToast("프로필 이미지가 변경되었습니다.");
+    } catch (err) {
+        console.error(err);
+        await showToast(err?.message || "이미지 변경 중 오류가 발생했습니다.");
     }
 });
 
-// ───────────── 수정 로직 ─────────────
-document.getElementById('accountForm').addEventListener('submit', async (e) => {
+// ===== 제출 =====
+formEl?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const nickname = nickNameEl.value?.trim();
-    if (!nickname) {
-        alert('닉네임을 입력하세요.');
-        return;
+    // 형식 재확인(UI 갱신)
+    const formatOk = verifyNicknameField(nickNameEl, { re: NICK_RE });
+    if (!formatOk) return refreshSubmit();
+
+    // 제출 직전 최신 중복 상태 재확인
+    // (내 기존 닉네임과 동일하면 중복검사 스킵)
+    let usable = true;
+    const v = nickNameEl.value.trim();
+    if (v !== originalNickname) {
+        usable = await verifyDupAsync(nickNameEl, isNickDuplicated, {
+            okMsg: "사용 가능한 닉네임입니다.",
+            dupMsg: "이미 사용 중인 닉네임입니다."
+        });
+    } else {
+        nickNameEl.dataset.duplicate = "";
     }
-    const imageKey = imageState.imageKey;
 
-    const payload = {
-        nickname,
-        imageKey: imageKey ?? null,
-    };
+    if (!usable) {
+        setFieldState(nickNameEl, { ok: false, msg: "이미 사용 중인 닉네임입니다." });
+        nickNameEl.dataset.duplicate = "true";
+        nickNameEl.focus();
+        return refreshSubmit();
+    }
 
-    // 버튼 상태
-    const submitBtn = e.target.querySelector('.btn--primary');
-    const oldText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = '수정 중...';
+    const nickname = nickNameEl.value.trim();
+    const keys     = uploader.getKeys();
+    const imageKey = keys.length ? keys[0] : currentImageKey ?? null;
+
+    const payload = { nickname, imageKey };
+
+    const oldText = submitBtn?.textContent ?? "";
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "수정 중...";
+    }
 
     try {
         await updateMyPage(payload);
-        alert('정상적으로 수정되었습니다.');
-        submitBtn.textContent = '수정완료';
-
-        // 성공 시 원본 상태 동기화
-        if (imageState.changed) {
-            imageState.originalUrl = imageState.finalUrl || imageState.originalUrl;
-            imageState.changed = false;
-
-            /// 목록으로 이동
-            location.href = '/pages/html/post-list.html';
-        }
+        await showToast("정상적으로 수정되었습니다.");
+        if (submitBtn) submitBtn.textContent = "수정완료";
+        location.href = "/pages/html/post-list.html";
     } catch (err) {
         console.error(err);
-        alert('수정 실패: ' + (err?.message || ''));
-        submitBtn.textContent = oldText;
+        await showToast("기존 이미지/닉네임 수정없이 수정할 수 없습니다.");
+        if (submitBtn) submitBtn.textContent = oldText;
     } finally {
-        submitBtn.disabled = false;
+        if (submitBtn) submitBtn.disabled = false;
     }
 });
 
-// ───────────── 탈퇴 로직 ─────────────
-document.getElementById('withdrawBtn').addEventListener('click', () => {
-    if (confirm('정말 탈퇴하시겠습니까?')) {
-        withdraw();
-        location.href = '/pages/html/login.html';
-    }
-});
-
-// 페이지 이탈 시 미리보기 ObjectURL 정리
-window.addEventListener('beforeunload', () => {
-    if (imageState.previewUrl?.startsWith('blob:')) {
-        URL.revokeObjectURL(imageState.previewUrl);
+// ===== 탈퇴 =====
+withdrawBtn?.addEventListener("click", async () => {
+    if (!confirm("정말 탈퇴하시겠습니까?")) return;
+    try {
+        await withdraw();
+    } finally {
+        location.href = "/pages/html/login.html";
     }
 });

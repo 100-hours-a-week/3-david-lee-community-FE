@@ -4,11 +4,12 @@ import { likePost } from "../api/like.js";
 import { unlikePost } from "../api/like.js";
 
 /// 컴포넌트
-import { createPostView } from '../components/postView.js';
+import { createPostDetailCard } from '../components/PostDetailCard.js';
 
 /// 댓글 조회 JS 사용
 import { loadComments } from './comment-list.js';
 import { registerCommentSubmit } from "./comment-new.js";
+import {showToast} from "../pages/common/toast.js";
 
 // ───────────── 내부 설정 ─────────────
 const root = document.getElementById('postRoot');
@@ -48,7 +49,7 @@ async function load() {
             liked: data.liked,
         };
 
-        // 4) 이벤트 콜백들 (새로고침 없음: 낙관적 갱신은 createPostView 내부에서 처리)
+        // 4) 이벤트 콜백들 (새로고침 없음: 낙관적 갱신은 createPostDetailCard 내부에서 처리)
         const viewOptions = {
             // prevLiked: 토글 "직전" 상태(true면 해제 요청, false면 좋아요 요청)
             onToggleLike: async (prevLiked) => {
@@ -68,16 +69,16 @@ async function load() {
                 if (!confirm('정말 삭제하시겠습니까?')) return;
                 try {
                     await deletePost(postId);
-                    alert('삭제되었습니다.');
-                    location.href = '/pages/html/post-list.html';
+                    /// 흔적 남기기
+                    location.href = '/pages/html/post-list.html?toast=deleted';
                 } catch (e) {
-                    alert('삭제 실패: ' + (e.message || ''));
+                    await showToast('삭제 실패: ' + (e.message || ''));
                 }
             };
         }
 
         // 5) 렌더
-        const view = await createPostView(post, viewOptions);
+        const view = await createPostDetailCard(post, viewOptions);
         root.innerHTML = '';
         root.appendChild(view);
 

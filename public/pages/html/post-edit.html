@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>아무 말 대잔치 — 게시글 수정</title>
+    <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/post-editor.css">
     <link rel="stylesheet" href="../css/appbar.css">
     <link rel="stylesheet" href="../css/appfooter.css">
@@ -25,7 +26,7 @@
             <div class="field">
                 <label class="label required" for="e-title">제목</label>
                 <input class="input" id="e-title" name="title" type="text" maxlength="26"
-                       placeholder="수정할 제목을 입력해주세요. (최대 26글자)" required>
+                       placeholder="수정할 제목을 입력해주세요. (최대 26글자)">
                 <small id="titleCount" class="count">0 / 26</small>
             </div>
 
@@ -33,7 +34,7 @@
             <div class="field">
                 <label class="label required" for="e-content">내용</label>
                 <textarea class="textarea" id="e-content" name="content"
-                          maxlength="1000" placeholder="수정할 내용을 입력해주세요." required></textarea>
+                          maxlength="1000" placeholder="수정할 내용을 입력해주세요." ></textarea>
                 <small id="contentCount" class="count">0 / 1000</small>
             </div>
 
@@ -42,7 +43,7 @@
                 <label class="label" for="e-image">이미지 (드래그해서 순서변경)</label>
                 <div class="filebox">
                     <label for="e-image" class="fake">파일 선택</label>
-                    <input id="e-image" name="image" type="file" accept="image/*" multiple>
+                    <input id="e-image" name="image" max="10" type="file" accept="image/*" multiple>
                 </div>
 
                 <!-- 이미지 썸네일 영역-->

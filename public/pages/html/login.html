@@ -6,7 +6,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>아무 말 대잔치 — 로그인</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/appbar.css">
     <link rel="stylesheet" href="../css/auth.css">
+    <link rel="stylesheet" href="../css/appfooter.css">
 </head>
 <body>
 
@@ -36,11 +39,14 @@
             <div class="actions">
                 <button type="submit" class="btn btn--primary">로그인</button>
             </div>
-
-            <div class="linkrow">
-                <a href="/pages/html/signup.html" aria-label="회원가입 페이지로 이동">회원가입</a>
-            </div>
         </form>
+
+        <!-- 별도의 회원가입 버튼 -->
+        <div class="actions mt-12">
+            <a href="/pages/html/signup.html" class="btn btn--ghost" aria-label="회원가입 페이지로 이동">
+                회원가입
+            </a>
+        </div>
     </section>
 </main>
 

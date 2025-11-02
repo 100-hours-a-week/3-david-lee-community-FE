@@ -1,5 +1,6 @@
 /// 서버 요청 주소
-const BASE_URL = 'http://localhost:8080/v1/policy';
+import {POLICY_URL} from "./config.js";
+const BASE_URL = POLICY_URL;
 
 export async function privacy() {
 

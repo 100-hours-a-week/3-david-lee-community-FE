@@ -1,0 +1,107 @@
+/* HTML 전용 CSS */
+.post__header{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
+}
+.PostDetailCard .title{
+    margin:0 0 8px;
+    font-size:22px;
+    font-weight:800;
+}
+.PostDetailCard .sub{
+    color:var(--muted);
+    font-size:13px;
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+}
+.PostDetailCard .toolbar{ margin-left:auto; display:flex; gap:8px }
+
+/* 유저 이미지 */
+.PostDetailCard .author__avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.PostDetailCard .author__url { display: none; }
+
+/* 유저 게시글 */
+.PostDetailCard .content{
+    background:#fff;
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:16px 18px;
+    box-shadow:var(--shadow);
+}
+
+/* 통계(조회/댓글/좋아요 등) */
+.stats{
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:10px; margin:18px 0;
+}
+.stat{
+    background:#fff; border:1px solid var(--border);
+    border-radius:12px;
+    padding:14px 10px; text-align:center; box-shadow:var(--shadow);
+}
+.stat .num{ font-size:20px; font-weight:800; margin-bottom:2px }
+.stat .label{ color:var(--muted); font-size:12px }
+
+/* 좋아요 버튼(카드형 통계와 톤 맞춤) */
+.stat--like{
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    padding:14px 10px;
+    border:none; border-radius:12px;
+    background:#fff; color:var(--muted);
+    cursor:pointer; font:inherit; transition:all .25s ease;
+    box-shadow:var(--shadow); border:1px solid var(--border);
+    font-size:12px;
+}
+.stat--like .top{ display:flex; align-items:center; gap:4px; font-size:16px; line-height:1 }
+.stat--like .heart::before{ content:"♡"; font-size:20px; line-height:1; transition:transform .25s ease, color .25s ease }
+.stat--like .likeCount{ font-weight:600; font-size:16px }
+.stat--like .label{ font-size:13px; color:#777 }
+.stat--like:hover{ background:rgba(255,75,75,.1); transform:translateY(-2px) }
+.stat--like[aria-pressed="true"], .stat--like.liked{
+    color:#ff4b4b; background:rgba(255,75,75,.15);
+    box-shadow:0 0 8px rgba(255,75,75,.2);
+    font-weight:600;
+}
+.stat--like[aria-pressed="true"] .heart::before,
+.stat--like.liked .heart::before{
+    content:"❤️"; transform:scale(1.2);
+}
+.stat--like[aria-pressed="true"]:hover,
+.stat--like.liked:hover{
+    background:rgba(255,75,75,.25); transform:scale(1.05);
+}
+
+/* 이미지 표시 */
+.gallery__main{
+    position:relative; display:grid; place-items:center;
+    border-radius:12px; overflow:hidden;
+    background:#fafafa; min-height:220px;
+}
+.gallery__main img{
+    width:100%; max-height:420px; object-fit:contain; display:block;
+}
+.gallery__nav{
+    position:absolute; top:50%; transform:translateY(-50%);
+    width:40px; height:40px; border-radius:999px;
+    background:rgba(0,0,0,.4); color:#fff; border:0; font-size:24px; cursor:pointer;
+}
+.gallery__nav--prev{ left:8px } .gallery__nav--next{ right:8px }
+.gallery__thumbs{ display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:6px }
+
+/* 이미지 목록 썸네일 */
+.thumb{ border:2px solid transparent; padding:0; border-radius:8px; background:none; cursor:pointer }
+.thumb img{ width:84px; height:84px; object-fit:cover; display:block; border-radius:6px }
+.thumb.is-active{ border-color:#6b8afd }
+
+/* 카운트 텍스트 */
+.count{
+    display:block; margin-top:4px;
+    color:var(--muted); font-size:12px; text-align:right;
+}

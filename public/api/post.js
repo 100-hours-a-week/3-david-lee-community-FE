@@ -1,8 +1,9 @@
 /// 서버 요청 주소
-const BASE_URL = 'http://localhost:8080/v1/posts';
+import {POST_URL} from "./config.js";
+const BASE_URL = POST_URL;
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 등록
 export async function createPost(postData) {

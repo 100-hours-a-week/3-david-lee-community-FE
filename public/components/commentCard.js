@@ -1,5 +1,5 @@
-/// 템플릿 정의
-let _template;
+/// 템플릿 로더
+import {loadTemplate} from "../utils/templateLoader.js";
 
 // =================
 //  외부 사용 로직
@@ -9,7 +9,7 @@ let _template;
 export async function createCommentCard(comment, {onCommentReply, onCommentEdit, onCommentDelete} = {}) {
 
     /// 템플릿 가져와서 복제하기
-    const tpl = await ensureTemplate();
+    const tpl = await loadTemplate('/components/commentCard.html', 'commentCard');
     const node = tpl.content.cloneNode(true);
     const rootEl = node.firstElementChild;
 
@@ -94,6 +94,15 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
         replyBtn?.remove();
     }
 
+    /// 삭제 시, 수정/삭제 툴바는 안보이게
+    if (comment.deleted) {
+        rootEl.classList.add('is-deleted');
+
+        // 편집/삭제 버튼 제거
+        $toolbar?.querySelector('[data-action="edit"]')?.remove();
+        $toolbar?.querySelector('[data-action="delete"]')?.remove();
+    }
+
     // replies 컨테이너 없으면 만들어서 반환(템플릿 미수정 대비)
     let repliesContainer = $replies;
     if (!repliesContainer) {
@@ -131,33 +140,4 @@ export async function renderCommentThreads(threads, container, handlers = {}) {
     }
 
     container.appendChild(frag);
-}
-
-// =================
-//  내부 사용 로직
-// =================
-
-/// 템플릿 가져오기
-async function ensureTemplate() {
-    if (_template) {
-        return _template;
-    }
-
-    /// HTML 가져오기
-    const res = await fetch('/components/commentCard.html');
-
-    if (!res.ok) {
-        throw new Error('commentCard 템플릿 로드 실패');
-    }
-
-    const html = await res.text();
-
-    /// HTML DOM 파서
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    _template = doc.getElementById('commentCard');
-    if (!_template) {
-        throw new Error("템플릿에 id='commentCard' 없음");
-    }
-
-    return _template;
 }

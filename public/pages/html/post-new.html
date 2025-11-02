@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>아무 말 대잔치 — 게시글 작성</title>
+    <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/post-editor.css">
     <link rel="stylesheet" href="../css/appbar.css">
     <link rel="stylesheet" href="../css/appfooter.css">
@@ -24,23 +25,25 @@
             <div class="field">
                 <label class="label required" for="title">제목</label>
                 <input class="input" id="title" name="title" type="text" maxlength="26"
-                       placeholder="제목을 입력해주세요. (최대 26글자)" required>
+                       placeholder="제목을 입력해주세요. (최대 26글자)">
                 <small id="titleCount" class="count">0 / 26</small>
             </div>
 
             <div class="field">
                 <label class="label required" for="content">내용</label>
-                <textarea class="textarea" id="content" name="content" maxlength="1000" placeholder="내용을 입력해주세요.(최대 1000글자)" required></textarea>
+                <textarea class="textarea" id="content" name="content" maxlength="1000" placeholder="내용을 입력해주세요.(최대 1000글자)"></textarea>
                 <small id="contentCount" class="count">0 / 1000</small>
             </div>
 
             <div class="field">
-                <label class="label" for="image">이미지</label>
+                <label class="label" for="e-image">이미지 (드래그해서 순서변경)</label>
                 <div class="filebox">
-                    <label for="image" class="fake">파일 선택</label>
-                    <input id="image" name="image" type="file" accept="image/*" multiple>
-                    <span id="filename" class="name">파일을 선택해주세요.</span>
+                    <label for="e-image" class="fake">파일 선택</label>
+                    <input id="e-image" name="image" type="file" max="10"  accept="image/*" multiple>
                 </div>
+
+                <!-- 이미지 썸네일 영역-->
+                <div id="imageList" class="image-list"></div>
             </div>
 
             <div class="actions">

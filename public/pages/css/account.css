@@ -1,19 +1,8 @@
-:root{
-    --bg:#f4f5f7; --card:#fff; --text:#111827; --muted:#6b7280; --border:#e5e7eb;
-    --primary:#9b5cff; --primary-pressed:#824bff; --ring:#e4d5ff;
-    --radius:16px; --shadow:0 10px 20px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.05);
-}
-*{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--text);
-    font:14px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
-
-
 /* Layout */
-.container{width:min(980px,100%);margin:24px auto 48px;padding:0 20px}
-.panel{width:min(520px,100%); margin:0 auto; background:var(--card); border:1px solid var(--border);
-    border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 20px; text-align:center}
-h1.page{margin:8px 0 18px; text-align:center}
+.panel{
+    width:min(520px,100%); background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 20px;
+}
 
 /* Avatar big */
 .profile{
@@ -24,12 +13,13 @@ h1.page{margin:8px 0 18px; text-align:center}
     display:grid;
     place-items:center
 }
+
 .profile button{
     position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
     height:30px; padding:0 12px; border-radius:16px; border:1px solid var(--border); background:#fff; cursor:pointer
 }
 
-/* 💡 수정된 부분: span이 부모와 규격이 같고 이미지를 표시하도록 */
+/* span이 부모와 규격이 같고 이미지를 표시하도록 */
 .profile span {
     /* 부모 div.profile과 동일한 크기로 설정 */
     display: block;
@@ -40,8 +30,7 @@ h1.page{margin:8px 0 18px; text-align:center}
     border-radius: 50%;
 
     /* 배경색과 테두리는 필요 없으므로 제거 (부모가 처리) */
-    /* border: 1px solid #ddd; */
-    /* background: #ccc; */
+    border: 4px solid var(--border);
 
     /* 이미지가 없을 때 투명하여 부모의 회색 배경이 보이도록 */
     background: transparent;
@@ -57,36 +46,4 @@ h1.page{margin:8px 0 18px; text-align:center}
     left: 0;
 }
 
-/* Form */
-.form{display:grid; gap:14px; text-align:left}
-.field{display:grid; gap:6px}
-.label{font-weight:700}
-.input{height:42px; padding:0 12px; border:1px solid var(--border); border-radius:10px; outline:none}
-.input:disabled{background:#f7f7fa; color:var(--muted)}
-.input:focus{box-shadow:0 0 0 4px var(--ring)}
-.help{color:var(--muted); font-size:12px}
-
-.btn{
-    display:inline-flex; align-items:center; justify-content:center; height:44px; padding:0 16px;
-    border-radius:10px; border:1px solid transparent; cursor:pointer; font-weight:700; transition:.15s ease;
-}
-.btn:disabled { opacity:.6; cursor:not-allowed; box-shadow:none; }
-.btn--primary:disabled { background:#cdb8ff; } /* 살짝 흐리게 */
-
-.btn--primary{background:var(--primary); color:#fff; box-shadow:0 6px 14px rgba(155,92,255,.25)}
-.btn--primary:active{background:var(--primary-pressed); transform:translateY(1px)}
-
-.btn--ghost{background:#fff; border-color:var(--border); color:var(--text)}
-.btn--danger{background:#fff; border-color:#ef4444; color:#ef4444}
-
-.actions{display:grid; gap:10px; margin-top:8px}
-
-.notice{margin-top:18px; color:#6b7280; font-weight:700}
-
-.input.is-invalid{ border-color:#ef4444 !important; outline-color:#ef4444 !important; }
-.input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12); }
-.field__error{ color:#ef4444; font-size:12px; margin-top:6px; min-height:1em; }
-
-/* 선택 사항: field 컨테이너에도 반응 */
-.field.is-invalid .input{ border-color:#ef4444 !important; }
-.field.is-invalid .input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12); }
+.check{ color:var(--text); font-size:12px; text-align:center }

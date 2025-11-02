@@ -2,7 +2,8 @@
 import { getPosts } from '../api/post.js';
 
 /// 컴포넌트
-import { createPostCard } from '../components/postCard.js';
+import { createPostListCard } from '../components/postListCard.js';
+import {showToast} from "../pages/common/toast.js";
 
 // ───────────── 내부 설정 ─────────────
 const listEl = document.getElementById('postList');
@@ -74,7 +75,7 @@ async function loadMore() {
                 author: p.user,
             };
 
-            const card = await createPostCard(post, {
+            const card = await createPostListCard(post, {
                 onClick: (pp) => {
                     location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(pp.id)}`;
                 },
@@ -102,6 +103,21 @@ async function loadMore() {
 
 // 초기 로딩(첫 페이지)
 async function init() {
+
+    const params = new URLSearchParams(location.search);
+    if (params.get('toast') === 'deleted') {
+        await showToast('삭제되었습니다.');
+    }
+
+    if (params.get('toast') === 'login') {
+        await showToast('로그인 되었습니다.');
+    }
+
+    if (params.get('toast') === 'password') {
+        await showToast('비밀번호가 정상적으로 변경되었습니다.');
+    }
+
+
     // 초기 목록 비우기
     listEl.innerHTML = '';
     cursor = '';
