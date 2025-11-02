@@ -6,10 +6,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>아무 말 대잔치 — 회원정보 수정</title>
+    <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/account.css">
     <link rel="stylesheet" href="../css/appbar.css">
     <link rel="stylesheet" href="../css/appfooter.css">
-    <link rel="stylesheet" href="../css/base.css">
 
 </head>
 <body>
@@ -19,7 +19,7 @@
 
 <!-- 실제 컨테이너 -->
 <main class="container">
-    <h1 class="page">회원정보수정</h1>
+    <h1 class="page">회원정보 수정</h1>
 
     <section class="panel">
         <!-- 프로필 사진 -->
@@ -40,8 +40,11 @@
                 <input class="input" id="nickname" type="text" placeholder="닉네임을 입력하세요" required>
             </div>
 
+            <!-- 수정 / 탈퇴 버튼 -->
             <div class="actions">
                 <button type="submit" class="btn btn--primary">수정하기</button>
+            </div>
+            <div class="actions">
                 <button type="button" class="btn btn--danger" id="withdrawBtn">회원 탈퇴</button>
             </div>
         </form>
