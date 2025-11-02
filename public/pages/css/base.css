@@ -11,6 +11,7 @@
     --text:#111827;
     --muted:#6b7280;
     --border:#e5e7eb;
+
     --primary:#9b5cff;
     --primary-pressed:#824bff;
     --primary-hover:#a887ff;
@@ -66,13 +67,19 @@ button { font: inherit }
 }
 
 /* 4) Surface: Card / Panel */
-.card{
-    background:var(--card); border:1px solid var(--border);
-    border-radius:var(--radius); box-shadow:var(--shadow);
-    padding:16px 18px;
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px 16px;
 }
 .card--hover{ transition: box-shadow .2s ease, transform .05s ease }
-.card--hover:hover{ box-shadow:0 16px 28px rgba(0,0,0,.08); transform:translateY(-1px) }
+.card--hover:hover {
+    background: #f9fafb;
+    box-shadow: 0 16px 28px rgba(0,0,0,.08);
+    transform: translateY(-1px);
+}
 
 .panel{
     width:min(720px,100%);
@@ -256,4 +263,10 @@ h1.page, h1.title{
 
 .divider {
     border: none; border-top: 1.5px solid #e0e0e0; margin: 25px 0;
+}
+
+/* 반응형 */
+@media (max-width:640px){
+    .stats{ grid-template-columns:1fr 1fr; }
+    .appbar__title{ font-size:16px }
 }
