@@ -20,6 +20,3 @@
     margin:8px auto 0; /* circle과 같은 마진 적용 */
     border:1px solid var(--border); /* border도 circle과 동일하게 적용 */
 }
-
-/* 에러 표시*/
-.note{ color:var(--btn-danger); font-size:12px; text-align:center }

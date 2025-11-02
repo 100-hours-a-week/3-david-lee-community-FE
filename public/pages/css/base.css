@@ -220,6 +220,9 @@ h1.page, h1.title{
 .help{ color:var(--muted); font-size:12px }
 .error, .field__error{ color:#ef4444; font-size:12px; margin-top:6px; min-height:1em }
 
+/* 에러 표시*/
+.note{ color:var(--btn-danger); font-size:12px; text-align:center }
+
 .input.is-invalid{ border-color:#ef4444 !important; outline-color:#ef4444 !important }
 .input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12) }
 .field.is-invalid .input{ border-color:#ef4444 !important }
@@ -243,7 +246,6 @@ h1.page, h1.title{
     color: #111;
     font-size: .95rem;
 }
-.author__url{ display:inline-flex; align-items:center; gap:6px }
 .createdAt {
     font-size: .85rem;
     color: #777;
@@ -256,16 +258,58 @@ h1.page, h1.title{
     border:1px solid var(--border); border-radius:12px; background:#fff;
 }
 
-/* 9) File input helpers */
-.filebox{ display:flex; align-items:center; gap:10px; flex-wrap:wrap }
-.filebox input[type="file"]{ display:none }
-.filebox .fake{
-    height:34px; padding:0 12px; border:1px solid var(--border);
-    border-radius:8px; background:#fff; cursor:pointer
+/* ───────────── 파일 선택 (filebox) ───────────── */
+.filebox {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
 }
-.filebox .name{ color:var(--muted); font-size:13px }
 
-/* 10) Divider */
+/* 실제 파일 input은 숨김 */
+.filebox input[type="file"] {
+    display: none;
+}
+
+/* 가짜 버튼 (파일 선택) */
+.filebox .fake {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--btn-ghost-bg);
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.filebox .fake:hover {
+    background: var(--btn-ghost-hover);
+    border-color: var(--primary-hover);
+    box-shadow: 0 0 0 2px rgba(162,141,252,.15);
+}
+.filebox .fake:active {
+    background: var(--btn-primary-active);
+    color: #fff;
+    box-shadow: 0 0 0 3px rgba(162,141,252,.25);
+}
+
+/* 선택된 파일명 */
+.filebox .name {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.4;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 나누기 */
 .divider{
     border:none; border-top:1.5px solid var(--border); margin:25px 0;
 }

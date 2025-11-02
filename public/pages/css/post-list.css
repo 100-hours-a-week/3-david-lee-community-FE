@@ -68,10 +68,3 @@
     width:3px; height:3px; background:#c5cad3; border-radius:50%; display:inline-block;
 }
 .post__tags{ color:var(--muted); font-size:12px; display:flex; gap:8px }
-
-/* 모바일 최적화 */
-@media (max-width:480px){
-    .post-row{ grid-template-columns:140px 1fr; gap:10px }
-    .post__thumbnail{ width:140px }
-    .post__title{ font-size:15px; -webkit-line-clamp:2 }
-}

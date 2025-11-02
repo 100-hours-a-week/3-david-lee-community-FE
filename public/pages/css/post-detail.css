@@ -1,4 +1,4 @@
-/* 헤더/서브 정보 */
+/* HTML 전용 CSS */
 .post__header{
     display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
 }
@@ -13,12 +13,6 @@
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
 }
 .postview .toolbar{ margin-left:auto; display:flex; gap:8px }
-.postview .sub .createdAt::before{
-    content:"·";
-    margin-right:10px;
-    font-weight:bold;
-    color:var(--border);
-}
 
 /* 유저 이미지 */
 .postview .author__avatar {
@@ -33,9 +27,8 @@
 
 .postview .author__url { display: none; }
 
-/* 본문 박스
-   - HTML에서 .card를 함께 쓰면 이 블록은 불필요. 별도 스타일을 원할 때만 사용. */
-.content{
+/* 유저 게시글 */
+.postview .content{
     background:#fff;
     border:1px solid var(--border);
     border-radius:var(--radius);
@@ -85,19 +78,7 @@
     background:rgba(255,75,75,.25); transform:scale(1.05);
 }
 
-/* 미디어 & 갤러리 */
-.media{
-    margin:16px 0;
-    border:none; background:none; padding:0;
-}
-.media--placeholder{
-    padding:8px;
-    border:1px dashed var(--border);
-    background:repeating-linear-gradient(45deg,#efeff3,#efeff3 12px,#f8f8fb 12px,#f8f8fb 24px);
-    min-height:220px;
-    display:grid; place-items:center;
-}
-.post__gallery{ margin:0 }
+/* 이미지 표시 */
 .gallery__main{
     position:relative; display:grid; place-items:center;
     border-radius:12px; overflow:hidden;
@@ -113,6 +94,8 @@
 }
 .gallery__nav--prev{ left:8px } .gallery__nav--next{ right:8px }
 .gallery__thumbs{ display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:6px }
+
+/* 이미지 목록 썸네일 */
 .thumb{ border:2px solid transparent; padding:0; border-radius:8px; background:none; cursor:pointer }
 .thumb img{ width:84px; height:84px; object-fit:cover; display:block; border-radius:6px }
 .thumb.is-active{ border-color:#6b8afd }
