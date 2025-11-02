@@ -37,7 +37,6 @@ const overlay = createSpinnerOverlay({
 const gallery = createImageGalleryUploader({
     listEl,
     fileInputEl: fileInput,
-    addMoreBtnEl: addBtn,
     dropZoneEl: dropZone,
     maxSizeMB: 10,
     onError: (m) => showToast(m),
