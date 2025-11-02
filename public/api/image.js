@@ -1,5 +1,6 @@
 /// 서버 요청 주소
-const BASE_URL = 'http://localhost:8080/v1/images';
+import {IMAGE_URL} from "./config.js";
+const BASE_URL = IMAGE_URL;
 
 /// 인증 요청
 import { authFetch } from './authFetch.js';
