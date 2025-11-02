@@ -1,6 +1,10 @@
+// ───────────── API ─────────────
 import { getPostDetail, updatePost } from '../api/post.js';
-import { showToast } from '../pages/common/toast.js';
-import { createImageGalleryUploader } from './image-uploader.js';
+
+// ───────────── 컴포넌트 ─────────────
+import {showToast} from '../pages/common/toast.js';
+import {createImageGalleryUploader} from './image-uploader.js';
+import {createSpinnerOverlay} from "../pages/common/spinner-overlay.js";
 
 // ───────────── 헬퍼 ─────────────
 function pick(...ids) {
@@ -95,7 +99,14 @@ function init() {
     titleCount   = required(document.getElementById('titleCount'), '제목 글자수');
     contentCount = required(document.getElementById('contentCount'), '내용 글자수');
     imageListEl  = required(document.getElementById('imageList'), '이미지 리스트');
-    addMoreBtn   = document.getElementById('addMoreImage'); // 선택 요소면 없어도 됨
+
+    /// 작동 스피너 넣기
+    const overlay = createSpinnerOverlay({
+        spinnerSize: 30,
+        border: 6,
+        borderColor: "#fff",
+        backdrop: "rgba(0,0,0,.45)",
+    });
 
     // 모듈 생성
     galleryCtl = createImageGalleryUploader({
@@ -105,6 +116,9 @@ function init() {
         maxSizeMB: 5,
         onError: (msg) => showToast(msg),
         onToast: (msg) => showToast(msg),
+        onUploadStart: () => overlay.show({ lockSelectors: ["#postForm input", "#postForm button", "#postForm textarea", "#postForm select"] }),
+        onUploadEnd:   () => overlay.hide(),
+
     });
 
     preload().catch(err => {

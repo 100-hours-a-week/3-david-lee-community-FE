@@ -1,9 +1,10 @@
 // ───────────── API ─────────────
 import { createPost } from "../api/post.js";
-import { showToast } from "../pages/common/toast.js";
 
-// ───────────── 갤러리 업로더 ─────────────
+// ───────────── 컴포넌트 ─────────────
 import {createImageGalleryUploader} from "./image-uploader.js";
+import {createSpinnerOverlay} from "../pages/common/spinner-overlay.js";
+import {showToast} from "../pages/common/toast.js";
 
 // ───────────── DOM ─────────────
 const formEl       = document.getElementById("postForm");
@@ -14,7 +15,6 @@ const contentCount = document.getElementById("contentCount");
 
 const fileInput = document.getElementById('e-image');
 const listEl       = document.getElementById("imageList");  // 이미지 카드 컨테이너
-const addBtn       = document.getElementById("addMoreImage"); // 선택
 const dropZone     = document.getElementById("dropZone");   // 선택(없으면 listEl이 드롭존)
 
 // 카운터
@@ -23,6 +23,14 @@ titleInput?.addEventListener("input", () => {
 });
 contentInput?.addEventListener("input", () => {
     contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
+});
+
+/// 작동 스피너 넣기
+const overlay = createSpinnerOverlay({
+    spinnerSize: 30,
+    border: 6,
+    borderColor: "#fff",
+    backdrop: "rgba(0,0,0,.45)",
 });
 
 // 갤러리 업로더 인스턴스
@@ -34,6 +42,8 @@ const gallery = createImageGalleryUploader({
     maxSizeMB: 10,
     onError: (m) => showToast(m),
     onToast: (m) => showToast(m),
+    onUploadStart: () => overlay.show({ lockSelectors: ["#postForm input", "#postForm button", "#postForm textarea", "#postForm select"] }),
+    onUploadEnd:   () => overlay.hide(),
 });
 
 // 작성 폼 제출

@@ -1,4 +1,5 @@
 import { getUrls, confirmUrls } from "../api/image.js";
+import { showToast } from "../pages/common/toast.js";
 
 function moveItem(arr, from, to) {
     if (from === to || from < 0 || to < 0 || from >= arr.length || to >= arr.length) return;
@@ -7,25 +8,25 @@ function moveItem(arr, from, to) {
 }
 
 export function createImageGalleryUploader({
-                                               listEl,          // 필수: 갤러리 컨테이너(이미지 카드가 append될 요소)
-                                               fileInputEl,     // 선택: 파일 input (있으면 change 시 자동 업로드 바인딩)
-                                               addMoreBtnEl,    // 선택: "이미지 추가" 버튼 (클릭 시 fileInput 클릭)
-                                               maxSizeMB = 5,   // 용량 제한
-                                               onError = (msg) => alert(msg),
-                                               onToast = async (msg) => alert(msg),
+                                               listEl,          // 필수
+                                               fileInputEl,     // 선택
+                                               addMoreBtnEl,    // 선택
+                                               maxSizeMB = 5,
+                                               onError  = (msg) => alert(msg),
+                                               onToast  = async (msg) => showToast(msg),
+                                               onUploadStart = () => {},
+                                               onUploadEnd   = () => {},
                                            } = {}) {
     if (!listEl) throw new Error("listEl은 필수입니다.");
 
     let gallery = [];     // [{key, url, isNew}]
     let dragSrcIndex = null;
 
-    // 인덱스 계산
     function indexOfItemEl(target) {
         const items = Array.from(listEl.querySelectorAll(".image-item"));
         return items.indexOf(target.closest(".image-item"));
     }
 
-    // 렌더
     function render() {
         listEl.innerHTML = "";
         gallery.forEach((img, idx) => {
@@ -79,33 +80,22 @@ export function createImageGalleryUploader({
                 }
             });
 
-            wrap.appendChild(handle);
-            wrap.appendChild(imgtag);
-            wrap.appendChild(removeBtn);
-            wrap.appendChild(label);
+            wrap.append(handle, imgtag, removeBtn, label);
             listEl.appendChild(wrap);
         });
     }
 
-    // 초기 서버 데이터 세팅
     function setInitial(serverImages = []) {
-        // 기대 형태: [{ imageUrl, imageKey, order? }, ...]
         gallery = (Array.isArray(serverImages) ? serverImages : [])
             .filter((it) => !!it?.imageUrl)
             .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
-            .map((it) => ({
-                key: it.imageKey,
-                url: it.imageUrl,
-                isNew: false,
-            }));
+            .map((it) => ({ key: it.imageKey, url: it.imageUrl, isNew: false }));
         render();
     }
 
-    // 유효 파일 필터
     function filterValid(filesLike) {
         const files = Array.from(filesLike || []);
         const maxBytes = maxSizeMB * 1024 * 1024;
-
         for (const f of files) {
             if (!f.type.startsWith("image/")) throw new Error("이미지 파일만 업로드 가능합니다.");
             if (f.size > maxBytes) throw new Error(`${maxSizeMB}MB를 초과한 파일이 있습니다.`);
@@ -113,60 +103,70 @@ export function createImageGalleryUploader({
         return files;
     }
 
-    // 업로드
+    // ✅ 업로드 상태 노출(원하면 밖에서 읽을 수 있게)
+    let isUploading = false;
+
     async function upload(filesLike) {
         const files = filterValid(filesLike);
         if (files.length === 0) return [];
 
-        // 1) presign
-        const fileNames = files.map((f) => f.name);
-        const presign = await getUrls(fileNames);
-        const items = presign?.data ?? [];
-        if (!Array.isArray(items) || items.length !== files.length) {
-            throw new Error("프리사인드 URL 개수가 파일 수와 다릅니다.");
+        // ✅ 로딩 시작
+        isUploading = true;
+        onUploadStart();
+
+        try {
+            // 1) presign
+            const fileNames = files.map((f) => f.name);
+            const presign = await getUrls(fileNames);
+            const items = presign?.data ?? [];
+            if (!Array.isArray(items) || items.length !== files.length) {
+                throw new Error("프리사인드 URL 개수가 파일 수와 다릅니다.");
+            }
+            const byName = new Map(items.map((it) => [it.fileName, it]));
+
+            // 2) S3 PUT
+            const uploaded = [];
+            for (const file of files) {
+                const it = byName.get(file.name);
+                if (!it) throw new Error(`presign 응답에 ${file.name}가 없습니다.`);
+                const { preSignedUrl, key } = it;
+
+                const res = await fetch(preSignedUrl, {
+                    method: "PUT",
+                    headers: { "Content-Type": file.type },
+                    body: file,
+                });
+                if (!res.ok) throw new Error(`S3 업로드 실패: ${file.name}`);
+
+                const localPreview = URL.createObjectURL(file);
+                uploaded.push({ key, url: localPreview, isNew: true });
+            }
+
+            // 3) confirm
+            await confirmUrls(uploaded.map((u) => u.key));
+
+            // 4) append & 렌더
+            gallery.push(...uploaded);
+            render();
+
+            if (fileInputEl) fileInputEl.value = "";
+
+            return uploaded.map((u) => u.key);
+        } catch (err) {
+            console.error(err);
+            onError(err?.message || "이미지 업로드 중 오류가 발생했습니다.");
+            throw err;
+        } finally {
+            isUploading = false;
+            onUploadEnd();
         }
-        const byName = new Map(items.map((it) => [it.fileName, it]));
-
-        // 2) S3 PUT
-        const uploaded = [];
-        for (const file of files) {
-            const it = byName.get(file.name);
-            if (!it) throw new Error(`presign 응답에 ${file.name}가 없습니다.`);
-            const { preSignedUrl, key } = it;
-
-            const res = await fetch(preSignedUrl, {
-                method: "PUT",
-                headers: { "Content-Type": file.type },
-                body: file,
-            });
-            if (!res.ok) throw new Error(`S3 업로드 실패: ${file.name}`);
-
-            const localPreview = URL.createObjectURL(file);
-            uploaded.push({ key, url: localPreview, isNew: true });
-        }
-
-        // 3) confirm
-        await confirmUrls(uploaded.map((u) => u.key));
-
-        // 4) append & 렌더
-        gallery.push(...uploaded);
-        render();
-
-        // file input 초기화(같은 파일 재선택 허용)
-        if (fileInputEl) fileInputEl.value = "";
-
-        return uploaded.map((u) => u.key);
     }
 
-    // 외부에서 파일 input change를 바인딩하고 싶으면 fileInputEl 넘기기
     if (fileInputEl) {
         fileInputEl.addEventListener("change", async (e) => {
             try {
                 await upload(e.currentTarget.files || []);
-            } catch (err) {
-                console.error(err);
-                onError(err?.message || "이미지 업로드 중 오류가 발생했습니다.");
-            }
+            } catch (_) {}
         });
     }
 
@@ -175,15 +175,11 @@ export function createImageGalleryUploader({
     }
 
     return {
-        // 서버에서 받아온 이미지 세팅
         setInitial,
-        // 직접 FileList/Array<File> 업로드
         upload,
-        // 현재 순서대로 key 배열 반환
-        getKeys: () => gallery.map((g) => g.key),
-        // 현재 상태 조회(필요 시)
+        getKeys:  () => gallery.map((g) => g.key),
         getState: () => [...gallery],
-        // 강제 렌더
         render,
+        get isUploading() { return isUploading; },
     };
 }
