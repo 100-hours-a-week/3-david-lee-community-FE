@@ -71,11 +71,11 @@ function mountGallery(root, imageUrls = [], title = 'post image') {
 }
 
 /// 상세 게시글 만들기
-export async function createPostView(post, opts = {}) {
+export async function createPostDetailCard(post, opts = {}) {
     const {onToggleLike, onEdit, onDelete} = opts;
 
     // 템플릿 로드
-    const tpl = await loadTemplate('/components/postView.html', 'postView');
+    const tpl = await loadTemplate('/components/PostDetailCard.html', 'PostDetailCard');
     const node = tpl.content.cloneNode(true);
 
     // ──────────────────────────────

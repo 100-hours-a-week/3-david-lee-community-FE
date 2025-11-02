@@ -2,20 +2,20 @@
 .post__header{
     display:flex; align-items:flex-start; justify-content:space-between; gap:12px;
 }
-.postview .title{
+.PostDetailCard .title{
     margin:0 0 8px;
     font-size:22px;
     font-weight:800;
 }
-.postview .sub{
+.PostDetailCard .sub{
     color:var(--muted);
     font-size:13px;
     display:flex; align-items:center; gap:10px; flex-wrap:wrap;
 }
-.postview .toolbar{ margin-left:auto; display:flex; gap:8px }
+.PostDetailCard .toolbar{ margin-left:auto; display:flex; gap:8px }
 
 /* 유저 이미지 */
-.postview .author__avatar {
+.PostDetailCard .author__avatar {
     width: 36px; height: 36px;
     border-radius: 50%;
     background-color: #d9d9d9;
@@ -25,10 +25,10 @@
     background-repeat: no-repeat;
 }
 
-.postview .author__url { display: none; }
+.PostDetailCard .author__url { display: none; }
 
 /* 유저 게시글 */
-.postview .content{
+.PostDetailCard .content{
     background:#fff;
     border:1px solid var(--border);
     border-radius:var(--radius);
