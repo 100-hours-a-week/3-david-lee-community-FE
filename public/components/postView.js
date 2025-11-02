@@ -1,19 +1,5 @@
-/// 템플릿 변수 선언
-let _tpl;
-
-/// 템플릿 로드
-async function ensureTemplate() {
-    if (_tpl) return _tpl;
-
-    const res = await fetch('/components/postView.html');
-    if (!res.ok) throw new Error('postView 템플릿 로드 실패');
-
-    const html = await res.text();
-    const doc = new DOMParser().parseFromString(html, 'text/html');
-    _tpl = doc.getElementById('postView');
-    if (!_tpl) throw new Error("템플릿에 id='postView' 없음");
-    return _tpl;
-}
+/// 템플릿 로더
+import {loadTemplate} from "../utils/templateLoader.js";
 
 /// 이미지 갤러리 생성기: 메인 + 썸네일 + 좌/우 버튼
 function createImageGallery(imageUrls = [], title = 'post image') {
@@ -84,12 +70,11 @@ function createImageGallery(imageUrls = [], title = 'post image') {
 }
 
 /// 상세 게시글 만들기
-/// 상세 게시글 만들기
 export async function createPostView(post, opts = {}) {
     const { onToggleLike, onEdit, onDelete, onSubmitComment } = opts;
 
     // 템플릿 가져오기
-    const tpl = await ensureTemplate();
+    const tpl = await loadTemplate('/components/postView.html', 'postView');
     const node = tpl.content.cloneNode(true);
 
     // 작성자/시간
