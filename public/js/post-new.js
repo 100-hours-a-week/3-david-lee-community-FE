@@ -2,70 +2,61 @@
 import { createPost } from "../api/post.js";
 import { showToast } from "../pages/common/toast.js";
 
-// ───────────── 이미지 업로더 모듈 ─────────────
-import {filterValidImages, uploadImagesAndGetKeys, bindFileNameLabel,} from "./image-uploader.js";
+// ───────────── 갤러리 업로더 ─────────────
+import {createImageGalleryUploader} from "./image-uploader.js";
 
-// ───────────── HTML DOM ─────────────
-const fileInput     = document.getElementById("image");
-const nameSpan      = document.getElementById("filename");
-const titleInput    = document.getElementById("title");
-const titleCount    = document.getElementById("titleCount");
-const contentInput  = document.getElementById("content");
-const contentCount  = document.getElementById("contentCount");
-const formEl        = document.getElementById("postForm");
+// ───────────── DOM ─────────────
+const formEl       = document.getElementById("postForm");
+const titleInput   = document.getElementById("title");
+const titleCount   = document.getElementById("titleCount");
+const contentInput = document.getElementById("content");
+const contentCount = document.getElementById("contentCount");
+
+const fileInput = document.getElementById('e-image');
+const listEl       = document.getElementById("imageList");  // 이미지 카드 컨테이너
+const addBtn       = document.getElementById("addMoreImage"); // 선택
+const dropZone     = document.getElementById("dropZone");   // 선택(없으면 listEl이 드롭존)
 
 // 카운터
-titleInput.addEventListener("input", () => {
+titleInput?.addEventListener("input", () => {
     titleCount.textContent = `${titleInput.value.length} / ${titleInput.maxLength}`;
 });
-contentInput.addEventListener("input", () => {
+contentInput?.addEventListener("input", () => {
     contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
 });
 
-// 파일명 라벨 바인딩(모듈 제공 유틸)
-bindFileNameLabel(fileInput, nameSpan);
+// 갤러리 업로더 인스턴스
+const gallery = createImageGalleryUploader({
+    listEl,
+    fileInputEl: fileInput,
+    addMoreBtnEl: addBtn,
+    dropZoneEl: dropZone,
+    maxSizeMB: 10,
+    onError: (m) => showToast(m),
+    onToast: (m) => showToast(m),
+});
 
-// ───────────── 제출 로직 ─────────────
-formEl.addEventListener("submit", async (e) => {
+// 작성 폼 제출
+formEl?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const form = e.currentTarget;
-    const submitBtn = form.querySelector('button[type="submit"]');
+    const submitBtn = formEl.querySelector('button[type="submit"]');
     const categoryId = "2";
-    const title = form.title.value.trim();
-    const content = form.content.value.trim();
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
 
-    /// 없으면
-    if (!title)  {
-        return showToast("제목을 입력하세요.");
-    }
-    if (!content) {
-        return showToast("내용을 입력하세요.");
-    }
-
-    // 원본 파일 목록
-    const allFiles = Array.from(fileInput?.files || []);
-
-    // (파일 검증 + 이름/타입/크기 선별
-    const files = filterValidImages(allFiles, 10);
-    if (allFiles.length !== files.length) {
-        await showToast("일부 파일이 이름/타입/크기 조건 불일치로 제외되었습니다.");
-    }
+    if (!title)  return showToast("제목을 입력하세요.");
+    if (!content) return showToast("내용을 입력하세요.");
 
     submitBtn.disabled = true;
 
     try {
-        let imageKeys = [];
-        if (files.length > 0) {
-            // 모듈이 presign → PUT → confirm까지 처리하고 업로드된 key[] 반환
-            imageKeys = await uploadImagesAndGetKeys(files);
-        }
-
+        const imageKeys = gallery.getKeys(); // 정렬 적용된 순서대로
         const payload = { categoryId, title, content, imageKeys };
         const res = await createPost(payload);
 
         await showToast("글 작성이 완료되었습니다.");
-        window.location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(res.data.postId)}`;
+        location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(res.data.postId)}`;
     } catch (err) {
         console.error(err);
         await showToast(err?.message || "글 작성 중 오류가 발생했습니다.");

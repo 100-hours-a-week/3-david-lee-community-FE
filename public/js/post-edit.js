@@ -1,6 +1,6 @@
 import { getPostDetail, updatePost } from '../api/post.js';
 import { showToast } from '../pages/common/toast.js';
-import { createImageGalleryUploader } from './image-gallery-uploader.js';
+import { createImageGalleryUploader } from './image-uploader.js';
 
 // ───────────── 헬퍼 ─────────────
 function pick(...ids) {
