@@ -80,8 +80,7 @@ form?.addEventListener('submit', async (e) => {
 
     try {
         await login(payload);
-        alert('로그인이 완료되었습니다.');
-        window.location.href = '/pages/html/post-list.html';
+        window.location.href = '/pages/html/post-list.html?toast=login';
     } catch (err) {
         // 서버가 주는 메시지를 우선 사용
         const msg = err?.message || '로그인 중 오류가 발생했습니다.';

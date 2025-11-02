@@ -9,6 +9,7 @@ import { createPostDetailCard } from '../components/PostDetailCard.js';
 /// 댓글 조회 JS 사용
 import { loadComments } from './comment-list.js';
 import { registerCommentSubmit } from "./comment-new.js";
+import {showToast} from "../pages/common/toast.js";
 
 // ───────────── 내부 설정 ─────────────
 const root = document.getElementById('postRoot');
@@ -68,10 +69,10 @@ async function load() {
                 if (!confirm('정말 삭제하시겠습니까?')) return;
                 try {
                     await deletePost(postId);
-                    alert('삭제되었습니다.');
-                    location.href = '/pages/html/post-list.html';
+                    /// 흔적 남기기
+                    location.href = '/pages/html/post-list.html?toast=deleted';
                 } catch (e) {
-                    alert('삭제 실패: ' + (e.message || ''));
+                    await showToast('삭제 실패: ' + (e.message || ''));
                 }
             };
         }

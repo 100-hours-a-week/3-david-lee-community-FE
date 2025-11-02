@@ -3,6 +3,7 @@ import { getPosts } from '../api/post.js';
 
 /// 컴포넌트
 import { createPostListCard } from '../components/postListCard.js';
+import {showToast} from "../pages/common/toast.js";
 
 // ───────────── 내부 설정 ─────────────
 const listEl = document.getElementById('postList');
@@ -102,6 +103,17 @@ async function loadMore() {
 
 // 초기 로딩(첫 페이지)
 async function init() {
+
+    const params = new URLSearchParams(location.search);
+    if (params.get('toast') === 'deleted') {
+        await showToast('삭제되었습니다.');
+    }
+
+    if (params.get('toast') === 'login') {
+        await showToast('로그인 되었습니다.');
+    }
+
+
     // 초기 목록 비우기
     listEl.innerHTML = '';
     cursor = '';
