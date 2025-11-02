@@ -13,7 +13,7 @@ import { handleDelete, handleEdit, handleReply } from "./comment-edit.js";
 // =================
 //  옵션
 // =================
-const COOLDOWN_MS = 5; // 옵저버 연속 트리거 방지
+const COOLDOWN_MS = 3; // 옵저버 연속 트리거 방지
 const stateMap = new Map(); // 포스트별 상태 저장
 
 // ---------- 유틸 ----------
@@ -25,7 +25,7 @@ function handlers(postId) {
     };
 }
 
-// 서버 응답 threads -> 다음 커서(lastId): 마지막 스레드의 root.id 사용
+// 마지막 스레드 root.id 사용
 function extractCursor(threads) {
     if (!Array.isArray(threads) || threads.length === 0) return null;
     const last = threads[threads.length - 1];
@@ -39,7 +39,7 @@ function detectObserverRoot(listEl) {
     return isScrollable ? listEl : null;
 }
 
-// 임시 컨테이너에 렌더 → 실제 리스트로 “옮겨 붙이기(append)”
+// 실제 리스트로 “옮겨 붙이기(append)”
 async function safeAppendWithRenderer(threads, listEl, postId) {
     if (!threads || threads.length === 0) return;
     const temp = document.createElement("div");
@@ -109,54 +109,66 @@ async function loadMore(st) {
 //  초기 로드 (첫 페이지 + 무한스크롤 시작)
 // =================
 export async function loadComments(postId, root) {
-    // 기존 상태 정리
+    // ──────────────────────────────
+    // 1. 기존 상태 정리
+    // ──────────────────────────────
     const prev = stateMap.get(postId);
     if (prev) {
         prev.observer?.disconnect();
         stateMap.delete(postId);
     }
 
-    const list = root.querySelector("#commentList");
-    list.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
+    // ──────────────────────────────
+    // 2. 주요 노드 캐싱
+    // ──────────────────────────────
+    const listEl     = root.querySelector("#commentList");
+    let sentinelEl   = listEl.querySelector("#commentSentinel");
 
-    // sentinel 준비(보이지 않지만 공간 차지)
-    let sentinel = list.querySelector("#commentSentinel");
-    if (!sentinel) {
-        sentinel = document.createElement("div");
-        sentinel.id = "commentSentinel";
-        sentinel.style.height = "1px";
-        sentinel.style.marginTop = "8px";
-        sentinel.style.visibility = "hidden";
-        list.appendChild(sentinel);
+    // sentinel 없으면 새로 생성
+    if (!sentinelEl) {
+        sentinelEl = document.createElement("div");
+        sentinelEl.id = "commentSentinel";
+        sentinelEl.style.height = "1px";
+        sentinelEl.style.marginTop = "8px";
+        sentinelEl.style.visibility = "hidden";
+        listEl.appendChild(sentinelEl);
     }
+
+    // ──────────────────────────────
+    // 3. 상태 초기화
+    // ──────────────────────────────
+    listEl.innerHTML = '<p class="skeleton">댓글을 불러오는 중…</p>';
 
     const st = {
         loading: false,
         ended: false,
         cursor: null,
-        listEl: list,
-        sentinel,
+        listEl,
+        sentinel: sentinelEl,
         postId,
         observer: null,
         lastFiredAt: 0,
     };
     stateMap.set(postId, st);
 
+    // ──────────────────────────────
+    // 4. 첫 페이지 로드
+    // ──────────────────────────────
     try {
         const res = await getComments(postId);
         const threads = res?.data?.content ?? [];
 
-        list.innerHTML = ""; // 스켈레톤 제거
-        await safeAppendWithRenderer(threads, list, postId);
-        list.appendChild(sentinel);
+        listEl.innerHTML = ""; // 스켈레톤 제거
+        await safeAppendWithRenderer(threads, listEl, postId);
+        listEl.appendChild(sentinelEl);
 
         st.cursor = extractCursor(threads);
-        st.ended = !Boolean(res?.data?.hasNext);
+        st.ended  = !Boolean(res?.data?.hasNext);
 
         setupObserver(st);
     } catch (err) {
         console.error(err);
         await showToast(err);
-        list.innerHTML = `<p style="color:#c00">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
+        listEl.innerHTML = `<p style="color:#c00">댓글을 불러오는 중 오류가 발생했습니다.</p>`;
     }
 }
