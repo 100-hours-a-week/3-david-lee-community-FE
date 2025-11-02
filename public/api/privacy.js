@@ -1,6 +1,6 @@
 /// 서버 요청 주소
-import {API_BASE} from "./config.js";
-const BASE_URL = API_BASE;
+import {POLICY_URL} from "./config.js";
+const BASE_URL = POLICY_URL;
 
 export async function privacy() {
 
