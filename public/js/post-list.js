@@ -69,6 +69,7 @@ async function loadMore() {
                 likes: p.likeCount,
                 comments: p.commentCount,
                 views: p.viewCount,
+                thumbnailUrl: p.thumbnailUrl,
                 date: p.createdAt,
                 author: p.user,
             };

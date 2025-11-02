@@ -1,20 +1,30 @@
 <template id="postCard">
-    <article class="card card--hover">
-        <div class="post__header">
-            <div>
-                <h3 class="post__title"></h3>
-                <div class="post__meta">
-                    <span class="likes"></span><span class="dot"></span>
-                    <span class="comments"></span><span class="dot"></span>
-                    <span class="views"></span><span class="dot"></span>
-                    <time></time>
+    <article class="card card--hover post-row">
+        <!-- 썸네일(왼쪽) -->
+        <div class="post__thumbnail"></div>
+
+        <!-- 본문(오른쪽) -->
+        <div class="post__body">
+            <h3 class="post__title"></h3>
+
+            <div class="post__meta">
+                <span class="views"></span><span class="dot"></span>
+                <time></time>
+            </div>
+
+            <div class="author">
+                <div class="author__avatar"></div>
+                <div class="author__info">
+                    <div class="author__name"></div>
+                    <span class="author__url"></span>
                 </div>
             </div>
-        </div>
-        <div class="author">
-            <div class="author__avatar"></div>
-            <span class="author__url"></span>
-            <div class="author__name"></div>
+
+            <!-- 필요 시 라벨 영역 -->
+            <div class="post__tags">
+                <span class="likes"></span><span class="dot"></span>
+                <span class="comments"></span>
+            </div>
         </div>
     </article>
 </template>
