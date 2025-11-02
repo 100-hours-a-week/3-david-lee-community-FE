@@ -1,5 +1,6 @@
 // ───────────── API ─────────────
 import { getTempUrl, confirmTempUrl } from "../api/image.js";
+import {showToast} from "../pages/common/toast.js";
 
 /// 설정
 const root = document.getElementById("avatar-uploader");
@@ -117,8 +118,7 @@ async function handlePickAndUpload() {
 
             // 3. 업로드 성공 후 서버에 확정 처리
             const fileName = {key: objectKey};
-            const confirmRes = await confirmTempUrl(fileName);
-            const publicUrl = confirmRes.imageUrl;
+            await confirmTempUrl(fileName);
 
             // 4. 업데이트: 미리보기 & hidden input 저장
             const objectUrl = URL.createObjectURL(file);
@@ -126,10 +126,10 @@ async function handlePickAndUpload() {
 
             hiddenKey.value = objectKey;
 
-            alert("프로필 사진이 업로드되었습니다.");
+            await showToast("프로필 사진이 업로드되었습니다.");
         } catch (err) {
             console.error(err);
-            alert(err?.message || "이미지 업로드 중 오류가 발생했습니다.");
+            await showToast(err?.message || "이미지 업로드 중 오류가 발생했습니다.");
         } finally {
             setUploading(false);
         }

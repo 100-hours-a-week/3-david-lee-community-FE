@@ -113,6 +113,10 @@ async function init() {
         await showToast('로그인 되었습니다.');
     }
 
+    if (params.get('toast') === 'password') {
+        await showToast('비밀번호가 정상적으로 변경되었습니다.');
+    }
+
 
     // 초기 목록 비우기
     listEl.innerHTML = '';
