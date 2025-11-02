@@ -6,7 +6,8 @@ import { deleteComment, saveComments, updateComment } from "../api/comment.js";
 // =================
 //  컴포넌트
 // =================
-import { showToast } from "../pages/common/toast.js";
+import {showToast} from "../pages/common/toast.js";
+import {createCommentCard} from "../components/commentCard.js";
 
 // ───────────── 댓글 수정하기 ─────────────
 export async function handleEdit(comment, ctx) {
@@ -62,7 +63,7 @@ export async function handleEdit(comment, ctx) {
         e.stopPropagation();
         const next = editTextarea.value.trim();
         if (!next) {
-            alert("내용을 입력해주세요.");
+            await showToast("수정할 내용을 입력해주세요.");
             return;
         }
 
@@ -75,7 +76,7 @@ export async function handleEdit(comment, ctx) {
             contentEl.style.display = "";
         } catch (err) {
             console.error(err);
-            alert(err?.message || "수정 중 오류가 발생했습니다.");
+            await showToast("수정 중 오류가 발생했습니다.");
         }
     });
 }
@@ -100,10 +101,10 @@ export async function handleDelete(comment, ctx) {
         const hasReplies = (repliesContainer?.children?.length ?? 0) > 0;
 
         if (!hasReplies) {
-            // 하드 삭제: 카드 제거
+            // 대댓글이 없다면 바로 하드 삭제: 카드 제거
             node.remove();
         } else {
-            // 소프트 삭제: 내용 치환 + 툴바 비활성
+            // 대댓글이 있다면 소프트 삭제: 내용 치환 + 툴바 비활성
             const deletedText = "삭제된 메시지입니다.";
             if (contentTargetEl) contentTargetEl.textContent = deletedText;
 
@@ -152,7 +153,6 @@ export async function handleReply(comment, ctx, postId) {
             const res = await saveComments({ parentId: comment.id, postId, content });
             const newReply = res.data;
 
-            const { createCommentCard } = await import("../components/commentCard.js");
             const { node: replyNode } = await createCommentCard(newReply, {
                 onCommentReply: (c2, ctx2) => handleReply(c2, ctx2, postId),
                 onCommentEdit: handleEdit,
@@ -167,7 +167,7 @@ export async function handleReply(comment, ctx, postId) {
             replyForm.classList.add("hidden");
         } catch (e2) {
             console.error(e2);
-            alert("답글 등록 중 오류가 발생했습니다.");
+            await showToast("답글 등록 중 오류가 발생했습니다.");
         }
     });
 }

@@ -94,6 +94,15 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
         replyBtn?.remove();
     }
 
+    /// 삭제 시, 수정/삭제 툴바는 안보이게
+    if (comment.deleted) {
+        rootEl.classList.add('is-deleted');
+
+        // 편집/삭제 버튼 제거
+        $toolbar?.querySelector('[data-action="edit"]')?.remove();
+        $toolbar?.querySelector('[data-action="delete"]')?.remove();
+    }
+
     // replies 컨테이너 없으면 만들어서 반환(템플릿 미수정 대비)
     let repliesContainer = $replies;
     if (!repliesContainer) {
