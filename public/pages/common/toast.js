@@ -4,7 +4,7 @@ export async function showToast(msg) {
 
     Object.assign(div.style, {
         position: 'fixed',
-        top: '20px',                  // ✅ 상단으로 이동
+        top: '20px',
         left: '50%',
         transform: 'translateX(-50%)',
         background: '#333',
