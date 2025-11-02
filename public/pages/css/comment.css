@@ -33,34 +33,6 @@
     flex: 1;
 }
 
-/* ───────────── 작성자 정보 ───────────── */
-.author {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-}
-.author__avatar {
-    width: 36px; height: 36px;
-    border-radius: 50%;
-    background-color: #d9d9d9;
-    flex-shrink: 0;
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-.author__name {
-    font-weight: 600;
-    color: #111;
-    font-size: .95rem;
-}
-.author__url { display: none; }
-.createdAt {
-    font-size: .85rem;
-    color: #777;
-    margin-left: auto;
-}
-
 /* ───────────── 대댓글 영역 ───────────── */
 .replies {
     margin-left: 48px;

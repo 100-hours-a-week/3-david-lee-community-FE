@@ -20,6 +20,19 @@
     color:var(--border);
 }
 
+/* 유저 이미지 */
+.postview .author__avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background-color: #d9d9d9;
+    flex-shrink: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.postview .author__url { display: none; }
+
 /* 본문 박스
    - HTML에서 .card를 함께 쓰면 이 블록은 불필요. 별도 스타일을 원할 때만 사용. */
 .content{
@@ -108,10 +121,4 @@
 .count{
     display:block; margin-top:4px;
     color:var(--muted); font-size:12px; text-align:right;
-}
-
-/* 반응형 */
-@media (max-width:640px){
-    .stats{ grid-template-columns:1fr 1fr }
-    .appbar__title{ font-size:16px }
 }
