@@ -3,9 +3,6 @@ const templateCache = new Map();
 
 /**
  * 템플릿 HTML을 비동기로 불러와서 <template> DOM 반환
- * @param {string} path - 템플릿 파일 경로 (예: '/components/postCard.html')
- * @param {string} id - template의 id 속성 (예: 'postCard')
- * @returns {Promise<HTMLTemplateElement>}
  */
 export async function loadTemplate(path, id) {
     // 캐시 있으면 바로 반환

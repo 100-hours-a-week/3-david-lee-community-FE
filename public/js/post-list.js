@@ -2,7 +2,7 @@
 import { getPosts } from '../api/post.js';
 
 /// 컴포넌트
-import { createPostCard } from '../components/postCard.js';
+import { createPostListCard } from '../components/postListCard.js';
 
 // ───────────── 내부 설정 ─────────────
 const listEl = document.getElementById('postList');
@@ -74,7 +74,7 @@ async function loadMore() {
                 author: p.user,
             };
 
-            const card = await createPostCard(post, {
+            const card = await createPostListCard(post, {
                 onClick: (pp) => {
                     location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(pp.id)}`;
                 },

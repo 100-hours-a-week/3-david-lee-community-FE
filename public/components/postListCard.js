@@ -2,10 +2,10 @@
 import { loadTemplate } from '../utils/templateLoader.js';
 
 /// 게시글 목록 만들기
-export async function createPostCard(post, { onClick } = {}) {
+export async function createPostListCard(post, { onClick } = {}) {
 
     // 템플릿 가져오기
-    const tpl = await loadTemplate('/components/postCard.html', 'postCard');
+    const tpl = await loadTemplate('/components/postListCard.html', 'postListCard');
     const node = tpl.content.cloneNode(true);
 
     // ───────────── 썸네일 처리 ─────────────
