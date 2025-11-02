@@ -1,54 +1,25 @@
-/* Layout */
-.container{ width:min(980px,100%); margin:24px auto 48px; padding:0 20px }
-.center{ display:flex; align-items:flex-start; justify-content:center; min-height:calc(100dvh - 120px) }
+/* 레아웃 재정의*/
 .panel{
     width:min(520px,100%); background:var(--card); border:1px solid var(--border);
     border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 20px;
 }
 
-/* Form */
-h1.title{ margin:6px 0 18px; text-align:center }
-.form{ display:grid; gap:14px }
-.field{ display:grid; gap:6px }
-.label{ font-weight:700 }
-.input{
-    height:42px; padding:0 12px; border:1px solid var(--border); border-radius:10px; outline:none;
-    background:#fff;
-}
-.input:focus{ box-shadow:0 0 0 4px var(--ring) }
-.help{ color:var(--muted); font-size:12px }
-.error{ color:#c00; font-size:12px }
-
-.actions{ display:grid; gap:10px }
-
-/* Avatar (signup) */
-.avatar-uploader{
-    display:grid; gap:8px; padding:14px; border:1px solid var(--border); border-radius:12px; background:#fff;
-}
+/* 이미지 업로드*/
 .avatar-circle{
     width:140px; height:140px; border-radius:50%; margin:8px auto 0;
     background:radial-gradient(circle at 50% 45%,#f0f0f3, #e6e7eb);
     border:1px solid var(--border); display:grid; place-items:center; color:var(--muted); font-size:20px;
 }
 
+/* 이미지 미리보기 스타일 */
 #avatarPreview{
-    /* 이미지 미리보기 스타일 */
-    width:140px; /* circle과 같은 크기로 설정 */
+    width:140px;
     height:140px;
     border-radius:50%;
     object-fit:cover;
     margin:8px auto 0; /* circle과 같은 마진 적용 */
     border:1px solid var(--border); /* border도 circle과 동일하게 적용 */
-    /* display:none; 는 JS가 제어 */
 }
 
-
-.note{ color:var(--muted); font-size:12px; text-align:center }
-
-.linkrow{ text-align:center; margin-top:6px }
-.linkrow a{ color:var(--text) }
-
-/* Responsive */
-@media (max-width:520px){
-    .panel{ padding:18px 16px }
-}
+/* 에러 표시*/
+.note{ color:var(--btn-danger); font-size:12px; text-align:center }
