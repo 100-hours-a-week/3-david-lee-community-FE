@@ -1,40 +1,119 @@
 
-/* 공통 레이아웃 */
+/* ───────────────── AppBar (개선판) ───────────────── */
 .appbar{
-    position:sticky; top:0; z-index:10;
-    background:#fff; border-bottom:1px solid var(--border);
-    height:64px;
-    display:flex; align-items:center; justify-content:center;
+    position: sticky;
+    top: 0;
+    z-index: 100;                     /* 상단 고정요소 위계 강화 */
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* iOS notch 안전영역 */
+    padding-top: env(safe-area-inset-top);
+    backdrop-filter: saturate(150%) blur(6px);   /* 투명 배경일 때도 읽기 쉬움 */
 }
+
+/* 스크롤 시 살짝 그림자 (JS로 .is-scrolled 토글) */
+.appbar.is-scrolled{
+    box-shadow: 0 6px 16px rgba(0,0,0,.06);
+}
+
 .appbar__inner{
-    width:min(980px, 100%); padding:0 20px;
-    display:flex; align-items:center; justify-content:center; gap:12px;
-    position:relative;
+    width: min(var(--bp-lg, 980px), 100%);
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;          /* 타이틀 중앙 정렬 */
+    gap: 12px;
+    position: relative;
+    height: 100%;
 }
-.appbar__title{font-weight:700; letter-spacing:.2px}
+
+/* 타이틀 */
+.appbar__title{
+    font-weight: 700;
+    letter-spacing: .2px;
+    font-size: 16px;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 뒤로가기 (왼쪽 고정) */
 .appbar__back{
-    position:absolute; left:20px; top:50%; transform:translateY(-50%);
-    display:inline-flex; align-items:center; gap:6px; cursor:pointer;
-    color:var(--muted);
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    cursor: pointer;
+    min-height: 36px;                 /* 터치 타깃 확보 */
+    padding: 6px 8px;
+    border-radius: 8px;
+    text-decoration: none;
+    outline: none;
 }
+.appbar__back:hover{ background: #f8f8fb }
+.appbar__back:focus-visible{
+    box-shadow: 0 0 0 3px var(--ring);
+}
+
+/* 아바타(오른쪽 고정) — div 또는 button 모두 대응 */
 .appbar__avatar{
-    position:absolute; right:20px; top:50%; transform:translateY(-50%);
-    width:36px; height:36px; border-radius:50%;
-    background:linear-gradient(#eee,#ddd); border:1px solid var(--border);
-
-    background-size: cover;        /* 이미지가 div를 꽉 채우도록 크기 조정 */
-    background-position: center;   /* 이미지를 div 중앙에 위치 */
-    background-repeat: no-repeat;  /* 이미지가 반복되는 것을 방지 */
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(#eee,#ddd);
+    border: 1px solid var(--border);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    outline: none;
+}
+.appbar__avatar:focus-visible{
+    box-shadow: 0 0 0 3px var(--ring);
 }
 
-/* 드롭다운 */
-.menu{position:absolute; right:20px; top:60px; width:160px; background:#fff; border:1px solid var(--border);
-    border-radius:12px; box-shadow:var(--shadow); padding:6px; display:none}
-.menu a{display:block; padding:10px 12px; border-radius:8px; color:inherit; text-decoration:none}
-.menu a:hover{background:#f8f8fb}
+/* ───────────── 드롭다운 메뉴 ───────────── */
+.menu {
+    position: absolute;
+    right: 20px;
+    top: 60px;
+    width: 160px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+    display: none;         /* 기본은 숨김 */
+    z-index: 1000;         /* 다른 요소 위에 표시 */
+}
 
+/* 메뉴 항목 */
+.menu a {
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+.menu a:hover {
+    background: #f8f8fb;
+}
 
-.menu { display:none; }
-.menu.is-open { display:block; }
-.appbar__avatar { cursor:pointer; } /* UX 개선 */
-.menu { z-index:1000; } /* 가림 방지 */
+/* is-open 클래스가 붙으면 표시 */
+.menu.is-open {
+    display: block;
+}
