@@ -1,8 +1,10 @@
-/* =========================
-   base.css  (공통 토큰 + 베이스 UI) — appbar 제외
-   ========================= */
+/*
+=========================
+   base.css  (베이스 UI)
+=========================
+*/
 
-/* 1) Design Tokens */
+/* 공통 디자인 Tokens */
 :root{
     --bg:#f4f5f7;
     --card:#ffffff;
@@ -11,6 +13,7 @@
     --border:#e5e7eb;
     --primary:#9b5cff;
     --primary-pressed:#824bff;
+    --primary-hover:#a887ff;
     --ring:#e4d5ff;
 
     --radius:16px;
@@ -22,6 +25,19 @@
     --bp-sm:480px;
     --bp-md:640px;
     --bp-lg:980px;
+}
+
+/* 버튼 색상 토큰 */
+:root {
+    --btn-primary: var(--primary);
+    --btn-primary-hover: var(--primary-hover);
+    --btn-primary-active: var(--primary-pressed);
+
+    --btn-danger: #ef4444;
+    --btn-danger-hover: #e64848;
+
+    --btn-ghost-bg: #fff;
+    --btn-ghost-hover: #e4e6eb;
 }
 
 /* 2) Reset / Base */
@@ -74,26 +90,95 @@ h1.page, h1.title{
     text-align:center;
 }
 
-/* 6) Buttons */
-.btn{
+/* 버튼 */
+.btn {
     display:inline-flex; align-items:center; justify-content:center;
-    height:44px; padding:0 16px;
-    border-radius:10px; border:1px solid transparent;
-    cursor:pointer; font-weight:700; transition:.15s ease;
+    height:40px; padding:0 16px; border-radius:10px;
+    border:1px solid transparent; cursor:pointer; user-select:none;
+    font-weight:600; transition:.15s ease;
 }
-.btn:disabled { opacity:.6; cursor:not-allowed; box-shadow:none }
-.btn--small{ height:34px; padding:0 12px; border-radius:8px; font-size:13px }
-.btn--ghost{ background:#fff; border-color:var(--border); color:var(--text) }
-.btn--primary{
-    background:var(--primary); color:#fff;
-    box-shadow:0 6px 14px rgba(155,92,255,.25)
-}
-.btn--primary:active{ background:var(--primary-pressed); transform:translateY(1px) }
-.btn--danger{ background:#fff; border-color:#ef4444; color:#ef4444 }
 
-/* (선택) 비활성화된 프라이머리 스타일 명시 */
-.btn--primary:disabled{
-    background:#cdb8ff; color:#fff; border-color:transparent; box-shadow:none; transform:none;
+/* Primary */
+.btn--primary {
+    background:var(--btn-primary);
+    color:#fff;
+    box-shadow:0 6px 14px rgba(155,92,255,.25);
+}
+.btn--primary:hover {
+    background:var(--btn-primary-hover);
+    box-shadow:0 2px 6px rgba(162,141,252,.35);
+}
+.btn--primary:active {
+    background:var(--btn-primary-active);
+    transform:translateY(1px);
+}
+.btn--primary:disabled {
+    background:#cdb8ff;
+    color:#fff;
+    border-color:transparent;
+    box-shadow:none;
+    transform:none;
+}
+
+/* Ghost */
+.btn--ghost {
+    background:var(--btn-ghost-bg);
+    border-color:var(--border);
+    color:var(--text);
+}
+.btn--ghost:hover {
+    background-color:var(--btn-ghost-hover);
+    color:var(--text);
+}
+
+/* Danger */
+.btn--danger {
+    background:#fff;
+    border-color:var(--btn-danger);
+    color:var(--btn-danger);
+}
+.btn--danger:hover {
+    background:var(--btn-danger);
+    color:#fff;
+}
+.btn--danger:active {
+    background:var(--btn-danger-hover);
+}
+
+/* Small, Disabled */
+.btn--small {
+    height:34px;
+    padding:0 12px;
+    border-radius:8px;
+    font-size:13px;
+}
+.btn:disabled {
+    opacity:.6;
+    cursor:not-allowed;
+    box-shadow:none;
+}
+
+/* 버튼 내부 고정형 */
+.btn--inside {
+    position: absolute;
+    bottom: 22px;
+    right: 32px;
+    background-color: var(--btn-primary);
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 16px;
+    font-size: .9rem;
+    cursor: pointer;
+    transition: background-color .2s ease, box-shadow .2s ease;
+}
+.btn--inside:hover {
+    background-color: var(--btn-primary-hover);
+    box-shadow: 0 2px 6px rgba(162,141,252,.4);
+}
+.btn--inside:active {
+    background-color: var(--btn-primary-active);
 }
 
 /* 7) Forms */
