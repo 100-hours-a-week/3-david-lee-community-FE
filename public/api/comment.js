@@ -2,7 +2,7 @@
 const BASE_URL = 'http://localhost:8080/v1/comments';
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 댓글 등록
 export async function saveComments(commentData) {

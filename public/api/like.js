@@ -2,7 +2,7 @@
 const BASE_URL = 'http://localhost:8080/v1/posts/likes';
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 좋아요
 export async function likePost(likeData) {

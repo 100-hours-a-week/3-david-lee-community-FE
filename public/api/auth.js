@@ -2,7 +2,7 @@
 const BASE_URL = 'http://localhost:8080/v1/auth';
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 로그인
 export async function login(loginData) {

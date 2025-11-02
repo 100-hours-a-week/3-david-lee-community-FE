@@ -2,7 +2,7 @@
 const BASE_URL = 'http://localhost:8080/v1/users';
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 회원가입
 export async function signUp(userData) {

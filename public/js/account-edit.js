@@ -1,4 +1,5 @@
 // ───────────── API ─────────────
+import {checkDuplicateNickname} from '../api/user.js';
 import { getMyPage, updateMyPage, withdraw } from '../api/user.js';
 import { getUrls, confirmUrls } from "../api/image.js";
 

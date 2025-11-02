@@ -2,7 +2,7 @@
 const BASE_URL = 'http://localhost:8080/v1/images';
 
 /// 인증 요청
-import { authFetch } from './base.js';
+import { authFetch } from './authFetch.js';
 
 /// 회원가입용 임시 주소 발급
 export async function getTempUrl(fileName) {
