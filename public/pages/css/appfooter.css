@@ -13,7 +13,7 @@
 
 /* 콘텐츠가 footer 뒤로 숨지지 않도록 하단 패딩 보강 */
 main.container {
-    padding-bottom: calc(var(--footer-h) + 15px); /* 살짝 여유분 */
+    padding-bottom: calc(var(--footer-h) + 50px); /* 살짝 여유분 */
 }
 
 
