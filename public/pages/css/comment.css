@@ -1,10 +1,10 @@
 /* ───────────── 댓글 카드 ───────────── */
 .comment__card {
-    background-color: #fff;
-    border-radius: 12px;
+    background: var(--card);
+    border-radius: var(--radius-sm);
     padding: 16px 20px;
     margin-bottom: 14px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    border: 1px solid var(--border);
     transition: background-color .2s ease, box-shadow .2s ease;
 }
 .comment__card.card--hover:hover {
@@ -14,9 +14,9 @@
 
 /* 본문 */
 .comment__content {
-    font-size: 1rem;
-    color: #222;
-    line-height: 1.5;
+    font-size: .95rem;
+    color: var(--text);
+    line-height: 1.6;
     white-space: pre-line;
     word-break: break-word;
 }
@@ -25,7 +25,7 @@
 .comment__header {
     display: flex;
     justify-content: space-between;
-    align-items: start;
+    align-items: flex-start;
     gap: 12px;
 }
 .comment__body {
@@ -33,87 +33,122 @@
     flex: 1;
 }
 
-/* ───────────── 대댓글 영역 ───────────── */
+/* ───────────── 대댓글 ───────────── */
 .replies {
     margin-left: 48px;
     margin-top: 10px;
-    border-left: 2px solid #e0e0e0;
+    border-left: 2px solid var(--border);
     padding-left: 12px;
 }
 
-/* ───────────── 섹션/작성 폼 ───────────── */
-.comment-title {
-    font-size: 1.1rem; font-weight: 700; color:#222;
-    margin-bottom: 14px; border-bottom: 2px solid #e0e0e0; padding-bottom: 6px;
-}
+/* ───────────── 댓글 입력 폼 ───────────── */
 .commentbox {
     position: relative;
-    background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
     padding: 16px 20px;
     margin-top: 32px;
-    display: flex; flex-direction: column;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
+
 .commentbox textarea {
-    width: 100%; min-height: 100px; resize: vertical;
-    border: 1px solid #ddd; border-radius: 10px;
+    width: 100%;
+    min-height: 100px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
     padding: 12px 14px 48px 14px;
-    font-size: .95rem; line-height: 1.5; color:#222; background:#fff;
+    font-size: .95rem;
+    line-height: 1.5;
+    color: var(--text);
+    background: #fff;
     transition: border-color .2s ease, box-shadow .2s ease;
 }
-.commentbox textarea::placeholder { color:#aaa; }
+.commentbox textarea::placeholder { color: var(--muted); }
 .commentbox textarea:focus {
-    outline: none; border-color:#a28dfc;
-    box-shadow:0 0 0 2px rgba(162,141,252,.25);
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--ring);
 }
 
 /* ───────────── 답글 폼 ───────────── */
-.reply-form{
+.reply-form {
     margin-top: 12px;
-    background:#fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
-    padding: 12px 12px 14px;
-}
-.reply-form textarea{
-    width: 100%; min-height: 80px; resize: vertical;
-    border: 1px solid #ddd; border-radius: 10px;
-    padding: 10px 12px; font-size: .95rem; line-height: 1.5; color:#222; background:#fff;
-    transition: border-color .2s ease, box-shadow .2s ease; box-sizing: border-box;
-}
-.reply-form textarea::placeholder{ color:#aaa; }
-.reply-form textarea:focus{
-    outline:none; border-color:#a28dfc;
-    box-shadow:0 0 0 2px rgba(162,141,252,.25);
-}
-.reply-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
-
-/* ───────────── 편집 폼 ───────────── */
-.edit-form{
-    margin-top: 8px;
-    background:#fff;
-    border: 1px solid #eee;
-    border-radius: 10px;
-    box-shadow: 0 1px 3px rgba(0,0,0,.05);
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
     padding: 12px;
 }
-.edit-form .edit-textarea{
-    width: 100%; min-height: 80px;
-    border: 1px solid #ddd; border-radius: 10px;
-    padding: 10px 12px; font-size: .95rem; line-height: 1.5; color:#222;
-    transition: border-color .2s, box-shadow .2s; box-sizing: border-box;
+.reply-form textarea {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: .95rem;
+    color: var(--text);
+    background: var(--card);
+    transition: border-color .2s ease, box-shadow .2s ease;
 }
-.edit-form .edit-textarea:focus{
-    outline:none; border-color:#a28dfc;
-    box-shadow:0 0 0 2px rgba(162,141,252,.25);
+.reply-form textarea::placeholder { color: var(--muted); }
+.reply-form textarea:focus {
+    outline: none;                          /* 기본 파란 테두리 제거 */
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(162, 141, 252, 0.25); /* 은은한 보라빛 */
+    transition: border-color .2s ease, box-shadow .2s ease;
 }
-.edit-actions{ display:flex; justify-content:flex-end; gap:8px; margin-top:8px; }
+.reply-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+/* ───────────── 편집 폼 ───────────── */
+.edit-form {
+    margin-top: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow);
+    padding: 12px;
+}
+.edit-form .edit-textarea {
+    width: 100%;
+    min-height: 80px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: .95rem;
+    color: var(--text);
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+.edit-form .edit-textarea:focus {
+    outline: none;                          /* 기본 파란 테두리 제거 */
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(162, 141, 252, 0.25);
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+.edit-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 8px;
+}
 
 /* ───────────── 상태/배지/유틸 ───────────── */
 .writer-badge {
-    font-size: 11px; background:#007bff; color:#fff;
-    border-radius: 4px; padding: 1px 4px; margin-left: 4px;
+    font-size: 11px;
+    background: var(--primary);
+    color: #fff;
+    border-radius: 4px;
+    padding: 1px 4px;
+    margin-left: 4px;
 }
 .hidden { display: none; }
