@@ -2,8 +2,9 @@
 import {AUTH_URL} from "./config.js";
 const BASE_URL = AUTH_URL;
 
-/// 인증 요청
+/// 인증 요청 및 토큰 저장소 유틸
 import { authFetch } from './authFetch.js';
+import {tokenStorage} from "../utils/tokenStorage.js";
 
 /// 로그인
 export async function login(loginData) {
@@ -20,15 +21,8 @@ export async function login(loginData) {
     }
 
     /// 응답 요청 ACCESS TOKEN 저장하기
-    const token = res.headers.get('Authorization');
-    if (token) {
-
-        /// Bearer 제거하고 저장
-        const pureToken = token.replace('Bearer ', '');
-
-        /// 로컬 스토리지에 저장하기
-        localStorage.setItem('accessToken', pureToken);
-    }
+    const token = extractBearer(res);
+    if (token) tokenStorage.set(token);
 
     return await res.json();
 }
@@ -44,6 +38,9 @@ export async function logout() {
         /// 없으면 예외 처리
         throw new Error(`로그아웃 실패 (${res.status})`);
     }
+
+    // 클라이언트 토큰 정리
+    tokenStorage.remove();
 
     return await res.json();
 }
@@ -61,14 +58,18 @@ export async function reissue() {
         throw new Error(`재발급 등록 실패 (${res.status})`);
     }
 
-    const token = res.headers.get('Authorization');
-    if (token) {
-        /// Bearer 제거하고 저장
-        const pureToken = token.replace('Bearer ', '');
-
-        /// 로컬 스토리지에 저장
-        localStorage.setItem('accessToken', pureToken);
-    }
+    const token = extractBearer(res);
+    if (token) tokenStorage.set(token);
 
     return await res.json();
+}
+
+/**
+ * Authorization 헤더에서 Bearer 토큰 부분만 추출
+ */
+function extractBearer(res) {
+    const raw = res.headers.get('Authorization');
+    if (!raw) return null;
+    // 대소문자 구분 없이 "Bearer " 제거
+    return raw.replace(/^Bearer\s+/i, '').trim();
 }
