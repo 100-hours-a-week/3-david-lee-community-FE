@@ -96,10 +96,6 @@
     box-shadow:0 0 0 2px rgba(162,141,252,.25);
 }
 
-.divider {
-    border: none; border-top: 1.5px solid #e0e0e0; margin: 25px 0;
-}
-
 /* ───────────── 답글 폼 ───────────── */
 .reply-form{
     margin-top: 12px;

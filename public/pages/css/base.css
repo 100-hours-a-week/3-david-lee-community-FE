@@ -248,4 +248,12 @@ h1.page, h1.title{
     position:absolute !important; width:1px; height:1px; padding:0; margin:-1px;
     overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
 }
-.mt-8{ margin-top:8px } .mt-12{ margin-top:12px } .mt-20{ margin-top:20px }
+.mt-8{ margin-top:8px }
+.mt-12{ margin-top:12px }
+.mt-20{ margin-top:20px }
+
+/* 나누기 */
+
+.divider {
+    border: none; border-top: 1.5px solid #e0e0e0; margin: 25px 0;
+}
