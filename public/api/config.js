@@ -1,5 +1,5 @@
 // 전역 __ENV__를 읽어서 상수 제공
-export const API_BASE = 'http://localhost:8080/v1';
+export const API_BASE = `${location.protocol}//${location.hostname}:8080/v1`;
 export const AUTH_URL = `${API_BASE}/auth`;
 export const USER_URL = `${API_BASE}/users`;
 export const POLICY_URL = `${API_BASE}/policy`;
