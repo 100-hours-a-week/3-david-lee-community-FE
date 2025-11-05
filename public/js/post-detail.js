@@ -4,7 +4,7 @@ import { likePost } from "../api/like.js";
 import { unlikePost } from "../api/like.js";
 
 /// 컴포넌트
-import { createPostDetailCard } from '../components/PostDetailCard.js';
+import { createPostDetailCard } from '../components/postDetailCard.js';
 
 /// 댓글 조회 JS 사용
 import { loadComments } from './comment-list.js';

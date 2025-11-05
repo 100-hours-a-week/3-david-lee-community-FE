@@ -75,7 +75,7 @@ export async function createPostDetailCard(post, opts = {}) {
     const {onToggleLike, onEdit, onDelete} = opts;
 
     // 템플릿 로드
-    const tpl = await loadTemplate('/components/PostDetailCard.html', 'PostDetailCard');
+    const tpl = await loadTemplate('/components/postDetailCard.html', 'postDetailCard');
     const node = tpl.content.cloneNode(true);
 
     // ──────────────────────────────
