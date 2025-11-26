@@ -34,6 +34,9 @@
 
 /* 타이틀 */
 .appbar__title{
+    display: flex;
+    align-items: center;
+    gap: 8px;
     font-weight: 700;
     letter-spacing: .2px;
     font-size: 16px;
@@ -41,7 +44,18 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.appbar__logo-icon{
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Fira Code', 'Consolas', monospace;
+}
+
+.appbar__logo-text{
     color: var(--text);
+    font-weight: 700;
 }
 
 /* 뒤로가기 (왼쪽 고정) */

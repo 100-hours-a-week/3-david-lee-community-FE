@@ -5,9 +5,9 @@ const port = 3000;
 // 현재 디렉터리의 모든 파일을 정적(static)으로 제공
 app.use(express.static('public'));
 
-// 루트("/") 접근 시 pages/index.html로 리다이렉트
+// 루트("/") 접근 시 홈 페이지로 리다이렉트
 app.get('/', (req, res) => {
-    res.redirect('/pages/html/login.html');
+    res.redirect('/pages/html/home.html');
 });
 
 // 서버 실행
