@@ -8,7 +8,7 @@ const header = document.querySelector('.appbar');
 /// 내부에 HTML 넣기
 header.innerHTML = `
 <div class="appbar__inner">
-        <strong class="appbar__title">아무 말 대잔치</strong>
+        <strong class="appbar__title">개발자 커뮤니티</strong>
         <div class="appbar__avatar" id="avatarBtn" title="프로필"></div>
         <nav class="menu" id="menu">
             <a href="/pages/html/account-edit.html">회원정보수정</a>

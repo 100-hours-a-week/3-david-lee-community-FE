@@ -11,7 +11,7 @@ if (header) {
     header.innerHTML = `
     <div class="appbar__inner">
       <a class="appbar__back" href="/pages/html/post-list.html" aria-label="뒤로가기">← 뒤로</a>
-      <strong class="appbar__title">아무 말 대잔치</strong>
+      <strong class="appbar__title">개발자 커뮤니티</strong>
       <div class="appbar__avatar" id="avatarBtn" title="프로필"></div>
       <nav class="menu" id="menu">
         <a href="/pages/html/account-edit.html">회원정보수정</a>

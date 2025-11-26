@@ -1,4 +1,6 @@
-/* 레아웃 재정의*/
+/* Auth Pages - Dark Developer Theme */
+
+/* 레이아웃 재정의*/
 .panel{
     width:min(520px,100%); background:var(--card); border:1px solid var(--border);
     border-radius:var(--radius); box-shadow:var(--shadow); padding:22px 20px;
@@ -7,7 +9,7 @@
 /* 이미지 업로드*/
 .avatar-circle{
     width:140px; height:140px; border-radius:50%; margin:8px auto 0;
-    background:radial-gradient(circle at 50% 45%,#f0f0f3, #e6e7eb);
+    background:radial-gradient(circle at 50% 45%,#21262d, #161b22);
     border:1px solid var(--border); display:grid; place-items:center; color:var(--muted); font-size:20px;
 }
 
@@ -17,6 +19,6 @@
     height:140px;
     border-radius:50%;
     object-fit:cover;
-    margin:8px auto 0; /* circle과 같은 마진 적용 */
-    border:1px solid var(--border); /* border도 circle과 동일하게 적용 */
+    margin:8px auto 0;
+    border:1px solid var(--border);
 }

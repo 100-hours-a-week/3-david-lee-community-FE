@@ -1,3 +1,5 @@
+/* Post Editor - Dark Developer Theme */
+
 /* 이미지 CSS */
 .image-list {
     display: grid;
@@ -7,9 +9,10 @@
 }
 .image-item {
     position: relative;
-    border: 1px solid #ddd;
+    border: 1px solid var(--border);
     border-radius: 8px;
     overflow: hidden;
+    background: var(--card);
 }
 .image-item img {
     width: 100%;
@@ -22,7 +25,7 @@
     top: 6px;
     right: 6px;
     border: none;
-    background: rgba(0,0,0,0.6);
+    background: rgba(0,0,0,0.8);
     color: #fff;
     width: 22px;
     height: 24px;
@@ -37,4 +40,5 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
+    color: var(--muted);
 }

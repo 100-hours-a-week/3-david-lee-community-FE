@@ -1,10 +1,10 @@
 
-/* ───────────────── AppBar (개선판) ───────────────── */
+/* ───────────────── AppBar (Dark Developer Theme) ───────────────── */
 .appbar{
     position: sticky;
     top: 0;
-    z-index: 100;                     /* 상단 고정요소 위계 강화 */
-    background: #fff;
+    z-index: 100;
+    background: #0d1117;
     border-bottom: 1px solid var(--border);
     height: 64px;
     display: flex;
@@ -13,12 +13,12 @@
 
     /* iOS notch 안전영역 */
     padding-top: env(safe-area-inset-top);
-    backdrop-filter: saturate(150%) blur(6px);   /* 투명 배경일 때도 읽기 쉬움 */
+    backdrop-filter: saturate(150%) blur(6px);
 }
 
 /* 스크롤 시 살짝 그림자 (JS로 .is-scrolled 토글) */
 .appbar.is-scrolled{
-    box-shadow: 0 6px 16px rgba(0,0,0,.06);
+    box-shadow: 0 6px 16px rgba(0,0,0,.5);
 }
 
 .appbar__inner{
@@ -26,7 +26,7 @@
     padding: 0 20px;
     display: flex;
     align-items: center;
-    justify-content: center;          /* 타이틀 중앙 정렬 */
+    justify-content: center;
     gap: 12px;
     position: relative;
     height: 100%;
@@ -41,6 +41,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text);
 }
 
 /* 뒤로가기 (왼쪽 고정) */
@@ -54,18 +55,18 @@
     gap: 6px;
     color: var(--muted);
     cursor: pointer;
-    min-height: 36px;                 /* 터치 타깃 확보 */
+    min-height: 36px;
     padding: 6px 8px;
     border-radius: 8px;
     text-decoration: none;
     outline: none;
 }
-.appbar__back:hover{ background: #f8f8fb }
+.appbar__back:hover{ background: #21262d; color: var(--text); }
 .appbar__back:focus-visible{
     box-shadow: 0 0 0 3px var(--ring);
 }
 
-/* 아바타(오른쪽 고정) — div 또는 button 모두 대응 */
+/* 아바타(오른쪽 고정) */
 .appbar__avatar{
     position: absolute;
     right: 20px;
@@ -73,7 +74,7 @@
     transform: translateY(-50%);
     width: 36px; height: 36px;
     border-radius: 50%;
-    background: linear-gradient(#eee,#ddd);
+    background: linear-gradient(#30363d,#21262d);
     border: 1px solid var(--border);
     background-size: cover;
     background-position: center;
@@ -91,13 +92,13 @@
     right: 20px;
     top: 60px;
     width: 160px;
-    background: #fff;
+    background: #161b22;
     border: 1px solid var(--border);
     border-radius: 12px;
     box-shadow: var(--shadow);
     padding: 6px;
-    display: none;         /* 기본은 숨김 */
-    z-index: 1000;         /* 다른 요소 위에 표시 */
+    display: none;
+    z-index: 1000;
 }
 
 /* 메뉴 항목 */
@@ -105,12 +106,12 @@
     display: block;
     padding: 10px 12px;
     border-radius: 8px;
-    color: inherit;
+    color: var(--text);
     text-decoration: none;
     transition: background 0.15s ease;
 }
 .menu a:hover {
-    background: #f8f8fb;
+    background: #21262d;
 }
 
 /* is-open 클래스가 붙으면 표시 */

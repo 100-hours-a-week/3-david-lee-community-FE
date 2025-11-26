@@ -1,26 +1,27 @@
 /*
 =========================
    base.css  (베이스 UI)
+   Dark Developer Theme
 =========================
 */
 
-/* 공통 디자인 Tokens */
+/* 공통 디자인 Tokens - Dark Developer Theme */
 :root{
-    --bg:#f9fafb;
-    --card:#ffffff;
-    --text:#111827;
-    --muted:#6b7280;
-    --border:#e5e7eb;
+    --bg:#0d1117;
+    --card:#161b22;
+    --text:#e6edf3;
+    --muted:#8b949e;
+    --border:#30363d;
 
-    --primary:#9b5cff;
-    --primary-pressed:#824bff;
-    --primary-hover:#a887ff;
-    --ring:#e4d5ff;
+    --primary:#8b5cf6;
+    --primary-pressed:#7c3aed;
+    --primary-hover:#a78bfa;
+    --ring:#5b21b6;
 
     --radius:16px;
     --radius-sm:12px;
 
-    --shadow:0 10px 20px rgba(0,0,0,.06), 0 2px 6px rgba(0,0,0,.05);
+    --shadow:0 10px 20px rgba(0,0,0,.4), 0 2px 6px rgba(0,0,0,.3);
 
     /* Optional breakpoints */
     --bp-sm:480px;
@@ -35,11 +36,11 @@
     --btn-primary-hover: var(--primary-hover);
     --btn-primary-active: var(--primary-pressed);
 
-    --btn-danger: #ef4444;
-    --btn-danger-hover: #e64848;
+    --btn-danger: #f87171;
+    --btn-danger-hover: #ef4444;
 
-    --btn-ghost-bg: #fff;
-    --btn-ghost-hover: #e4e6eb;
+    --btn-ghost-bg: #21262d;
+    --btn-ghost-hover: #30363d;
 }
 
 /* 2) Reset / Base */
@@ -49,7 +50,7 @@ body{
     margin:0;
     background:var(--bg);
     color:var(--text);
-    font:14px/1.5 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+    font:14px/1.5 'JetBrains Mono', 'Fira Code', 'Consolas', Monaco, monospace, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
     "Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic", sans-serif;
 }
 img { max-width:100%; display:block }
@@ -76,9 +77,10 @@ button { font: inherit }
 }
 .card--hover{ transition: box-shadow .2s ease, transform .05s ease }
 .card--hover:hover {
-    background: #f9fafb;
-    box-shadow: 0 16px 28px rgba(0,0,0,.08);
+    background: #1c2128;
+    box-shadow: 0 16px 28px rgba(0,0,0,.6);
     transform: translateY(-1px);
+    border-color: #484f58;
 }
 
 .panel{
@@ -96,6 +98,7 @@ button { font: inherit }
 h1.page, h1.title{
     margin:6px 0 18px;
     text-align:center;
+    color: var(--text);
 }
 
 /* 버튼 */
@@ -113,11 +116,11 @@ h1.page, h1.title{
 .btn--primary {
     background:var(--btn-primary);
     color:#fff;
-    box-shadow:0 6px 14px rgba(155,92,255,.25);
+    box-shadow:0 6px 14px rgba(139,92,246,.35);
 }
 .btn--primary:hover {
     background:var(--btn-primary-hover);
-    box-shadow:0 2px 6px rgba(162,141,252,.35);
+    box-shadow:0 2px 6px rgba(167,139,250,.45);
 }
 .btn--primary:active {
     background:var(--btn-primary-active);
@@ -141,11 +144,12 @@ h1.page, h1.title{
 .btn--ghost:hover {
     background-color:var(--btn-ghost-hover);
     color:var(--text);
+    border-color: #484f58;
 }
 
 /* Danger */
 .btn--danger {
-    background:#fff;
+    background:transparent;
     border-color:var(--btn-danger);
     color:var(--btn-danger);
 }
@@ -187,7 +191,7 @@ h1.page, h1.title{
 }
 .btn--inside:hover {
     background-color: var(--btn-primary-hover);
-    box-shadow: 0 2px 6px rgba(162,141,252,.4);
+    box-shadow: 0 2px 6px rgba(167,139,250,.5);
 }
 .btn--inside:active {
     background-color: var(--btn-primary-active);
@@ -200,23 +204,23 @@ h1.page, h1.title{
 
 /* 유효한 상태 (성공) */
 .field.is-valid .note {
-    color: #2e7d32;
+    color: #4ade80;
 }
 
 /* 유효하지 않은 상태 (에러) */
 .field.is-invalid .note {
-    color: #d32f2f;
+    color: #f87171;
 }
 
 /* 인풋 테두리 강조 */
 .field.is-valid input,
 .field.is-valid textarea {
-    border-color: #2e7d32;
+    border-color: #4ade80;
 }
 
 .field.is-invalid input,
 .field.is-invalid textarea {
-    border-color: #d32f2f;
+    border-color: #f87171;
 }
 
 /* 전환 부드럽게 */
@@ -224,36 +228,38 @@ h1.page, h1.title{
 .field textarea {
     transition: border-color 0.2s, box-shadow 0.2s;
 }
-.label{ font-weight:700 }
-.required::after{ content:"*"; margin-left:4px; color:#c00 }
+.label{ font-weight:700; color: var(--text); }
+.required::after{ content:"*"; margin-left:4px; color:#f87171 }
 
 .input, .textarea{
     width:100%;
     border:1px solid var(--border);
     border-radius:10px;
-    background:#fff; outline:none;
+    background:#0d1117;
+    color: var(--text);
+    outline:none;
     padding:10px 12px; min-height:42px;
 }
 .input:focus, .textarea:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(162, 141, 252, 0.25); /* 은은한 보라빛 */
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
     transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.input:disabled{ background:#f7f7fa; color:var(--muted) }
+.input:disabled{ background:#161b22; color:var(--muted) }
 .textarea{ min-height:200px; resize:vertical }
 
 .help{ color:var(--muted); font-size:12px }
-.error, .field__error{ color:#ef4444; font-size:12px; margin-top:6px; min-height:1em }
+.error, .field__error{ color:#f87171; font-size:12px; margin-top:6px; min-height:1em }
 
 /* 에러 표시*/
 .note{ color:var(--btn-danger); font-size:12px; text-align:center }
 
-.input.is-invalid{ border-color:#ef4444 !important; outline-color:#ef4444 !important }
-.input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12) }
-.field.is-invalid .input{ border-color:#ef4444 !important }
-.field.is-invalid .input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(239,68,68,.12) }
+.input.is-invalid{ border-color:#f87171 !important; outline-color:#f87171 !important }
+.input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(248,113,113,.25) }
+.field.is-invalid .input{ border-color:#f87171 !important }
+.field.is-invalid .input[aria-invalid="true"]{ box-shadow:0 0 0 3px rgba(248,113,113,.25) }
 
 /* 게시글 유저 이미지*/
 .author {
@@ -264,25 +270,25 @@ h1.page, h1.title{
 }
 .author__avatar{
     width:36px; height:36px; border-radius:50%;
-    background:#e5e7eb; border:1px solid var(--border);
+    background:#21262d; border:1px solid var(--border);
     overflow:hidden;
 }
 .author__avatar img{ width:100%; height:100%; object-fit:cover; display:block }
 .author__name {
     font-weight: 600;
-    color: #111;
+    color: var(--text);
     font-size: .95rem;
 }
 .createdAt {
     font-size: .85rem;
-    color: #777;
+    color: var(--muted);
     margin-left: auto;
 }
 
 /* 유저 이미지 */
 .avatar-uploader{
     display:grid; gap:8px; padding:14px;
-    border:1px solid var(--border); border-radius:12px; background:#fff;
+    border:1px solid var(--border); border-radius:12px; background:var(--card);
 }
 
 /* ───────────── 파일 선택 (filebox) ───────────── */
@@ -317,12 +323,12 @@ h1.page, h1.title{
 .filebox .fake:hover {
     background: var(--btn-ghost-hover);
     border-color: var(--primary-hover);
-    box-shadow: 0 0 0 2px rgba(162,141,252,.15);
+    box-shadow: 0 0 0 2px rgba(139,92,246,.2);
 }
 .filebox .fake:active {
     background: var(--btn-primary-active);
     color: #fff;
-    box-shadow: 0 0 0 3px rgba(162,141,252,.25);
+    box-shadow: 0 0 0 3px rgba(139,92,246,.3);
 }
 
 /* 선택된 파일명 */
@@ -354,7 +360,7 @@ h1.page, h1.title{
 /* 나누기 */
 
 .divider {
-    border: none; border-top: 1.5px solid #e0e0e0; margin: 25px 0;
+    border: none; border-top: 1.5px solid var(--border); margin: 25px 0;
 }
 
 /* 반응형 */
