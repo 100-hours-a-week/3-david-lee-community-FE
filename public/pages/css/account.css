@@ -1,3 +1,5 @@
+/* Account Pages - Dark Developer Theme */
+
 /* Layout */
 .panel{
     width:min(520px,100%); background:var(--card); border:1px solid var(--border);
@@ -7,7 +9,7 @@
 /* Avatar big */
 .profile{
     width:150px;height:150px;border-radius:50%;margin:8px auto 12px;
-    background:radial-gradient(circle at 50% 45%,#f0f0f3,#e6e7eb);
+    background:radial-gradient(circle at 50% 45%,#21262d,#161b22);
     border:1px solid var(--border);
     position:relative;
     display:grid;
@@ -16,32 +18,22 @@
 
 .profile button{
     position:absolute; bottom:10px; left:50%; transform:translateX(-50%);
-    height:30px; padding:0 12px; border-radius:16px; border:1px solid var(--border); background:#fff; cursor:pointer
+    height:30px; padding:0 12px; border-radius:16px; border:1px solid var(--border);
+    background:var(--btn-ghost-bg); color: var(--text); cursor:pointer
 }
 
 /* span이 부모와 규격이 같고 이미지를 표시하도록 */
 .profile span {
-    /* 부모 div.profile과 동일한 크기로 설정 */
     display: block;
     width: 100%;
     height: 100%;
-
-    /* 부모와 동일하게 원형 설정 */
     border-radius: 50%;
-
-    /* 배경색과 테두리는 필요 없으므로 제거 (부모가 처리) */
     border: 4px solid var(--border);
-
-    /* 이미지가 없을 때 투명하여 부모의 회색 배경이 보이도록 */
     background: transparent;
-
-    /* 이미지 표시 설정 */
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-
-    /* span이 부모 profile 위에 정확히 겹치도록 */
-    position: absolute; /* 절대 위치 지정 */
+    position: absolute;
     top: 0;
     left: 0;
 }

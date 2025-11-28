@@ -10,6 +10,6 @@ footer.innerHTML = `
     <span class="divider">|</span>
     <a href="${API_BASE}/policy/privacy">개인정보처리방침</a>
     <span class="divider">|</span>
-    <p class="footer__copy">© 2025 아무 말 대잔치. All rights reserved.</p>
+    <p class="footer__copy">© 2025 개발자 커뮤니티. All rights reserved.</p>
   </div>
 `;

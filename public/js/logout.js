@@ -15,7 +15,7 @@ export function attachLogout(
     {
         onBefore = () => {},
         onAfter = () => {},
-        redirectTo = '/pages/html/login.html',
+        redirectTo = '/',
         clear = clearAuthentication,
         textDuring = '로그아웃 중...',
         // 목적지에서 ?toast=logout 을 읽어 토스트 띄우도록

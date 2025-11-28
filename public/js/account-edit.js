@@ -239,7 +239,10 @@ withdrawBtn?.addEventListener("click", async () => {
     if (!confirm("정말 탈퇴하시겠습니까?")) return;
     try {
         await withdraw();
+        // 인증 정보 삭제
+        localStorage.removeItem('accessToken');
+        sessionStorage.clear();
     } finally {
-        location.href = "/pages/html/login.html";
+        location.href = "/";
     }
 });

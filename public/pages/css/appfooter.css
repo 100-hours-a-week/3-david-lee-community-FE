@@ -1,9 +1,11 @@
+/* App Footer - Dark Developer Theme */
+
 .appfooter {
-    background: #f9fafb;
-    border-top: 1px solid #e5e7eb;
+    background: #0d1117;
+    border-top: 1px solid var(--border);
     padding: 14px 0;
     text-align: center;
-    color: #6b7280;
+    color: var(--muted);
     position: fixed;
     bottom: 0;
     left: 0;
@@ -13,7 +15,7 @@
 
 /* 콘텐츠가 footer 뒤로 숨지지 않도록 하단 패딩 보강 */
 main.container {
-    padding-bottom: calc(var(--footer-h) + 50px); /* 살짝 여유분 */
+    padding-bottom: calc(var(--footer-h) + 50px);
 }
 
 
@@ -22,21 +24,22 @@ main.container {
     justify-content: center;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap; /* 화면이 좁아지면 줄바꿈 가능 */
+    flex-wrap: wrap;
 }
 
 .footer__inner a {
-    color: #6b7280;
+    color: var(--muted);
     text-decoration: none;
     font-size: 0.9rem;
 }
 
 .footer__inner a:hover {
     text-decoration: underline;
+    color: var(--text);
 }
 
 .footer__copy {
     margin: 0;
     font-size: 0.9rem;
-    color: #9ca3af;
+    color: var(--muted);
 }
