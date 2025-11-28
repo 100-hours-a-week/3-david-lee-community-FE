@@ -6,6 +6,7 @@
     <title>개발자 커뮤니티 — 개발 이야기를 공유하는 공간</title>
     <link rel="stylesheet" href="../css/base.css">
     <link rel="stylesheet" href="../css/home.css">
+    <script type="module" src="../../js/home.js"></script>
 </head>
 <body>
     <!-- 홈 컨테이너 -->
@@ -21,16 +22,16 @@
         <!-- 메인 히어로 섹션 -->
         <section class="hero__section">
             <div class="hero__content">
-                <h2 class="hero__title">
+                <h2 class="hero__title fade-in">
                     개발 이야기를 나누는<br>
                     <span class="highlight">특별한 공간</span>
                 </h2>
-                <p class="hero__description">
+                <p class="hero__description fade-in delay-100">
                     코드, 아이디어, 경험을 공유하세요.<br>
                     함께 성장하는 개발자 커뮤니티입니다.
                 </p>
 
-                <div class="hero__actions">
+                <div class="hero__actions fade-in delay-200">
                     <a href="/pages/html/login.html" class="btn btn--primary btn--large">
                         로그인
                     </a>
@@ -42,7 +43,7 @@
 
             <!-- 코드 블록 데코레이션 -->
             <div class="hero__decoration">
-                <div class="code-block">
+                <div class="code-block scale-up delay-300">
                     <div class="code-header">
                         <span class="dot dot--red"></span>
                         <span class="dot dot--yellow"></span>
@@ -61,19 +62,19 @@
 
         <!-- 기능 소개 -->
         <section class="features">
-            <div class="feature">
+            <div class="feature scroll-reveal">
                 <div class="feature__icon">💬</div>
                 <h3 class="feature__title">자유로운 소통</h3>
                 <p class="feature__description">개발 관련 질문, 팁, 경험을 자유롭게 공유하세요</p>
             </div>
 
-            <div class="feature">
+            <div class="feature scroll-reveal delay-100">
                 <div class="feature__icon">🚀</div>
                 <h3 class="feature__title">프로젝트 공유</h3>
                 <p class="feature__description">작업한 프로젝트를 공유하고 피드백을 받으세요</p>
             </div>
 
-            <div class="feature">
+            <div class="feature scroll-reveal delay-200">
                 <div class="feature__icon">🤝</div>
                 <h3 class="feature__title">함께 성장</h3>
                 <p class="feature__description">다른 개발자들과 함께 배우고 성장하세요</p>

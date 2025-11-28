@@ -7,7 +7,73 @@
     flex-direction: column;
     background: var(--bg);
     color: var(--text);
+    overflow-x: hidden;
 }
+
+/* ─────────── 스크롤 애니메이션 ─────────── */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 페이드 인 효과 */
+.fade-in {
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+.fade-in.revealed {
+    opacity: 1;
+}
+
+/* 좌측에서 슬라이드 */
+.slide-left {
+    opacity: 0;
+    transform: translateX(-50px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.slide-left.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 우측에서 슬라이드 */
+.slide-right {
+    opacity: 0;
+    transform: translateX(50px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.slide-right.revealed {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+/* 스케일 업 효과 */
+.scale-up {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scale-up.revealed {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* 딜레이 클래스 */
+.delay-100 { transition-delay: 0.1s; }
+.delay-200 { transition-delay: 0.2s; }
+.delay-300 { transition-delay: 0.3s; }
+.delay-400 { transition-delay: 0.4s; }
+.delay-500 { transition-delay: 0.5s; }
 
 /* ─────────── 헤더 ─────────── */
 .home__header {
