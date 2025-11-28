@@ -27,6 +27,7 @@ function required(el, name) {
 // ───────────── 상태 및 DOM ─────────────
 let postId, titleInput, contentInput, titleCount, contentCount, fileInput, imageListEl, addMoreBtn;
 let galleryCtl;
+let submitSpinner;
 
 function updateCounts() {
     titleCount.textContent   = `${titleInput.value.length} / ${titleInput.maxLength || 0}`;
@@ -105,7 +106,7 @@ function init() {
     });
 
     // 제출용 스피너
-    const submitSpinner = createSpinnerOverlay({ ariaLabel: "게시글 수정 중" });
+    submitSpinner = createSpinnerOverlay({ ariaLabel: "게시글 수정 중" });
 
     // 모듈 생성
     galleryCtl = createImageGalleryUploader({
