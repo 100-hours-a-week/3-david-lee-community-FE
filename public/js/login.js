@@ -64,3 +64,6 @@ if (params.get('toast') === 'signup') {
 if (params.get('toast') === 'login-required') {
     showToast('로그인이 필요합니다.');
 }
+if (params.get('toast') === 'withdraw') {
+    showToast('회원 탈퇴가 완료되었습니다.');
+}

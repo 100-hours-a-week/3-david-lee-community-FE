@@ -237,13 +237,27 @@ formEl?.addEventListener("submit", async (e) => {
 
 // ===== 탈퇴 =====
 withdrawBtn?.addEventListener("click", async () => {
-    if (!confirm("정말 탈퇴하시겠습니까?")) return;
+    if (!confirm("정말 탈퇴하시겠습니까? 이 작업은 되돌릴 수 없습니다.")) return;
+
     try {
         await withdraw();
-        // 인증 정보 삭제
-        localStorage.removeItem('accessToken');
-        sessionStorage.clear();
-    } finally {
-        location.href = "/";
+    } catch (err) {
+        console.error(err);
+        await showToast(err?.message || "탈퇴 처리 중 오류가 발생했습니다.");
+        return;
     }
+
+    // 모든 인증 정보 완전히 삭제
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // 쿠키 삭제 (refreshToken 등)
+    document.cookie.split(";").forEach((c) => {
+        document.cookie = c
+            .replace(/^ +/, "")
+            .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+    });
+
+    // 로그인 페이지로 리다이렉트
+    location.href = "/pages/html/login.html?toast=withdraw";
 });
