@@ -28,7 +28,11 @@ function showError(msg){
 // ───────────── 상세 조회 ─────────────
 async function load() {
     try {
-        if (!postId) throw new Error('잘못된 접근입니다. (id 누락)');
+        // ID가 없으면 404 페이지로 리다이렉트
+        if (!postId) {
+            location.href = '/pages/html/404.html';
+            return;
+        }
 
         // 1) 상세 조회
         const data = await getPostDetail(postId);
@@ -92,6 +96,13 @@ async function load() {
 
     } catch (e) {
         console.error(e);
+
+        // 404 에러인 경우 404 페이지로 리다이렉트
+        if (e.status === 404) {
+            location.href = '/pages/html/404.html';
+            return;
+        }
+
         showError(e.message || '상세 조회 실패');
     }
 }

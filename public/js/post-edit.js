@@ -36,8 +36,7 @@ function updateCounts() {
 // ───────────── 초기 데이터 로드 ─────────────
 async function preload() {
     if (!postId) {
-        alert('잘못된 접근입니다. (id 누락)');
-        location.href = '/pages/html/post-list.html';
+        location.href = '/pages/html/404.html';
         return;
     }
 
@@ -123,6 +122,13 @@ function init() {
 
     preload().catch(err => {
         console.error(err);
+
+        // 404 에러인 경우 404 페이지로 리다이렉트
+        if (err.status === 404) {
+            location.href = '/pages/html/404.html';
+            return;
+        }
+
         alert(err?.message || '기존 내용을 불러오지 못했습니다.');
     });
 

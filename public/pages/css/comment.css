@@ -19,8 +19,9 @@
     font-size: .95rem;
     color: var(--text);
     line-height: 1.6;
-    white-space: pre-line;
+    white-space: pre-wrap;      /* 줄바꿈과 띄어쓰기 모두 유지 */
     word-break: break-word;
+    overflow-wrap: break-word;  /* 긴 텍스트 처리 */
 }
 
 /* 헤더/바디 */

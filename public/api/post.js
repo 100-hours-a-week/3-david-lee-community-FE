@@ -49,6 +49,12 @@ export async function getPostDetail(postId) {
     const res = await authFetch(`${BASE_URL}/${postId}`, {method: 'GET'});
 
     if (!res.ok) {
+        // 404 에러인 경우 특별히 처리
+        if (res.status === 404) {
+            const error = new Error('존재하지 않는 게시글입니다.');
+            error.status = 404;
+            throw error;
+        }
         throw new Error(`상세 조회 실패 (${res.status})`);
     }
 
