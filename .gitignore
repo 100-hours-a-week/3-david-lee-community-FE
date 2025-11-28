@@ -1,0 +1,76 @@
+# --------------------------
+# OS / System Files
+# --------------------------
+.DS_Store
+*.swp
+*.tmp
+Thumbs.db
+
+# --------------------------
+# Node.js
+# --------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+dist/
+build/
+out/
+
+# Environment files (보안상 절대 올리면 안 됨)
+.env
+.env.*.local
+
+# PM2 logs
+.pids
+*.pid
+*.seed
+*.pid.lock
+
+# --------------------------
+# Logs
+# --------------------------
+logs/
+*.log
+log/
+
+# --------------------------
+# IDE / Editors
+# --------------------------
+# VSCode
+.vscode/
+.history/
+
+# JetBrains (WebStorm, IntelliJ 등)
+.idea/
+*.iml
+out/
+
+# --------------------------
+# Frontend Build Artifacts
+# --------------------------
+.cache/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+.vitepress/
+.hugo_build.lock
+
+# --------------------------
+# Coverage / Test
+# --------------------------
+coverage/
+.nyc_output/
+
+# --------------------------
+# Misc
+# --------------------------
+*.tsbuildinfo
+*.tgz
+*.zip
+
+# Local env files not for git
+.secret
