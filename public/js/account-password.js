@@ -1,3 +1,7 @@
+// ───────────── 인증 가드 ─────────────
+import { requireAuth } from '../utils/auth-guard.js';
+requireAuth();
+
 // ───────────── API ─────────────
 import { updatePassword } from "../api/user.js";
 import { createSpinnerOverlay } from "../pages/common/spinner-overlay.js";

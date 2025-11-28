@@ -1,3 +1,7 @@
+// ───────────── 인증 가드 ─────────────
+import { requireAuth } from '../utils/auth-guard.js';
+requireAuth();
+
 import { checkDuplicateNickname, getMyPage, updateMyPage, withdraw } from "../api/user.js";
 import { showToast } from "../pages/common/toast.js";
 import { createImageGalleryUploader } from "./image-uploader.js";

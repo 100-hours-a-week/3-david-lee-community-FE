@@ -4,7 +4,11 @@ import { login } from "../api/auth.js";
 // ───────────── 컴포넌트 ─────────────
 import { showToast } from "../pages/common/toast.js";
 import { createSpinnerOverlay } from "../pages/common/spinner-overlay.js";
+import { redirectIfAuthenticated, getRedirectPath } from "../utils/auth-guard.js";
 import {$, setFieldState, verifyEmailField, verifyPasswordLengthField, createFormEnabler} from "../utils/validators.js";
+
+// ───────────── 이미 로그인한 경우 리다이렉트 ─────────────
+redirectIfAuthenticated();
 
 // ───────────── 스피너 생성 ─────────────
 const spinner = createSpinnerOverlay({ ariaLabel: "로그인 중" });
@@ -37,8 +41,9 @@ form?.addEventListener("submit", async (e) => {
 
     try {
         await login(payload);
-        // 다음 페이지에서 토스트 띄우기
-        location.href = "/pages/html/post-list.html?toast=login";
+        // 원래 가려던 페이지 또는 기본 페이지로 이동
+        const redirectPath = getRedirectPath('/pages/html/post-list.html?toast=login');
+        location.href = redirectPath;
     } catch (err) {
         spinner.hide();
         const msg = err?.message || "로그인 중 오류가 발생했습니다.";
@@ -55,4 +60,7 @@ if (params.get('toast') === 'logout') {
 }
 if (params.get('toast') === 'signup') {
     showToast('회원가입 되었습니다.');
+}
+if (params.get('toast') === 'login-required') {
+    showToast('로그인이 필요합니다.');
 }

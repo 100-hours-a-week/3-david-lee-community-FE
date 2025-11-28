@@ -1,3 +1,7 @@
+// ───────────── 인증 가드 ─────────────
+import { requireAuth } from '../utils/auth-guard.js';
+requireAuth();
+
 // ───────────── API ─────────────
 import { createPost } from "../api/post.js";
 

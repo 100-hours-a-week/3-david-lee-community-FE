@@ -1,3 +1,7 @@
+// ───────────── 인증 가드 ─────────────
+import { redirectIfAuthenticated } from "../utils/auth-guard.js";
+redirectIfAuthenticated();
+
 // ───────────── API ─────────────
 import { signUp, checkDuplicateNickname, checkDuplicateEmail } from "../api/user.js";
 
