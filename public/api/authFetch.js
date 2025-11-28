@@ -43,10 +43,20 @@ export async function authFetch(url, options = {}) {
         }
     }
 
-    /// 에러
+    /// 에러 - 서버 응답의 실제 메시지 파싱
     if (!res.ok) {
-        const msg = `요청 실패 (${res.status})`;
-        throw new Error(msg);
+        let errorMessage = `요청 실패 (${res.status})`;
+
+        try {
+            const errorData = await res.json();
+            // 서버에서 보내는 다양한 에러 메시지 형식 처리
+            errorMessage = errorData.message || errorData.error || errorData.msg || errorMessage;
+        } catch (e) {
+            // JSON 파싱 실패 시 기본 메시지 사용
+            console.warn('에러 응답 파싱 실패:', e);
+        }
+
+        throw new Error(errorMessage);
     }
 
     return res;

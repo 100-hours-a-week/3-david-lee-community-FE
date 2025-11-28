@@ -104,8 +104,9 @@ export async function updatePassword(changeableData) {
         method: 'PUT', body: JSON.stringify(changeableData)
     });
 
+    // authFetch에서 이미 에러 처리되지만, 안전장치로 추가
     if (!res.ok) {
-        throw new Error(`마이페이지 조회 실패 (${res.status})`);
+        throw new Error(`비밀번호 변경 실패 (${res.status})`);
     }
 
     return await res.json();
