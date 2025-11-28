@@ -37,6 +37,10 @@
     padding:16px 18px;
     box-shadow:var(--shadow);
     color: var(--text);
+    white-space: pre-wrap;      /* 줄바꿈과 띄어쓰기 유지 */
+    word-wrap: break-word;      /* 긴 단어 자동 줄바꿈 */
+    line-height: 1.6;           /* 가독성을 위한 줄 간격 */
+    overflow-wrap: break-word;  /* URL 등 긴 텍스트 처리 */
 }
 
 /* 통계(조회/댓글/좋아요 등) */
