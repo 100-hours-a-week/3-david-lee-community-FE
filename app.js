@@ -1,4 +1,10 @@
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const port = 3000;
 
@@ -8,6 +14,11 @@ app.use(express.static('public'));
 // 루트("/") 접근 시 홈 페이지로 리다이렉트
 app.get('/', (req, res) => {
     res.redirect('/pages/html/home.html');
+});
+
+// 404 에러 핸들러 (모든 라우트 다음에 위치해야 함)
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, 'public', 'pages', 'html', '404.html'));
 });
 
 // 서버 실행

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>404 - 페이지를 찾을 수 없습니다</title>
+    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="../css/404.css">
+</head>
+<body>
+    <main class="error-page">
+        <!-- 404 콘텐츠 -->
+        <div class="error-content">
+            <!-- 코드 형식의 404 아이콘 -->
+            <div class="error-code">
+                <pre class="code-display"><span class="bracket">{</span>
+  <span class="key">"error"</span>: <span class="string">"404"</span>,
+  <span class="key">"message"</span>: <span class="string">"Page Not Found"</span>
+<span class="bracket">}</span></pre>
+            </div>
+
+            <!-- 메시지 -->
+            <h1 class="error-title">페이지를 찾을 수 없습니다</h1>
+            <p class="error-description">
+                요청하신 페이지가 존재하지 않거나<br>
+                이동되었을 수 있습니다.
+            </p>
+
+            <!-- 액션 버튼 -->
+            <div class="error-actions">
+                <a href="/pages/html/home.html" class="btn btn--primary btn--large">
+                    홈으로 돌아가기
+                </a>
+                <button onclick="history.back()" class="btn btn--ghost btn--large">
+                    이전 페이지
+                </button>
+            </div>
+
+            <!-- 추천 링크 -->
+            <div class="error-links">
+                <p class="links-title">다음 페이지를 찾고 계신가요?</p>
+                <div class="links-list">
+                    <a href="/pages/html/login.html" class="link-item">
+                        <span class="link-icon">🔐</span>
+                        <span class="link-text">로그인</span>
+                    </a>
+                    <a href="/pages/html/signup.html" class="link-item">
+                        <span class="link-icon">✍️</span>
+                        <span class="link-text">회원가입</span>
+                    </a>
+                    <a href="/pages/html/post-list.html" class="link-item">
+                        <span class="link-icon">📝</span>
+                        <span class="link-text">게시글</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 배경 장식 -->
+        <div class="error-bg">
+            <div class="floating-code">404</div>
+            <div class="floating-symbol">&lt;/&gt;</div>
+            <div class="floating-symbol">{ }</div>
+            <div class="floating-symbol">[ ]</div>
+        </div>
+    </main>
+</body>
+</html>

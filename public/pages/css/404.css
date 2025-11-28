@@ -1,0 +1,333 @@
+/* 404 Error Page - Dark Developer Theme */
+
+/* 메인 컨테이너 */
+.error-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    color: var(--text);
+    padding: 40px 20px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 콘텐츠 */
+.error-content {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+}
+
+/* ─────────── 404 코드 디스플레이 ─────────── */
+.error-code {
+    margin-bottom: 40px;
+    animation: fadeInDown 0.6s ease;
+}
+
+.code-display {
+    display: inline-block;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 32px;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-size: 18px;
+    line-height: 1.8;
+    color: var(--text);
+    text-align: left;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    position: relative;
+}
+
+.code-display .bracket {
+    color: #79c0ff;
+    font-weight: 700;
+}
+
+.code-display .key {
+    color: #7ee787;
+}
+
+.code-display .string {
+    color: #a5d6ff;
+}
+
+/* ─────────── 텍스트 ─────────── */
+.error-title {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 0 0 16px 0;
+    color: var(--text);
+    animation: fadeInUp 0.6s ease 0.1s backwards;
+}
+
+.error-description {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--muted);
+    margin: 0 0 40px 0;
+    animation: fadeInUp 0.6s ease 0.2s backwards;
+}
+
+/* ─────────── 액션 버튼 ─────────── */
+.error-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 48px;
+    animation: fadeInUp 0.6s ease 0.3s backwards;
+}
+
+.error-actions .btn {
+    min-width: 160px;
+}
+
+/* ─────────── 추천 링크 ─────────── */
+.error-links {
+    animation: fadeInUp 0.6s ease 0.4s backwards;
+}
+
+.links-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--muted);
+    margin: 0 0 16px 0;
+}
+
+.links-list {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.link-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 24px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.link-item:hover {
+    background: #1c2128;
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(139, 92, 246, 0.2);
+}
+
+.link-icon {
+    font-size: 24px;
+}
+
+.link-text {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* ─────────── 배경 장식 ─────────── */
+.error-bg {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+}
+
+.floating-code,
+.floating-symbol {
+    position: absolute;
+    font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+    font-weight: 700;
+    color: var(--border);
+    opacity: 0.15;
+    animation: float 20s infinite ease-in-out;
+}
+
+.floating-code {
+    font-size: 200px;
+    top: 10%;
+    right: -5%;
+    animation-delay: 0s;
+}
+
+.floating-symbol:nth-child(2) {
+    font-size: 120px;
+    bottom: 15%;
+    left: 5%;
+    animation-delay: -5s;
+}
+
+.floating-symbol:nth-child(3) {
+    font-size: 80px;
+    top: 30%;
+    left: 10%;
+    animation-delay: -10s;
+}
+
+.floating-symbol:nth-child(4) {
+    font-size: 100px;
+    bottom: 25%;
+    right: 15%;
+    animation-delay: -15s;
+}
+
+/* ─────────── 애니메이션 ─────────── */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    25% {
+        transform: translate(20px, -20px) rotate(5deg);
+    }
+    50% {
+        transform: translate(-15px, 15px) rotate(-3deg);
+    }
+    75% {
+        transform: translate(15px, 20px) rotate(3deg);
+    }
+}
+
+/* ─────────── 반응형 ─────────── */
+
+/* 태블릿 (768px 이하) */
+@media (max-width: 768px) {
+    .error-page {
+        padding: 32px 24px;
+    }
+
+    .error-title {
+        font-size: 28px;
+    }
+
+    .error-description {
+        font-size: 15px;
+    }
+
+    .code-display {
+        font-size: 16px;
+        padding: 20px 24px;
+    }
+
+    .error-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .error-actions .btn {
+        width: 100%;
+    }
+
+    .floating-code {
+        font-size: 150px;
+    }
+
+    .floating-symbol {
+        font-size: 60px;
+    }
+}
+
+/* 모바일 (640px 이하) */
+@media (max-width: 640px) {
+    .error-page {
+        padding: 24px 20px;
+    }
+
+    .error-title {
+        font-size: 24px;
+    }
+
+    .error-description {
+        font-size: 14px;
+        margin-bottom: 32px;
+    }
+
+    .code-display {
+        font-size: 14px;
+        padding: 16px 20px;
+    }
+
+    .error-code {
+        margin-bottom: 32px;
+    }
+
+    .error-actions {
+        margin-bottom: 40px;
+    }
+
+    .links-list {
+        gap: 12px;
+    }
+
+    .link-item {
+        padding: 12px 16px;
+        min-width: 80px;
+    }
+
+    .link-icon {
+        font-size: 20px;
+    }
+
+    .link-text {
+        font-size: 12px;
+    }
+
+    .floating-code {
+        font-size: 100px;
+        opacity: 0.08;
+    }
+
+    .floating-symbol {
+        font-size: 40px;
+        opacity: 0.08;
+    }
+}
+
+/* 아주 작은 모바일 (480px 이하) */
+@media (max-width: 480px) {
+    .error-title {
+        font-size: 22px;
+    }
+
+    .code-display {
+        font-size: 13px;
+        padding: 14px 18px;
+    }
+
+    .error-actions .btn {
+        height: 44px;
+        font-size: 14px;
+    }
+}
