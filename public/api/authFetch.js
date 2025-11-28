@@ -56,7 +56,9 @@ export async function authFetch(url, options = {}) {
             console.warn('에러 응답 파싱 실패:', e);
         }
 
-        throw new Error(errorMessage);
+        const error = new Error(errorMessage);
+        error.status = res.status; // HTTP 상태 코드 추가
+        throw error;
     }
 
     return res;
