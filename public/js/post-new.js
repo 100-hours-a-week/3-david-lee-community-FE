@@ -25,13 +25,16 @@ contentInput?.addEventListener("input", () => {
     contentCount.textContent = `${contentInput.value.length} / ${contentInput.maxLength}`;
 });
 
-/// 작동 스피너 넣기
+/// 작동 스피너 넣기 (이미지 업로드용)
 const overlay = createSpinnerOverlay({
     spinnerSize: 30,
     border: 6,
     borderColor: "#fff",
     backdrop: "rgba(0,0,0,.45)",
 });
+
+// 제출용 스피너
+const submitSpinner = createSpinnerOverlay({ ariaLabel: "게시글 작성 중" });
 
 // 갤러리 업로더 인스턴스
 const gallery = createImageGalleryUploader({
@@ -49,7 +52,6 @@ const gallery = createImageGalleryUploader({
 formEl?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const submitBtn = formEl.querySelector('button[type="submit"]');
     const categoryId = "2";
     const title = titleInput.value.trim();
     const content = contentInput.value.trim();
@@ -57,7 +59,8 @@ formEl?.addEventListener("submit", async (e) => {
     if (!title)  return showToast("제목을 입력하세요.");
     if (!content) return showToast("내용을 입력하세요.");
 
-    submitBtn.disabled = true;
+    // 스피너 표시
+    submitSpinner.show();
 
     try {
         const imageKeys = gallery.getKeys(); // 정렬 적용된 순서대로
@@ -67,9 +70,8 @@ formEl?.addEventListener("submit", async (e) => {
         await showToast("글 작성이 완료되었습니다.");
         location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(res.data.postId)}`;
     } catch (err) {
+        submitSpinner.hide();
         console.error(err);
         await showToast(err?.message || "글 작성 중 오류가 발생했습니다.");
-    } finally {
-        submitBtn.disabled = false;
     }
 });

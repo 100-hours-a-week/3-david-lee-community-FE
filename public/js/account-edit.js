@@ -36,13 +36,16 @@ hiddenFile.accept = "image/*";
 hiddenFile.style.display = "none";
 document.body.appendChild(hiddenFile);
 
-// ===== 작동 스피너 =====
+// ===== 작동 스피너 (이미지 업로드용) =====
 const overlay = createSpinnerOverlay({
     spinnerSize: 30,
     border: 6,
     borderColor: "#fff",
     backdrop: "rgba(0,0,0,.45)",
 });
+
+// 제출용 스피너
+const submitSpinner = createSpinnerOverlay({ ariaLabel: "정보 수정 중" });
 
 // ===== 업로더 =====
 const uploader = createImageGalleryUploader({
@@ -214,23 +217,17 @@ formEl?.addEventListener("submit", async (e) => {
 
     const payload = { nickname, imageKey };
 
-    const oldText = submitBtn?.textContent ?? "";
-    if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.textContent = "수정 중...";
-    }
+    // 스피너 표시
+    submitSpinner.show();
 
     try {
         await updateMyPage(payload);
         await showToast("정상적으로 수정되었습니다.");
-        if (submitBtn) submitBtn.textContent = "수정완료";
         location.href = "/pages/html/post-list.html";
     } catch (err) {
+        submitSpinner.hide();
         console.error(err);
         await showToast("기존 이미지/닉네임 수정없이 수정할 수 없습니다.");
-        if (submitBtn) submitBtn.textContent = oldText;
-    } finally {
-        if (submitBtn) submitBtn.disabled = false;
     }
 });
 

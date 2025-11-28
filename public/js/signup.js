@@ -2,7 +2,6 @@
 import { signUp, checkDuplicateNickname, checkDuplicateEmail } from "../api/user.js";
 
 // ───────────── 컴포넌트─────────────
-
 import {
     $,
     debounce,
@@ -14,7 +13,11 @@ import {
     verifyDupAsync,
     createFormEnabler
 } from "../utils/validators.js";
-import {showToast} from "../pages/common/toast.js";
+import { showToast } from "../pages/common/toast.js";
+import { createSpinnerOverlay } from "../pages/common/spinner-overlay.js";
+
+// ───────────── 스피너 생성 ─────────────
+const spinner = createSpinnerOverlay({ ariaLabel: "회원가입 중" });
 
 
 // ───────────── 입력 폼 ─────────────
@@ -94,11 +97,15 @@ form?.addEventListener("submit", async (e) => {
         imageKey: ($("#avatarKey")?.value?.trim() || null),
     };
 
+    // 스피너 표시
+    spinner.show();
+
     try {
         await signUp(payload);
         await showToast("회원가입이 완료되었습니다. 로그인 페이지로 이동합니다.");
         location.href = "/pages/html/login.html?toast=signup";
     } catch (err) {
+        spinner.hide();
         // 서버 필드 에러 매핑 (예시)
         const list = err?.error;
         if (err?.code === 400002 && Array.isArray(list)) {

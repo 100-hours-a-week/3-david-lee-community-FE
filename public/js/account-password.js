@@ -1,5 +1,9 @@
 // ───────────── API ─────────────
-import {updatePassword} from "../api/user.js";
+import { updatePassword } from "../api/user.js";
+import { createSpinnerOverlay } from "../pages/common/spinner-overlay.js";
+
+// ───────────── 스피너 생성 ─────────────
+const spinner = createSpinnerOverlay({ ariaLabel: "비밀번호 변경 중" });
 
 // ───────── 내부 설정 ─────────
 const form  = document.getElementById('pwForm');
@@ -95,21 +99,17 @@ form.addEventListener('submit', async (e) => {
     // 가드: 혹시나 DOM 조작으로 버튼을 활성화했을 경우 대비
     if (!isFieldValid(oldEl) || !isFieldValid(pwEl) || !isFieldValid(pw2El)) return;
 
-    const submitBtn = form.querySelector('.btn--primary');
-
     const oldPassword = oldEl.value.trim();
     const newPassword = pwEl.value.trim();
     const confirmPassword = pw2El.value.trim();
 
-    submitBtn.disabled = true;
-    const prevText = submitBtn.textContent;
-    submitBtn.textContent = '수정 중...';
-
     const payload = { oldPassword, newPassword, confirmPassword };
+
+    // 스피너 표시
+    spinner.show();
 
     try {
         await updatePassword(payload);
-        submitBtn.textContent = '수정완료';
 
         // 민감정보 초기화 및 상태 재검증
         oldEl.value = '';
@@ -122,12 +122,9 @@ form.addEventListener('submit', async (e) => {
         // 이동
         location.href = '/pages/html/post-list.html?toast=password';
     } catch (err) {
+        spinner.hide();
         console.error(err);
         alert('비밀번호 변경 실패: ' + (err?.message || '알 수 없는 오류'));
-        submitBtn.textContent = prevText;
-        refreshFormValidity();
-    } finally {
-        submitBtn.disabled = true; // 실패 시도 이후에도 다시 잠가두고, 입력이 바뀌면 해제되도록
         refreshFormValidity();
     }
 });

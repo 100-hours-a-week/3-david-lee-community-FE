@@ -56,21 +56,15 @@ function wireEvents() {
     document.getElementById('editForm').addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const submitBtn = e.currentTarget.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-
         const categoryId = '2';
         const title = titleInput.value.trim();
         const content = contentInput.value.trim();
 
-        if (!title)  {
-            submitBtn.disabled = false;
-            return showToast('제목을 입력하세요.');
-        }
-        if (!content){
-            submitBtn.disabled = false;
-            return showToast('내용을 입력하세요.');
-        }
+        if (!title)  return showToast('제목을 입력하세요.');
+        if (!content) return showToast('내용을 입력하세요.');
+
+        // 스피너 표시
+        submitSpinner.show();
 
         try {
             const imageKeys = galleryCtl.getKeys(); // 화면 순서대로 키 반환
@@ -80,10 +74,9 @@ function wireEvents() {
             alert('글 수정이 완료되었습니다.');
             location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(postId)}`;
         } catch (err) {
+            submitSpinner.hide();
             console.error(err);
             await showToast(err?.message || '글 수정 중 오류가 발생했습니다.');
-        } finally {
-            submitBtn.disabled = false;
         }
     });
 }
@@ -100,13 +93,16 @@ function init() {
     contentCount = required(document.getElementById('contentCount'), '내용 글자수');
     imageListEl  = required(document.getElementById('imageList'), '이미지 리스트');
 
-    /// 작동 스피너 넣기
+    /// 작동 스피너 넣기 (이미지 업로드용)
     const overlay = createSpinnerOverlay({
         spinnerSize: 30,
         border: 6,
         borderColor: "#fff",
         backdrop: "rgba(0,0,0,.45)",
     });
+
+    // 제출용 스피너
+    const submitSpinner = createSpinnerOverlay({ ariaLabel: "게시글 수정 중" });
 
     // 모듈 생성
     galleryCtl = createImageGalleryUploader({
