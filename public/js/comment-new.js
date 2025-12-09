@@ -15,6 +15,16 @@ export async function registerCommentSubmit(postId) {
 
     document.body.dataset.commentSubmitBound = "1";
 
+    // 댓글 글자 수 카운터 설정
+    const commentTextarea = document.getElementById("comment");
+    const commentCount = document.getElementById("commentCount");
+
+    if (commentTextarea && commentCount) {
+        commentTextarea.addEventListener("input", () => {
+            commentCount.textContent = `${commentTextarea.value.length} / ${commentTextarea.maxLength}`;
+        });
+    }
+
     /// click => onClick 바꾸기
     document.addEventListener("click", async (e) => {
 
@@ -48,6 +58,12 @@ export async function registerCommentSubmit(postId) {
 
             // 입력창 초기화
             textarea.value = "";
+
+            // 카운터 초기화
+            const commentCount = document.getElementById("commentCount");
+            if (commentCount) {
+                commentCount.textContent = "0 / 200";
+            }
 
             // 전체 목록 재조회
             const root = document.getElementById("postRoot");

@@ -78,6 +78,21 @@
     box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.25);
 }
 
+.comment-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.comment-actions .count {
+    margin: 0;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: left;
+}
+
 /* ───────────── 답글 폼 ───────────── */
 .reply-form {
     margin-top: 12px;
@@ -108,9 +123,16 @@
 }
 .reply-actions {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
     gap: 8px;
     margin-top: 8px;
+}
+
+.reply-actions .reply-count {
+    margin: 0;
+    margin-right: auto;
+    font-size: 12px;
+    color: var(--muted);
 }
 
 /* ───────────── 편집 폼 ───────────── */
@@ -141,9 +163,16 @@
 }
 .edit-actions {
     display: flex;
-    justify-content: flex-end;
+    align-items: center;
     gap: 8px;
     margin-top: 8px;
+}
+
+.edit-actions .edit-count {
+    margin: 0;
+    margin-right: auto;
+    font-size: 12px;
+    color: var(--muted);
 }
 
 /* ───────────── 상태/배지/유틸 ───────────── */

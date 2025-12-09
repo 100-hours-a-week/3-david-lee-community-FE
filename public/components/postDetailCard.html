@@ -73,8 +73,11 @@
 
     <!-- 댓글 입력 -->
     <div class="commentbox">
-      <textarea id="comment" placeholder="댓글을 남겨주세요!"></textarea>
-      <button class="btn btn--primary btn--inside" data-action="comment">댓글 등록</button>
+      <textarea id="comment" maxlength="200" placeholder="댓글을 남겨주세요! (최대 200글자)"></textarea>
+      <div class="comment-actions">
+        <span id="commentCount" class="count">0 / 200</span>
+        <button class="btn btn--primary btn--inside" data-action="comment">댓글 등록</button>
+      </div>
     </div>
 
     <!-- 댓글 리스트 -->

@@ -25,8 +25,9 @@
 
     <!-- 내장 편집 폼 (기본 숨김) -->
     <form class="edit-form hidden" novalidate>
-      <textarea rows="3" class="edit-textarea" placeholder="댓글을 수정하세요…"></textarea>
+      <textarea rows="3" class="edit-textarea" placeholder="댓글을 수정하세요…" maxlength="200"></textarea>
       <div class="edit-actions">
+        <span class="edit-count">0 / 200</span>
         <button type="submit" class="btn btn--small btn--primary">저장</button>
         <button type="button" class="btn btn--small btn--ghost" data-action="edit-cancel">취소</button>
       </div>
@@ -34,8 +35,9 @@
 
     <!-- 내장 답글 폼 (기본 숨김) -->
     <form class="reply-form hidden" novalidate>
-      <textarea rows="2" placeholder="답글을 입력하세요…"></textarea>
+      <textarea rows="2" placeholder="답글을 입력하세요…" maxlength="200"></textarea>
       <div class="reply-actions">
+        <span class="reply-count">0 / 200</span>
         <button type="submit" class="btn btn--small btn--primary">등록</button>
         <button type="button" class="btn btn--small btn--ghost" data-action="reply-cancel">취소</button>
       </div>

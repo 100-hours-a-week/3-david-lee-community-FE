@@ -26,11 +26,13 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
     const $replyForm      = rootEl.querySelector('.reply-form');
     const $replyTextarea  = $replyForm?.querySelector('textarea');
     const $replyCancelBtn = $replyForm?.querySelector('[data-action="reply-cancel"]');
+    const $replyCount     = $replyForm?.querySelector('.reply-count');
 
     // 내장 수정 폼
     const $editForm      = rootEl.querySelector('.edit-form');
     const $editTextarea  = $editForm?.querySelector('.edit-textarea');
     const $editCancelBtn = $editForm?.querySelector('[data-action="edit-cancel"]');
+    const $editCount     = $editForm?.querySelector('.edit-count');
 
     /// comment 들어온 값을 사용하게끔 수정
     const user = comment.user ?? {};
@@ -52,9 +54,11 @@ export async function createCommentCard(comment, {onCommentReply, onCommentEdit,
         replyForm: $replyForm,
         replyTextarea: $replyTextarea,
         replyCancelBtn: $replyCancelBtn,
+        replyCount: $replyCount,
         editForm: $editForm,
         editTextarea: $editTextarea,
         editCancelBtn: $editCancelBtn,
+        editCount: $editCount,
     };
 
     // 편집/삭제/답글 버튼 표시

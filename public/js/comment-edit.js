@@ -11,7 +11,7 @@ import {createCommentCard} from "../components/commentCard.js";
 
 // ───────────── 댓글 수정하기 ─────────────
 export async function handleEdit(comment, ctx) {
-    const { node, contentEl, editForm, editTextarea, editCancelBtn } = ctx || {};
+    const { node, contentEl, editForm, editTextarea, editCancelBtn, editCount } = ctx || {};
     if (!node || !contentEl || !editForm || !editTextarea) return;
 
     // === 상단 캐싱 ===
@@ -45,9 +45,21 @@ export async function handleEdit(comment, ctx) {
     editForm.classList.remove("hidden");
     editTextarea.focus();
 
+    // 카운터 초기화
+    if (editCount) {
+        editCount.textContent = `${original.length} / ${editTextarea.maxLength || 200}`;
+    }
+
     // 중복 바인딩 방지
     if (editForm.dataset.bound === "1") return;
     editForm.dataset.bound = "1";
+
+    // 카운터 업데이트 이벤트
+    if (editCount) {
+        editTextarea.addEventListener("input", () => {
+            editCount.textContent = `${editTextarea.value.length} / ${editTextarea.maxLength || 200}`;
+        });
+    }
 
     // 취소
     editCancelBtn?.addEventListener("click", (e) => {
@@ -121,21 +133,36 @@ export async function handleDelete(comment, ctx) {
 
 // ───────────── 대댓글 작성하기 ─────────────
 export async function handleReply(comment, ctx, postId) {
-    const { replyForm, replyTextarea, replyCancelBtn, repliesContainer } = ctx || {};
+    const { replyForm, replyTextarea, replyCancelBtn, repliesContainer, replyCount } = ctx || {};
     if (!replyForm || !replyTextarea || !repliesContainer) return;
 
     // === 상단 캐싱 (이미 전달된 요소들로 충분) ===
     replyForm.classList.remove("hidden");
     replyTextarea.focus();
 
+    // 카운터 초기화
+    if (replyCount) {
+        replyCount.textContent = `${replyTextarea.value.length} / ${replyTextarea.maxLength || 200}`;
+    }
+
     // 중복 바인딩 방지
     if (replyForm.dataset.bound === "1") return;
     replyForm.dataset.bound = "1";
+
+    // 카운터 업데이트 이벤트
+    if (replyCount) {
+        replyTextarea.addEventListener("input", () => {
+            replyCount.textContent = `${replyTextarea.value.length} / ${replyTextarea.maxLength || 200}`;
+        });
+    }
 
     // 취소 (once)
     replyCancelBtn?.addEventListener("click", (e) => {
         e.preventDefault();
         replyTextarea.value = "";
+        if (replyCount) {
+            replyCount.textContent = "0 / 200";
+        }
         replyForm.classList.add("hidden");
     });
 
@@ -164,6 +191,9 @@ export async function handleReply(comment, ctx, postId) {
 
             // reset & hide
             replyTextarea.value = "";
+            if (replyCount) {
+                replyCount.textContent = "0 / 200";
+            }
             replyForm.classList.add("hidden");
         } catch (e2) {
             console.error(e2);
