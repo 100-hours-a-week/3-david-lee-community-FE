@@ -46,6 +46,7 @@ const gallery = createImageGalleryUploader({
     fileInputEl: fileInput,
     dropZoneEl: dropZone,
     maxSizeMB: 10,
+    maxImages: 10,
     onError: (m) => showToast(m),
     onToast: (m) => showToast(m),
     onUploadStart: () => overlay.show({ lockSelectors: ["#postForm input", "#postForm button", "#postForm textarea", "#postForm select"] }),

@@ -114,6 +114,7 @@ function init() {
         fileInputEl: fileInput,
         addMoreBtnEl: addMoreBtn,
         maxSizeMB: 5,
+        maxImages: 10,
         onError: (msg) => showToast(msg),
         onToast: (msg) => showToast(msg),
         onUploadStart: () => overlay.show({ lockSelectors: ["#postForm input", "#postForm button", "#postForm textarea", "#postForm select"] }),

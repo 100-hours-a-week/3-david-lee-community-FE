@@ -11,6 +11,7 @@ export function createImageGalleryUploader({
                                                listEl,          // 필수
                                                fileInputEl,     // 선택
                                                maxSizeMB = 5,
+                                               maxImages = 10,  // 최대 이미지 개수
                                                onError  = (msg) => alert(msg),
                                                onToast  = async (msg) => showToast(msg),
                                                onUploadStart = () => {},
@@ -108,6 +109,14 @@ export function createImageGalleryUploader({
     async function upload(filesLike) {
         const files = filterValid(filesLike);
         if (files.length === 0) return [];
+
+        // 이미지 개수 제한 체크
+        const currentCount = gallery.length;
+        const newCount = currentCount + files.length;
+        if (newCount > maxImages) {
+            await onToast(`이미지는 최대 ${maxImages}개까지 업로드할 수 있습니다. (현재: ${currentCount}개)`);
+            return [];
+        }
 
         // 로딩 시작
         isUploading = true;
