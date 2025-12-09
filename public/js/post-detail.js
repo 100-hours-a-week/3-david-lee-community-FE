@@ -28,6 +28,11 @@ function showError(msg){
 // ───────────── 상세 조회 ─────────────
 async function load() {
     try {
+        // 토스트 메시지 처리
+        if (params.get('toast') === 'updated') {
+            await showToast('글 수정이 완료되었습니다.');
+        }
+
         // ID가 없으면 404 페이지로 리다이렉트
         if (!postId) {
             location.href = '/pages/html/404.html';

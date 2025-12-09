@@ -75,8 +75,7 @@ function wireEvents() {
             const payload = { categoryId, title, content, imageKeys };
             await updatePost(postId, payload);
 
-            alert('글 수정이 완료되었습니다.');
-            location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(postId)}`;
+            location.href = `/pages/html/post-detail.html?id=${encodeURIComponent(postId)}&toast=updated`;
         } catch (err) {
             submitSpinner.hide();
             console.error(err);
